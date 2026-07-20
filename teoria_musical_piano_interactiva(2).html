@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#19182f" />
+  <title>Teoría musical interactiva con piano</title>
+  <style>
+    :root {
+      --bg: #f5f6fb;
+      --panel: #ffffff;
+      --panel-soft: #fafaff;
+      --text: #202437;
+      --muted: #687187;
+      --line: #dfe3ec;
+      --accent: #5a4ce6;
+      --accent-dark: #4236bb;
+      --accent-soft: #eeecff;
+      --green: #138a76;
+      --green-soft: #e6f7f2;
+      --orange: #d98219;
+      --orange-soft: #fff4df;
+      --red: #ca4560;
+      --red-soft: #ffedf1;
+      --blue: #2d78c7;
+      --blue-soft: #e9f3ff;
+      --root: #5a4ce6;
+      --third: #df7b18;
+      --fifth: #168f78;
+      --seventh: #c54667;
+      --other: #377bc4;
+      --shadow: 0 14px 38px rgba(35, 39, 62, .09);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #fbfbff 0%, var(--bg) 100%);
+      color: var(--text);
+    }
+
+    button, select, input { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, select:focus-visible, input:focus-visible {
+      outline: 3px solid rgba(90, 76, 230, .26);
+      outline-offset: 2px;
+    }
+
+    .app { max-width: 1220px; margin: 0 auto; padding: 22px 18px 64px; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      color: white;
+      border-radius: 30px;
+      padding: 34px;
+      background:
+        radial-gradient(circle at 92% 8%, rgba(164, 151, 255, .42), transparent 26%),
+        radial-gradient(circle at 76% 110%, rgba(25, 151, 127, .26), transparent 34%),
+        linear-gradient(135deg, #17182b 0%, #29264e 100%);
+      box-shadow: var(--shadow);
+    }
+    .hero::after {
+      content: "♪";
+      position: absolute;
+      right: 5%;
+      top: 5%;
+      font-size: 10rem;
+      line-height: 1;
+      opacity: .06;
+      transform: rotate(-8deg);
+      pointer-events: none;
+    }
+    .hero h1 { margin: 0 0 10px; max-width: 820px; font-size: clamp(2.15rem, 5vw, 4rem); line-height: .98; }
+    .hero p { max-width: 820px; margin: 0; color: rgba(255,255,255,.82); font-size: 1.08rem; line-height: 1.55; }
+    .hero-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    .hero-pill { padding: 9px 13px; border-radius: 999px; background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.16); font-weight: 750; font-size: .9rem; }
+
+    .mode-tabs {
+      position: sticky;
+      top: 8px;
+      z-index: 50;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 18px 0;
+      padding: 9px;
+      border-radius: 18px;
+      background: rgba(245,246,251,.91);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(223,227,236,.9);
+    }
+    .mode-tab {
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 800;
+    }
+    .mode-tab.active { background: var(--accent); color: white; border-color: var(--accent); box-shadow: 0 8px 18px rgba(90,76,230,.2); }
+
+    .mode-panel { display: none; }
+    .mode-panel.active { display: block; animation: fade .22s ease; }
+    @keyframes fade { from { opacity: .45; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; box-shadow: 0 8px 24px rgba(35,39,62,.045); }
+    .card h2, .card h3 { margin: 0 0 8px; }
+    .card p { color: var(--muted); line-height: 1.62; }
+    .grid { display: grid; gap: 18px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .mt { margin-top: 18px; }
+    .eyebrow { color: var(--accent); font-size: .76rem; font-weight: 900; letter-spacing: .085em; text-transform: uppercase; margin-bottom: 8px; }
+    .muted { color: var(--muted); }
+    .big-idea { font-size: clamp(1.3rem, 3vw, 2rem); font-weight: 900; line-height: 1.25; margin: 15px 0; }
+    .callout { margin-top: 14px; padding: 14px 16px; border-radius: 14px; border-left: 4px solid var(--orange); background: var(--orange-soft); color: #68420f; line-height: 1.52; }
+    .callout.info { border-color: var(--accent); background: var(--accent-soft); color: #403686; }
+    .callout.good { border-color: var(--green); background: var(--green-soft); color: #0d6355; }
+    .callout.bad { border-color: var(--red); background: var(--red-soft); color: #8a2940; }
+
+    .lesson-layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 18px; align-items: start; }
+    .lesson-sidebar { position: sticky; top: 86px; padding: 14px; }
+    .lesson-sidebar h3 { padding: 8px 8px 4px; font-size: .95rem; }
+    .lesson-list { display: grid; gap: 7px; }
+    .lesson-link { width: 100%; text-align: left; border: 1px solid transparent; background: transparent; color: var(--muted); border-radius: 12px; padding: 10px; font-weight: 750; }
+    .lesson-link:hover { background: #f5f5fb; color: var(--text); }
+    .lesson-link.active { color: var(--accent-dark); border-color: #d9d5ff; background: var(--accent-soft); }
+    .lesson-link.done::after { content: " ✓"; color: var(--green); }
+    .progress-track { height: 8px; background: #eceef4; border-radius: 999px; overflow: hidden; margin: 10px 8px 14px; }
+    .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), #9c91ff); transition: width .25s ease; }
+    .lesson-panel { display: none; }
+    .lesson-panel.active { display: block; }
+    .lesson-actions { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+
+    .btn { border: 0; border-radius: 12px; padding: 11px 15px; background: var(--accent); color: white; font-weight: 850; box-shadow: 0 8px 18px rgba(90,76,230,.19); }
+    .btn:hover { filter: brightness(.98); transform: translateY(-1px); }
+    .btn.secondary { background: #f0f1f6; color: var(--text); border: 1px solid var(--line); box-shadow: none; }
+    .btn.good { background: var(--green); }
+    .btn.danger { background: var(--red); }
+    .btn.small { padding: 8px 11px; font-size: .88rem; }
+    .btn:disabled { opacity: .48; cursor: not-allowed; transform: none; }
+
+    .controls { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; }
+    .field { display: grid; gap: 6px; min-width: 155px; }
+    label { color: var(--muted); font-size: .84rem; font-weight: 800; }
+    select, input[type="number"] { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; background: white; color: var(--text); }
+
+    .keyboard-wrap { margin-top: 16px; overflow-x: auto; padding: 4px 0 11px; }
+    .keyboard { position: relative; height: 220px; min-width: 840px; user-select: none; touch-action: manipulation; }
+    .white-keys { display: flex; position: absolute; inset: 0; }
+    .key { border: 0; }
+    .key.white { position: relative; flex: 1; height: 100%; border: 1px solid #aeb5c4; border-radius: 0 0 9px 9px; background: linear-gradient(#fff, #eef0f5); display: flex; align-items: end; justify-content: center; padding: 0 3px 11px; font-weight: 850; color: #535d70; transition: .1s ease; }
+    .key.black { position: absolute; z-index: 3; top: 0; width: 44px; height: 138px; transform: translateX(-50%); border-radius: 0 0 7px 7px; background: linear-gradient(#242837, #090b12); color: rgba(255,255,255,.78); display: flex; align-items: end; justify-content: center; padding: 0 3px 8px; font-size: .67rem; font-weight: 850; box-shadow: 0 6px 10px rgba(0,0,0,.25); transition: .1s ease; }
+    .key:hover { filter: brightness(.97); }
+    .key.pressed.white { transform: translateY(2px); filter: brightness(.95); }
+    .key.pressed.black { transform: translateX(-50%) translateY(2px); filter: brightness(1.15); }
+    .key.role-0.white { background: linear-gradient(#e8e5ff, #bcb4ff); color: #302574; }
+    .key.role-0.black { background: linear-gradient(#978cff, #493db8); color: white; }
+    .key.role-1.white { background: linear-gradient(#fff0d9, #ffc873); color: #784407; }
+    .key.role-1.black { background: linear-gradient(#efa955, #a85e08); color: white; }
+    .key.role-2.white { background: linear-gradient(#dff7f0, #84dac7); color: #0a5f52; }
+    .key.role-2.black { background: linear-gradient(#53c8af, #08705e); color: white; }
+    .key.role-3.white { background: linear-gradient(#ffe4eb, #f5a1b7); color: #7e243a; }
+    .key.role-3.black { background: linear-gradient(#e96f91, #9c2947); color: white; }
+    .key.interval-start.white { box-shadow: inset 0 -8px 0 var(--accent); }
+    .key.interval-start.black { outline: 4px solid var(--accent); outline-offset: -4px; }
+    .key.interval-end.white { box-shadow: inset 0 -8px 0 var(--orange); }
+    .key.interval-end.black { outline: 4px solid var(--orange); outline-offset: -4px; }
+    .key.correct.white { box-shadow: inset 0 -10px 0 var(--green); }
+    .key.wrong.white { box-shadow: inset 0 -10px 0 var(--red); }
+    .key.correct.black { outline: 4px solid var(--green); outline-offset: -4px; }
+    .key.wrong.black { outline: 4px solid var(--red); outline-offset: -4px; }
+    .key small { font-size: .7em; font-weight: 700; opacity: .72; }
+
+    .result-box { margin-top: 14px; min-height: 68px; padding: 15px 16px; border-radius: 14px; background: #f8f8fb; border: 1px dashed #cfd4df; line-height: 1.52; }
+    .result-box strong { color: var(--text); }
+    .status-good { background: var(--green-soft); border-color: #9dd9cc; color: #0b6253; }
+    .status-bad { background: var(--red-soft); border-color: #efb3c1; color: #8e2941; }
+
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .pill { padding: 7px 10px; border-radius: 999px; background: var(--accent-soft); color: #4c41bd; font-weight: 850; font-size: .84rem; }
+    .note-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 14px 0 2px; }
+    .note-chip { min-width: 55px; text-align: center; padding: 11px 13px; border-radius: 14px; border: 1px solid transparent; font-weight: 900; font-size: 1.02rem; }
+    .note-chip.role-0 { background: var(--accent-soft); color: #4639ba; border-color: #d4ceff; }
+    .note-chip.role-1 { background: var(--orange-soft); color: #8b4e08; border-color: #ffd89d; }
+    .note-chip.role-2 { background: var(--green-soft); color: #0c6959; border-color: #a6dfd2; }
+    .note-chip.role-3 { background: var(--red-soft); color: #932c47; border-color: #efb5c3; }
+    .separator { color: #a1a8b7; font-weight: 900; }
+    .legend { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; color: var(--muted); font-size: .84rem; }
+    .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.root { background: var(--root); } .dot.third { background: var(--third); } .dot.fifth { background: var(--fifth); } .dot.seventh { background: var(--seventh); }
+
+    .concept-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 16px; }
+    .concept { border: 1px solid var(--line); background: var(--panel-soft); border-radius: 14px; padding: 13px; }
+    .concept strong { display: block; margin-bottom: 4px; }
+    .concept span { color: var(--muted); font-size: .88rem; line-height: 1.4; }
+
+    .mission { background: linear-gradient(135deg, #f1efff, #fbfaff); border: 1px solid #d8d3ff; border-radius: 16px; padding: 16px; margin: 14px 0; }
+    .mission-title { color: var(--accent-dark); font-weight: 900; margin-bottom: 5px; }
+    .mission p { margin: 0; color: #514a79; }
+
+    .interval-meter { display: grid; grid-template-columns: repeat(13, minmax(28px,1fr)); gap: 4px; margin-top: 14px; }
+    .interval-cell { min-height: 42px; border-radius: 9px; background: #eff0f5; display: grid; place-items: center; color: #858da0; font-size: .76rem; font-weight: 850; }
+    .interval-cell.active { background: var(--accent); color: white; }
+
+    .comparison { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; gap: 12px; margin-top: 16px; }
+    .compare-card { border: 1px solid var(--line); border-radius: 16px; padding: 16px; background: var(--panel-soft); }
+    .compare-vs { display: grid; place-items: center; color: var(--muted); font-weight: 900; }
+
+    .info-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-top: 14px; }
+    .info-item { border: 1px solid var(--line); border-radius: 14px; padding: 13px; background: var(--panel-soft); }
+    .info-item span { display: block; color: var(--muted); font-size: .76rem; font-weight: 800; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .05em; }
+    .info-item strong { display: block; font-size: 1.02rem; }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 620px; }
+    th, td { text-align: left; padding: 12px 11px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .045em; }
+    td { line-height: 1.45; }
+
+    .quiz-score { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .score-chip { border-radius: 10px; padding: 8px 10px; background: #f1f2f6; font-size: .86rem; font-weight: 850; }
+    .quiz-options { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 12px; }
+
+    .footer { margin-top: 30px; color: var(--muted); text-align: center; font-size: .9rem; }
+
+    @media (max-width: 930px) {
+      .lesson-layout { grid-template-columns: 1fr; }
+      .lesson-sidebar { position: static; }
+      .lesson-list { grid-template-columns: repeat(3, minmax(0,1fr)); }
+      .lesson-link { text-align: center; }
+      .info-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 760px) {
+      .grid.two, .grid.three { grid-template-columns: 1fr; }
+      .concept-strip { grid-template-columns: repeat(2, 1fr); }
+      .comparison { grid-template-columns: 1fr; }
+      .compare-vs { padding: 0; }
+      .hero { padding: 27px 22px; }
+      .card { padding: 18px; }
+      .lesson-list { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 470px) {
+      .concept-strip, .info-grid { grid-template-columns: 1fr; }
+      .mode-tab { flex: 1 1 46%; }
+      .lesson-list { grid-template-columns: 1fr; }
+    }
+
+    .mode-panel, .lesson-layout > div, .lesson-panel, .card { min-width: 0; }
+    .keyboard-wrap { max-width: 100%; }
+    .progress-summary { margin: 5px 8px 0; color: var(--muted); font-size: .82rem; font-weight: 800; }
+    .lesson-link { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .lesson-link .lesson-status { flex: 0 0 auto; padding: 4px 7px; border-radius: 999px; background: #eef0f5; color: #737c8f; font-size: .65rem; }
+    .lesson-link.explored .lesson-status { background: var(--blue-soft); color: var(--blue); }
+    .lesson-link.practiced .lesson-status { background: var(--orange-soft); color: #975307; }
+    .lesson-link.mastered .lesson-status { background: var(--green-soft); color: var(--green); }
+    .lesson-link.mastered { border-color: #b8e2d8; }
+    .compact-callout { margin: 14px 4px 0; font-size: .82rem; }
+    .mission-progress { margin-top: 10px; color: var(--accent); font-weight: 900; letter-spacing: .22em; }
+    .keyboard-hint { margin-top: 12px; color: var(--muted); font-size: .82rem; }
+    kbd { display: inline-grid; place-items: center; min-width: 25px; padding: 3px 6px; border: 1px solid #cbd0dc; border-bottom-width: 3px; border-radius: 6px; background: white; color: var(--text); font-weight: 850; }
+    .fingering-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+    .fingering-card { border: 1px solid var(--line); border-radius: 14px; padding: 13px; background: var(--panel-soft); }
+    .fingering-card strong, .fingering-card span { display: block; }
+    .fingering-card span { margin-top: 4px; color: var(--muted); }
+    .compact-field { min-width: 125px; }
+    .advanced-details { border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; background: var(--panel-soft); }
+    .advanced-details summary { cursor: pointer; font-weight: 850; color: var(--accent-dark); }
+    .voice-map { margin-top: 12px; border: 1px dashed #cfd4df; border-radius: 12px; padding: 12px; background: white; color: var(--muted); line-height: 1.7; }
+    .voice-line { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; padding: 4px 0; }
+    .voice-line strong:last-child { text-align: right; }
+    .voice-arrow { color: var(--accent); font-weight: 900; }
+    .key.selected.white { box-shadow: inset 0 -10px 0 var(--accent); }
+    .key.selected.black { outline: 4px solid var(--accent); outline-offset: -4px; }
+    @media (max-width: 760px) { .fingering-grid { grid-template-columns: 1fr; } }
+
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <h1>Entiende los acordes tocándolos</h1>
+      <p>
+        Aprende qué es una nota, cómo se miden los intervalos, por qué un acorde es mayor o menor,
+        cómo funcionan sostenidos y bemoles, y qué ocurre cuando invertimos un acorde. El piano funciona aquí como mapa, oído y laboratorio.
+      </p>
+      <div class="hero-row">
+        <span class="hero-pill">Ruta guiada</span>
+        <span class="hero-pill">Piano interactivo</span>
+        <span class="hero-pill">Laboratorio de acordes</span>
+        <span class="hero-pill">Entrenamiento auditivo</span>
+      </div>
+    </header>
+
+    <nav class="mode-tabs" aria-label="Modos de la aplicación">
+      <button class="mode-tab active" data-mode="course">Aprender paso a paso</button>
+      <button class="mode-tab" data-mode="lab">Laboratorio</button>
+      <button class="mode-tab" data-mode="practice">Practicar</button>
+      <button class="mode-tab" data-mode="reference">Referencia</button>
+    </nav>
+
+    <section id="mode-course" class="mode-panel active">
+      <div class="lesson-layout">
+        <aside class="card lesson-sidebar">
+          <h3>Ruta esencial</h3>
+          <div id="progressSummary" class="progress-summary">0 de 5 dominadas</div>
+          <div class="progress-track" aria-label="Progreso de dominio"><div id="progressFill" class="progress-fill"></div></div>
+          <div class="lesson-list">
+            <button class="lesson-link active" data-lesson="1"><span>1. Nota y teclado</span><small class="lesson-status">Sin iniciar</small></button>
+            <button class="lesson-link" data-lesson="2"><span>2. Semitonos e intervalos</span><small class="lesson-status">Sin iniciar</small></button>
+            <button class="lesson-link" data-lesson="3"><span>3. Mayor y menor</span><small class="lesson-status">Sin iniciar</small></button>
+            <button class="lesson-link" data-lesson="4"><span>4. ♯ y ♭</span><small class="lesson-status">Sin iniciar</small></button>
+            <button class="lesson-link" data-lesson="5"><span>5. Inversiones</span><small class="lesson-status">Sin iniciar</small></button>
+          </div>
+          <div class="callout info compact-callout">
+            Puedes explorar libremente. La app solo marca una lección como <strong>dominada</strong> cuando completas su misión.
+          </div>
+        </aside>
+
+        <div>
+          <article class="lesson-panel active" data-lesson-panel="1">
+            <section class="card">
+              <div class="eyebrow">Lección 1 de 5</div>
+              <h2>Las notas se repiten; la altura cambia</h2>
+              <p>
+                Cada tecla produce una altura concreta. Los nombres Do, Re, Mi, Fa, Sol, La y Si vuelven a aparecer
+                en distintas octavas: un Do grave y un Do agudo comparten nombre, pero suenan a alturas diferentes.
+              </p>
+              <div class="big-idea">Tecla → sonido concreto<br>Nombre → lugar dentro del patrón</div>
+              <div class="concept-strip">
+                <div class="concept"><strong>Nota</strong><span>Un sonido musical con nombre.</span></div>
+                <div class="concept"><strong>Octava</strong><span>El patrón reaparece más grave o más agudo.</span></div>
+                <div class="concept"><strong>Do = C</strong><span>Nombre latino y cifrado americano.</span></div>
+                <div class="concept"><strong>12 notas</strong><span>Dentro de una octava antes de repetir el patrón.</span></div>
+              </div>
+              <div class="callout info">
+                Para encontrar Do, busca un grupo de <strong>dos teclas negras</strong>: Do está inmediatamente a su izquierda.
+              </div>
+              <div class="mission">
+                <div class="mission-title">Misión de dominio</div>
+                <p id="lesson1MissionText">1 de 4 · Encuentra cualquier Do.</p>
+                <div class="mission-progress"><span id="lesson1Dots">○ ○ ○ ○</span></div>
+              </div>
+              <div class="keyboard-hint">También puedes tocar con el teclado: <kbd>A</kbd> a <kbd>K</kbd>, usando las teclas negras intermedias.</div>
+              <div class="keyboard-wrap"><div id="courseKeyboard1" class="keyboard" aria-label="Piano de la lección uno"></div></div>
+              <div id="lesson1Result" class="result-box">Toca una tecla para comenzar.</div>
+              <div class="lesson-actions">
+                <button id="restartLesson1" class="btn secondary">Reiniciar misión</button>
+                <button class="btn lesson-next" data-next="2">Continuar: intervalos</button>
+              </div>
+            </section>
+          </article>
+
+          <article class="lesson-panel" data-lesson-panel="2">
+            <section class="card">
+              <div class="eyebrow">Lección 2 de 5</div>
+              <h2>Un intervalo es la distancia entre dos notas</h2>
+              <p>
+                Un <strong>semitono</strong> es un paso hacia la tecla inmediatamente vecina, sea blanca o negra.
+                Dos semitonos forman un tono.
+              </p>
+              <div class="callout">
+                Mi–Fa y Si–Do también son semitonos. No hay una tecla negra entre esas parejas.
+              </div>
+              <div class="mission">
+                <div class="mission-title">Misión guiada</div>
+                <p id="intervalMissionText">Pulsa “Iniciar misión” para practicar un semitono ascendente, un tono y un semitono descendente.</p>
+                <div class="mission-progress"><span id="intervalMissionDots">○ ○ ○</span></div>
+              </div>
+              <div class="keyboard-wrap"><div id="intervalKeyboard" class="keyboard" aria-label="Piano para medir intervalos"></div></div>
+              <div class="controls">
+                <button id="startIntervalMission" class="btn">Iniciar misión</button>
+                <button id="resetInterval" class="btn secondary">Reiniciar selección</button>
+                <button id="playIntervalMelodic" class="btn secondary" disabled>Escuchar sucesivamente</button>
+                <button id="playIntervalHarmonic" class="btn secondary" disabled>Escuchar juntas</button>
+              </div>
+              <div id="intervalResult" class="result-box">Selecciona una primera nota para explorar.</div>
+              <div id="intervalMeter" class="interval-meter" aria-label="Medidor de semitonos"></div>
+              <div class="lesson-actions">
+                <button class="btn secondary lesson-prev" data-prev="1">Volver</button>
+                <button class="btn lesson-next" data-next="3">Continuar: acordes</button>
+              </div>
+            </section>
+          </article>
+
+          <article class="lesson-panel" data-lesson-panel="3">
+            <section class="card">
+              <div class="eyebrow">Lección 3 de 5</div>
+              <h2>Mayor y menor se distinguen por la tercera</h2>
+              <p>
+                Una tríada mayor o menor contiene raíz, tercera y quinta. La tercera está a cuatro semitonos en el acorde mayor
+                y a tres semitonos en el menor.
+              </p>
+              <div class="comparison">
+                <div class="compare-card">
+                  <div class="eyebrow">Mayor</div><h3>Do – Mi – Sol</h3><p><strong>0 – 4 – 7</strong> semitonos.</p>
+                  <button id="playCMajor" class="btn">Escuchar Do mayor</button>
+                </div>
+                <div class="compare-vs">VS.</div>
+                <div class="compare-card">
+                  <div class="eyebrow">Menor</div><h3>Do – Mi♭ – Sol</h3><p><strong>0 – 3 – 7</strong> semitonos.</p>
+                  <button id="playCMinor" class="btn">Escuchar Do menor</button>
+                </div>
+              </div>
+              <div class="mission">
+                <div class="mission-title">Misión de construcción</div>
+                <p id="majorMinorMissionText">Paso 1 de 2 · Selecciona Do, Mi y Sol para construir Do mayor.</p>
+                <div class="mission-progress"><span id="majorMinorDots">○ ○</span></div>
+              </div>
+              <div class="keyboard-wrap"><div id="majorMinorKeyboard" class="keyboard" aria-label="Piano para construir mayor y menor"></div></div>
+              <div class="controls">
+                <button id="checkMajorMinor" class="btn good">Comprobar acorde</button>
+                <button id="clearMajorMinor" class="btn secondary">Limpiar selección</button>
+                <button id="compareMajorMinor" class="btn secondary">Escuchar mayor → menor</button>
+              </div>
+              <div id="majorMinorResult" class="result-box">Selecciona las notas del acorde. La octava no importa.</div>
+              <div class="fingering-grid mt">
+                <div class="fingering-card"><strong>Mano derecha</strong><span>Do–Mi–Sol: dedos 1–3–5</span></div>
+                <div class="fingering-card"><strong>Mano izquierda</strong><span>Do–Mi–Sol: dedos 5–3–1</span></div>
+              </div>
+              <div class="callout info">Son digitaciones iniciales para tocar el acorde aislado; pueden cambiar según lo que venga antes y después.</div>
+              <div class="lesson-actions">
+                <button class="btn secondary lesson-prev" data-prev="2">Volver</button>
+                <button class="btn lesson-next" data-next="4">Continuar: sostenidos y bemoles</button>
+              </div>
+            </section>
+          </article>
+
+          <article class="lesson-panel" data-lesson-panel="4">
+            <section class="card">
+              <div class="eyebrow">Lección 4 de 5</div>
+              <h2>Sostenido sube; bemol baja</h2>
+              <div class="grid two">
+                <div>
+                  <p><strong>♯ Sostenido:</strong> sube una nota un semitono.</p>
+                  <p><strong>♭ Bemol:</strong> baja una nota un semitono.</p>
+                  <div class="big-idea">Do♯ y Re♭ pueden ser<br>la misma tecla</div>
+                </div>
+                <div class="callout info">
+                  Mayor y menor describen la estructura del acorde. Sostenido y bemol modifican el nombre o la altura de una nota.
+                </div>
+              </div>
+              <div class="mission">
+                <div class="mission-title">Misión de alteraciones</div>
+                <p id="accidentalMissionText">Pulsa “Iniciar misión” para practicar subir y bajar un semitono.</p>
+                <div class="mission-progress"><span id="accidentalDots">○ ○ ○</span></div>
+              </div>
+              <div class="keyboard-wrap"><div id="accidentalKeyboard" class="keyboard" aria-label="Piano para sostenidos y bemoles"></div></div>
+              <div class="controls">
+                <button id="startAccidentalMission" class="btn">Iniciar misión</button>
+                <button id="resetAccidental" class="btn secondary">Reiniciar selección</button>
+              </div>
+              <div id="accidentalResult" class="result-box">Explora libremente o inicia la misión.</div>
+              <details class="advanced-details mt">
+                <summary>Detalle teórico opcional: por qué Do♯ mayor y Re♭ mayor se escriben distinto</summary>
+                <p>En el piano moderno suenan con las mismas teclas, pero sus notas cumplen funciones diferentes dentro de una tonalidad.</p>
+                <div class="comparison">
+                  <div class="compare-card"><h3>Do♯ mayor</h3><p>Do♯ – Mi♯ – Sol♯</p><button id="playCSharpMajor" class="btn small">Escuchar</button></div>
+                  <div class="compare-vs">MISMAS TECLAS</div>
+                  <div class="compare-card"><h3>Re♭ mayor</h3><p>Re♭ – Fa – La♭</p><button id="playDFlatMajor" class="btn small">Escuchar</button></div>
+                </div>
+              </details>
+              <div class="lesson-actions">
+                <button class="btn secondary lesson-prev" data-prev="3">Volver</button>
+                <button class="btn lesson-next" data-next="5">Continuar: inversiones</button>
+              </div>
+            </section>
+          </article>
+
+          <article class="lesson-panel" data-lesson-panel="5">
+            <section class="card">
+              <div class="eyebrow">Lección 5 de 5</div>
+              <h2>La inversión depende de la nota más grave</h2>
+              <p>
+                La <strong>raíz</strong> da nombre al acorde; el <strong>bajo</strong> es la nota más grave que realmente suena.
+                Una inversión cambia el bajo, pero conserva la identidad del acorde.
+              </p>
+              <div class="controls">
+                <button class="btn inversion-demo" data-inversion-demo="0">Fundamental: Do–Mi–Sol</button>
+                <button class="btn secondary inversion-demo" data-inversion-demo="1">1ª: Mi–Sol–Do</button>
+                <button class="btn secondary inversion-demo" data-inversion-demo="2">2ª: Sol–Do–Mi</button>
+                <div class="field compact-field"><label for="inversionHand">Digitación sugerida</label><select id="inversionHand"><option value="right">Mano derecha</option><option value="left">Mano izquierda</option></select></div>
+              </div>
+              <div class="keyboard-wrap"><div id="inversionKeyboard" class="keyboard" aria-label="Piano para inversiones"></div></div>
+              <div id="inversionInfo" class="info-grid"></div>
+              <div id="inversionFingering" class="result-box"></div>
+
+              <div class="mission mt">
+                <div class="mission-title">Misión: identifica raíz, bajo y símbolo</div>
+                <p id="inversionChallengeNotes">Pulsa “Nuevo desafío”. Debes acertar dos disposiciones diferentes.</p>
+                <div class="mission-progress"><span id="inversionChallengeDots">○ ○</span></div>
+              </div>
+              <div class="controls">
+                <button id="newInversionChallenge" class="btn">Nuevo desafío</button>
+                <div class="field compact-field"><label for="inversionRootAnswer">Raíz</label><select id="inversionRootAnswer"><option value="C">Do</option><option value="E">Mi</option><option value="G">Sol</option></select></div>
+                <div class="field compact-field"><label for="inversionBassAnswer">Bajo</label><select id="inversionBassAnswer"><option value="C">Do</option><option value="E">Mi</option><option value="G">Sol</option></select></div>
+                <div class="field compact-field"><label for="inversionSymbolAnswer">Símbolo</label><select id="inversionSymbolAnswer"><option value="C">C</option><option value="C/E">C/E</option><option value="C/G">C/G</option></select></div>
+                <button id="checkInversionChallenge" class="btn good">Comprobar</button>
+              </div>
+              <div id="inversionChallengeResult" class="result-box">Todavía no hay un desafío activo.</div>
+
+              <div class="grid two mt">
+                <div class="compare-card">
+                  <h3>¿Qué ocurre con ambas manos?</h3>
+                  <p>La inversión se decide por la nota más grave de todo lo que suena.</p>
+                  <div class="controls"><button id="rightHandOnly" class="btn secondary">Solo derecha: Mi–Sol–Do</button><button id="bothHandsDemo" class="btn secondary">Añadir Do grave</button></div>
+                  <div id="bothHandsResult" class="result-box">Primero escucha la mano derecha sola.</div>
+                </div>
+                <div class="compare-card">
+                  <h3>Conducción de voces</h3>
+                  <p>Compara un salto amplio con una conexión que conserva o mueve poco cada nota.</p>
+                  <div class="controls"><button id="voiceLeadingRough" class="btn secondary">C → F fundamental</button><button id="voiceLeadingSmooth" class="btn secondary">C → F/C suave</button></div>
+                  <div id="voiceLeadingDiagram" class="voice-map">Pulsa una comparación para ver el movimiento.</div>
+                </div>
+              </div>
+              <div class="callout good">Una inversión no siempre es “mejor”: puede conectar más suavemente, pero también cambia el bajo y la sensación de estabilidad.</div>
+              <div class="lesson-actions">
+                <button class="btn secondary lesson-prev" data-prev="4">Volver</button>
+                <button id="goToPractice" class="btn good">Ir a practicar</button>
+              </div>
+            </section>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="mode-lab" class="mode-panel">
+      <section class="card">
+        <div class="eyebrow">Laboratorio completo</div>
+        <h2>Construye, escucha y analiza cualquier acorde</h2>
+        <p>Escoge una raíz, la familia y la inversión. El modo práctico prioriza nombres frecuentes; el avanzado permite todas las grafías teóricas.</p>
+        <div class="controls">
+          <div class="field"><label for="labSpellingMode">Escritura</label><select id="labSpellingMode"><option value="practical">Práctica</option><option value="advanced">Teórica avanzada</option></select></div>
+          <div class="field"><label for="labRoot">Raíz</label><select id="labRoot"></select></div>
+          <div class="field"><label for="labQuality">Tipo de acorde</label><select id="labQuality"></select></div>
+          <div class="field"><label for="labInversion">Inversión</label><select id="labInversion"></select></div>
+          <button id="labPlay" class="btn">Construir y escuchar</button>
+          <button id="labArpeggio" class="btn secondary">Arpegio</button>
+        </div>
+        <div class="legend">
+          <span class="legend-item"><span class="dot root"></span>Raíz</span>
+          <span class="legend-item"><span class="dot third"></span>3ª / 2ª / 4ª</span>
+          <span class="legend-item"><span class="dot fifth"></span>5ª</span>
+          <span class="legend-item"><span class="dot seventh"></span>7ª</span>
+        </div>
+        <div class="keyboard-wrap"><div id="labKeyboard" class="keyboard" aria-label="Piano del laboratorio"></div></div>
+        <div id="labNotes" class="note-row"></div>
+        <div id="labInfo" class="info-grid"></div>
+        <div id="labExplanation" class="result-box"></div>
+      </section>
+
+      <section class="card mt">
+        <div class="eyebrow">Comparador</div>
+        <h2>Escucha qué cambia cuando modificas la estructura</h2>
+        <p>Mantiene la raíz del laboratorio y compara dos calidades. La comparación directa ayuda más que memorizar adjetivos.</p>
+        <div class="controls">
+          <div class="field"><label for="compareA">Acorde A</label><select id="compareA"></select></div>
+          <div class="field"><label for="compareB">Acorde B</label><select id="compareB"></select></div>
+          <button id="playCompare" class="btn good">Escuchar A → B</button>
+        </div>
+        <div id="compareExplanation" class="result-box">Compara mayor y menor para comenzar.</div>
+      </section>
+    </section>
+
+    <section id="mode-practice" class="mode-panel">
+      <section class="card">
+        <div class="eyebrow">Práctica visual</div>
+        <h2>Construye el acorde indicado</h2>
+        <p>Selecciona las notas. Los errores entregan pistas progresivas antes de revelar la respuesta.</p>
+        <div class="controls">
+          <button id="newBuildChallenge" class="btn">Nuevo desafío</button>
+          <button id="clearBuildSelection" class="btn secondary">Limpiar</button>
+          <button id="checkBuildChallenge" class="btn good">Comprobar</button>
+        </div>
+        <div id="buildChallengePrompt" class="mission"><div class="mission-title">Presiona “Nuevo desafío”.</div></div>
+        <div class="keyboard-wrap"><div id="buildKeyboard" class="keyboard" aria-label="Piano para construir acordes"></div></div>
+        <div id="buildChallengeResult" class="result-box">Las teclas seleccionadas aparecerán aquí.</div>
+      </section>
+
+      <div class="grid two mt">
+        <section class="card">
+          <div class="eyebrow">Entrenamiento auditivo</div>
+          <h2>Reconoce la calidad del acorde</h2>
+          <p>El acorde permanece igual hasta que pulses “Siguiente”. Puedes repetirlo todas las veces necesarias.</p>
+          <div class="controls">
+            <div class="field"><label for="earLevel">Nivel</label><select id="earLevel"><option value="1">1 · Mayor vs. menor, raíz Do</option><option value="2">2 · Mayor vs. menor, raíces variadas</option><option value="3">3 · Mayor, menor, aumentado y disminuido</option></select></div>
+            <button id="earNew" class="btn">Nuevo acorde</button><button id="earRepeat" class="btn secondary" disabled>Repetir</button>
+          </div>
+          <div id="earOptions" class="quiz-options"></div>
+          <div id="earFeedback" class="result-box">Elige un nivel y pulsa “Nuevo acorde”.</div>
+          <div class="controls mt"><button id="earExplain" class="btn secondary" disabled>Escuchar la pista</button><button id="earNext" class="btn good" disabled>Siguiente</button></div>
+          <div class="quiz-score"><span class="score-chip">Aciertos: <strong id="earCorrect">0</strong></span><span class="score-chip">Intentos: <strong id="earTotal">0</strong></span><span class="score-chip">Precisión: <strong id="earAccuracy">—</strong></span></div>
+        </section>
+
+        <section class="card">
+          <div class="eyebrow">Cómo escuchar</div>
+          <h2>Busca relaciones, no etiquetas</h2>
+          <p>“Feliz” o “triste” puede orientar al comienzo, pero depende del contexto. Escucha distancias concretas:</p>
+          <div class="concept-strip" style="grid-template-columns:1fr 1fr;">
+            <div class="concept"><strong>Mayor</strong><span>Tercera a 4 semitonos.</span></div>
+            <div class="concept"><strong>Menor</strong><span>Tercera a 3 semitonos.</span></div>
+            <div class="concept"><strong>Aumentado</strong><span>Quinta a 8 semitonos.</span></div>
+            <div class="concept"><strong>Disminuido</strong><span>Quinta a 6 semitonos.</span></div>
+          </div>
+          <div class="callout info">La pista reproduce raíz, nota decisiva y acorde completo. Así entrenas la relación audible.</div>
+        </section>
+      </div>
+    </section>
+
+    <section id="mode-reference" class="mode-panel">
+      <section class="card">
+        <div class="eyebrow">Mapa de referencia</div>
+        <h2>Consulta rápida de los fundamentos</h2>
+        <div class="concept-strip">
+          <div class="concept"><strong>Nota</strong><span>Un sonido musical con nombre. Do4 y Do5 comparten nombre, pero están en registros diferentes.</span></div>
+          <div class="concept"><strong>Intervalo</strong><span>Distancia entre dos notas, medida en semitonos.</span></div>
+          <div class="concept"><strong>Acorde</strong><span>Notas organizadas como una unidad armónica.</span></div>
+          <div class="concept"><strong>Inversión</strong><span>Mismo acorde con otra nota en el bajo.</span></div>
+        </div>
+      </section>
+
+      <section class="card mt">
+        <h2>Intervalos fundamentales</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Semitonos</th><th>Nombre</th><th>Ejemplo desde Do</th><th>Uso frecuente</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>Unísono</td><td>Do–Do</td><td>Misma altura</td></tr>
+              <tr><td>1</td><td>2ª menor</td><td>Do–Re♭</td><td>Semitono</td></tr>
+              <tr><td>2</td><td>2ª mayor</td><td>Do–Re</td><td>Tono; acorde sus2</td></tr>
+              <tr><td>3</td><td>3ª menor</td><td>Do–Mi♭</td><td>Define tríada menor</td></tr>
+              <tr><td>4</td><td>3ª mayor</td><td>Do–Mi</td><td>Define tríada mayor</td></tr>
+              <tr><td>5</td><td>4ª justa</td><td>Do–Fa</td><td>Acorde sus4</td></tr>
+              <tr><td>6</td><td>4ª aumentada / 5ª disminuida</td><td>Do–Fa♯ / Sol♭</td><td>Tritono</td></tr>
+              <tr><td>7</td><td>5ª justa</td><td>Do–Sol</td><td>Estabilidad de tríadas</td></tr>
+              <tr><td>8</td><td>6ª menor</td><td>Do–La♭</td><td>También 5ª aumentada según contexto</td></tr>
+              <tr><td>9</td><td>6ª mayor</td><td>Do–La</td><td>Acordes de sexta</td></tr>
+              <tr><td>10</td><td>7ª menor</td><td>Do–Si♭</td><td>Acorde dominante 7</td></tr>
+              <tr><td>11</td><td>7ª mayor</td><td>Do–Si</td><td>Acorde maj7</td></tr>
+              <tr><td>12</td><td>Octava</td><td>Do–Do</td><td>Mismo nombre de nota en otra octava</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+
+      <section class="card mt">
+        <h2>Familias de acordes</h2>
+        <p class="muted">Las sensaciones son orientativas y dependen del contexto. La definición real está en la fórmula.</p>
+        <div class="table-wrap"><table><thead><tr><th>Tipo</th><th>Fórmula</th><th>Ejemplo en Do</th><th>Descripción orientativa</th><th></th></tr></thead><tbody>
+          <tr><td>Mayor</td><td>0–4–7</td><td>Do–Mi–Sol</td><td>Estable, luminoso</td><td><button class="btn small reference-chord-demo" data-quality="major">Oír</button></td></tr>
+          <tr><td>Menor</td><td>0–3–7</td><td>Do–Mi♭–Sol</td><td>Estable, color menor</td><td><button class="btn small reference-chord-demo" data-quality="minor">Oír</button></td></tr>
+          <tr><td>Disminuido</td><td>0–3–6</td><td>Do–Mi♭–Sol♭</td><td>Inestable, tenso</td><td><button class="btn small reference-chord-demo" data-quality="diminished">Oír</button></td></tr>
+          <tr><td>Aumentado</td><td>0–4–8</td><td>Do–Mi–Sol♯</td><td>Expansivo, simétrico, inestable</td><td><button class="btn small reference-chord-demo" data-quality="augmented">Oír</button></td></tr>
+          <tr><td>Sus2</td><td>0–2–7</td><td>Do–Re–Sol</td><td>Abierto, ambiguo</td><td><button class="btn small reference-chord-demo" data-quality="sus2">Oír</button></td></tr>
+          <tr><td>Sus4</td><td>0–5–7</td><td>Do–Fa–Sol</td><td>Tensión suspendida</td><td><button class="btn small reference-chord-demo" data-quality="sus4">Oír</button></td></tr>
+          <tr><td>7 dominante</td><td>0–4–7–10</td><td>Do–Mi–Sol–Si♭</td><td>Impulso de resolución</td><td><button class="btn small reference-chord-demo" data-quality="dom7">Oír</button></td></tr>
+          <tr><td>7 mayor</td><td>0–4–7–11</td><td>Do–Mi–Sol–Si</td><td>Expansivo, flotante</td><td><button class="btn small reference-chord-demo" data-quality="maj7">Oír</button></td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section class="grid two mt">
+        <article class="card">
+          <h2>Cifrado americano</h2>
+          <div class="table-wrap">
+            <table style="min-width:480px;">
+              <thead><tr><th>Latino</th><th>Letra</th><th>Ejemplo</th></tr></thead>
+              <tbody>
+                <tr><td>Do</td><td>C</td><td>C = Do mayor</td></tr>
+                <tr><td>Re</td><td>D</td><td>Dm = Re menor</td></tr>
+                <tr><td>Mi</td><td>E</td><td>E7 = Mi séptima</td></tr>
+                <tr><td>Fa</td><td>F</td><td>F/A = Fa con La en el bajo</td></tr>
+                <tr><td>Sol</td><td>G</td><td>Gmaj7 = Sol séptima mayor</td></tr>
+                <tr><td>La</td><td>A</td><td>Asus4 = La suspendido 4</td></tr>
+                <tr><td>Si</td><td>B</td><td>Bdim = Si disminuido</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+        <article class="card">
+          <h2>Errores comunes</h2>
+          <div class="callout bad"><strong>“Sostenido” no significa mayor.</strong> Fa♯ menor es una raíz Fa♯ con estructura menor.</div>
+          <div class="callout"><strong>Raíz no siempre es bajo.</strong> En C/E la raíz es Do y el bajo es Mi.</div>
+          <div class="callout info"><strong>Do♯ y Re♭ suenan igual, pero no siempre se escriben igual.</strong> La función musical decide el nombre.</div>
+          <div class="callout good"><strong>Un arpegio sigue expresando un acorde.</strong> Las notas no necesitan empezar exactamente al mismo tiempo.</div>
+        </article>
+      </section>
+    </section>
+
+    <footer class="footer">Aprender música es aprender a escuchar relaciones. El resto son nombres útiles para poder hablar de ellas.</footer>
+  </main>
+
+  <script>
+    "use strict";
+
+    const NATURAL_PCS = [0, 2, 4, 5, 7, 9, 11];
+    const LATIN_LETTERS = ["Do", "Re", "Mi", "Fa", "Sol", "La", "Si"];
+    const AMERICAN_LETTERS = ["C", "D", "E", "F", "G", "A", "B"];
+    const PC_SHARP_LATIN = ["Do", "Do♯", "Re", "Re♯", "Mi", "Fa", "Fa♯", "Sol", "Sol♯", "La", "La♯", "Si"];
+    const PC_FLAT_LATIN = ["Do", "Re♭", "Re", "Mi♭", "Mi", "Fa", "Sol♭", "Sol", "La♭", "La", "Si♭", "Si"];
+    const PC_KEY_LABELS = ["Do", "Do♯/Re♭", "Re", "Re♯/Mi♭", "Mi", "Fa", "Fa♯/Sol♭", "Sol", "Sol♯/La♭", "La", "La♯/Si♭", "Si"];
+    const PC_KEY_SHORT = ["C", "C♯/D♭", "D", "D♯/E♭", "E", "F", "F♯/G♭", "G", "G♯/A♭", "A", "A♯/B♭", "B"];
+
+    const ROOTS = [
+      { id:"C", pc:0, letter:0, accidental:0, latin:"Do", american:"C" },
+      { id:"C#", pc:1, letter:0, accidental:1, latin:"Do♯", american:"C♯" },
+      { id:"Db", pc:1, letter:1, accidental:-1, latin:"Re♭", american:"D♭" },
+      { id:"D", pc:2, letter:1, accidental:0, latin:"Re", american:"D" },
+      { id:"D#", pc:3, letter:1, accidental:1, latin:"Re♯", american:"D♯" },
+      { id:"Eb", pc:3, letter:2, accidental:-1, latin:"Mi♭", american:"E♭" },
+      { id:"E", pc:4, letter:2, accidental:0, latin:"Mi", american:"E" },
+      { id:"F", pc:5, letter:3, accidental:0, latin:"Fa", american:"F" },
+      { id:"F#", pc:6, letter:3, accidental:1, latin:"Fa♯", american:"F♯" },
+      { id:"Gb", pc:6, letter:4, accidental:-1, latin:"Sol♭", american:"G♭" },
+      { id:"G", pc:7, letter:4, accidental:0, latin:"Sol", american:"G" },
+      { id:"G#", pc:8, letter:4, accidental:1, latin:"Sol♯", american:"G♯" },
+      { id:"Ab", pc:8, letter:5, accidental:-1, latin:"La♭", american:"A♭" },
+      { id:"A", pc:9, letter:5, accidental:0, latin:"La", american:"A" },
+      { id:"A#", pc:10, letter:5, accidental:1, latin:"La♯", american:"A♯" },
+      { id:"Bb", pc:10, letter:6, accidental:-1, latin:"Si♭", american:"B♭" },
+      { id:"B", pc:11, letter:6, accidental:0, latin:"Si", american:"B" }
+    ];
+
+    const CHORDS = {
+      major: { label:"mayor", short:"", intervals:[0,4,7], degreeSteps:[0,2,4], degreeLabels:["1","3","5"], roleLabels:["raíz","3ª mayor","5ª justa"], feeling:"estable y luminoso" },
+      minor: { label:"menor", short:"m", intervals:[0,3,7], degreeSteps:[0,2,4], degreeLabels:["1","♭3","5"], roleLabels:["raíz","3ª menor","5ª justa"], feeling:"estable con color menor" },
+      diminished: { label:"disminuido", short:"dim", intervals:[0,3,6], degreeSteps:[0,2,4], degreeLabels:["1","♭3","♭5"], roleLabels:["raíz","3ª menor","5ª disminuida"], feeling:"muy inestable y tenso" },
+      augmented: { label:"aumentado", short:"aug", intervals:[0,4,8], degreeSteps:[0,2,4], degreeLabels:["1","3","♯5"], roleLabels:["raíz","3ª mayor","5ª aumentada"], feeling:"abierto e inestable" },
+      sus2: { label:"suspendido 2", short:"sus2", intervals:[0,2,7], degreeSteps:[0,1,4], degreeLabels:["1","2","5"], roleLabels:["raíz","2ª mayor","5ª justa"], feeling:"abierto y ambiguo" },
+      sus4: { label:"suspendido 4", short:"sus4", intervals:[0,5,7], degreeSteps:[0,3,4], degreeLabels:["1","4","5"], roleLabels:["raíz","4ª justa","5ª justa"], feeling:"suspendido, suele pedir resolución" },
+      dom7: { label:"séptima dominante", short:"7", intervals:[0,4,7,10], degreeSteps:[0,2,4,6], degreeLabels:["1","3","5","♭7"], roleLabels:["raíz","3ª mayor","5ª justa","7ª menor"], feeling:"tenso y con impulso de resolución" },
+      maj7: { label:"séptima mayor", short:"maj7", intervals:[0,4,7,11], degreeSteps:[0,2,4,6], degreeLabels:["1","3","5","7"], roleLabels:["raíz","3ª mayor","5ª justa","7ª mayor"], feeling:"suave y expansivo" },
+      min7: { label:"séptima menor", short:"m7", intervals:[0,3,7,10], degreeSteps:[0,2,4,6], degreeLabels:["1","♭3","5","♭7"], roleLabels:["raíz","3ª menor","5ª justa","7ª menor"], feeling:"menor, amplio y flexible" }
+    };
+
+    const INTERVAL_NAMES = [
+      "unísono", "segunda menor", "segunda mayor", "tercera menor", "tercera mayor", "cuarta justa",
+      "tritono", "quinta justa", "sexta menor", "sexta mayor", "séptima menor", "séptima mayor", "octava"
+    ];
+
+    let audioCtx;
+    const heldVoices = new Map();
+    function getAudioContext() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      return audioCtx;
+    }
+    function midiToFreq(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
+    function makeVoice(midi, volume=.11, when=null) {
+      const ctx = getAudioContext();
+      const now = when ?? ctx.currentTime;
+      const master = ctx.createGain();
+      master.gain.setValueAtTime(.0001, now);
+      master.gain.exponentialRampToValueAtTime(volume, now + .018);
+      master.connect(ctx.destination);
+      const layers = [
+        {type:"triangle", ratio:1, gain:1},
+        {type:"sine", ratio:2, gain:.18},
+        {type:"sine", ratio:3, gain:.07}
+      ];
+      const oscillators = layers.map(layer => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = layer.type;
+        osc.frequency.setValueAtTime(midiToFreq(midi) * layer.ratio, now);
+        gain.gain.value = layer.gain;
+        osc.connect(gain).connect(master);
+        osc.start(now);
+        return osc;
+      });
+      return {ctx, master, oscillators, started:now};
+    }
+    function playMidi(midi, duration=.78, delay=0, volume=.12) {
+      const ctx = getAudioContext();
+      const when = ctx.currentTime + delay;
+      const voice = makeVoice(midi, volume, when);
+      voice.master.gain.exponentialRampToValueAtTime(.0001, when + duration);
+      voice.oscillators.forEach(osc => osc.stop(when + duration + .05));
+    }
+    function startHeldMidi(token, midi, volume=.11) {
+      if (heldVoices.has(token)) return;
+      heldVoices.set(token, makeVoice(midi, volume));
+    }
+    function stopHeldMidi(token) {
+      const voice = heldVoices.get(token);
+      if (!voice) return;
+      const now = voice.ctx.currentTime;
+      voice.master.gain.cancelScheduledValues(now);
+      voice.master.gain.setValueAtTime(Math.max(voice.master.gain.value, .0001), now);
+      voice.master.gain.exponentialRampToValueAtTime(.0001, now + .12);
+      voice.oscillators.forEach(osc => { try { osc.stop(now + .15); } catch (_) {} });
+      heldVoices.delete(token);
+    }
+    function playChord(midis, arpeggio=false, delayStart=0) {
+      midis.forEach((m,i) => playMidi(m, arpeggio ? .72 : .95, delayStart + (arpeggio ? i*.16 : 0), arpeggio ? .13 : .09));
+    }
+
+    const keyboards = new Map();
+    function bindKeyInteraction(id, key, midi, pc, onTrigger) {
+      const token = `${id}:${midi}`;
+      const press = event => {
+        event.preventDefault();
+        key.classList.add("pressed");
+        startHeldMidi(token, midi);
+        onTrigger?.(midi, pc, key);
+      };
+      const release = () => { key.classList.remove("pressed"); stopHeldMidi(token); };
+      key.addEventListener("pointerdown", press);
+      key.addEventListener("pointerup", release);
+      key.addEventListener("pointercancel", release);
+      key.addEventListener("pointerleave", release);
+      key.addEventListener("contextmenu", e => e.preventDefault());
+    }
+    function buildKeyboard(id, onTrigger, options={}) {
+      const container = document.getElementById(id);
+      if (!container) return null;
+      const startMidi = options.startMidi || 48;
+      const octaves = options.octaves || 2;
+      const whitePattern = [0,2,4,5,7,9,11];
+      const blackAfterWhite = {0:1,1:3,3:6,4:8,5:10};
+      const keyMap = new Map();
+      container.innerHTML = "";
+      const whiteContainer = document.createElement("div");
+      whiteContainer.className = "white-keys";
+      container.appendChild(whiteContainer);
+      for (let octave=0; octave<octaves; octave++) {
+        whitePattern.forEach(pc => {
+          const midi = startMidi + octave*12 + pc;
+          const key = document.createElement("button");
+          key.type = "button"; key.className = "key white"; key.dataset.midi = midi; key.dataset.pc = pc;
+          key.innerHTML = `<span>${PC_KEY_LABELS[pc]}<br><small>${PC_KEY_SHORT[pc]}</small></span>`;
+          bindKeyInteraction(id,key,midi,pc,onTrigger); whiteContainer.appendChild(key); keyMap.set(midi,key);
+        });
+      }
+      const finalMidi = startMidi + octaves*12;
+      const finalKey = document.createElement("button");
+      finalKey.type="button"; finalKey.className="key white"; finalKey.dataset.midi=finalMidi; finalKey.dataset.pc=0;
+      finalKey.innerHTML='<span>Do<br><small>C</small></span>';
+      bindKeyInteraction(id,finalKey,finalMidi,0,onTrigger); whiteContainer.appendChild(finalKey); keyMap.set(finalMidi,finalKey);
+      const totalWhite = octaves*7+1;
+      let globalWhite=0;
+      for (let octave=0; octave<octaves; octave++) {
+        whitePattern.forEach((pc,i) => {
+          if (blackAfterWhite[i] !== undefined) {
+            const blackPc=blackAfterWhite[i], midi=startMidi+octave*12+blackPc;
+            const key=document.createElement("button");
+            key.type="button"; key.className="key black"; key.dataset.midi=midi; key.dataset.pc=blackPc;
+            key.style.left=`${((globalWhite+1)/totalWhite)*100}%`;
+            key.innerHTML=`<span>${PC_KEY_LABELS[blackPc]}<br><small>${PC_KEY_SHORT[blackPc]}</small></span>`;
+            bindKeyInteraction(id,key,midi,blackPc,onTrigger); container.appendChild(key); keyMap.set(midi,key);
+          }
+          globalWhite++;
+        });
+      }
+      const obj={container,keyMap,startMidi,octaves,onTrigger}; keyboards.set(id,obj); return obj;
+    }
+    function clearKeyboard(id) {
+      const kb=keyboards.get(id); if(!kb) return;
+      const classes=["role-0","role-1","role-2","role-3","interval-start","interval-end","correct","wrong","selected"];
+      kb.keyMap.forEach(k=>k.classList.remove(...classes));
+    }
+    function findVisibleMidi(kb,pc,preferred=60) {
+      const candidates=[...kb.keyMap.keys()].filter(m=>((m%12)+12)%12===pc);
+      return candidates.sort((a,b)=>Math.abs(a-preferred)-Math.abs(b-preferred))[0] ?? null;
+    }
+    function highlightChordOnKeyboard(id,tones) {
+      clearKeyboard(id); const kb=keyboards.get(id); if(!kb) return;
+      tones.forEach(t=>{ const key=kb.keyMap.get(t.midi)||kb.keyMap.get(findVisibleMidi(kb,t.pc,t.midi)); key?.classList.add(`role-${Math.min(t.role,3)}`); });
+    }
+    function highlightMidiRoles(id,items) {
+      clearKeyboard(id); const kb=keyboards.get(id); if(!kb) return;
+      items.forEach(({midi,role})=>kb.keyMap.get(midi)?.classList.add(`role-${Math.min(role,3)}`));
+    }
+    function togglePcSelection(id,set,pc) {
+      const kb=keyboards.get(id); if(!kb) return;
+      if(set.has(pc)) set.delete(pc); else set.add(pc);
+      kb.keyMap.forEach(k=>{ if(Number(k.dataset.pc)===pc) k.classList.toggle("selected",set.has(pc)); });
+    }
+
+    const COMPUTER_KEYS=["a","w","s","e","d","f","t","g","y","h","u","j","k"];
+    const computerHeld=new Map();
+    function activeKeyboard() {
+      const visible=[...document.querySelectorAll(".keyboard")].filter(el=>el.offsetParent!==null);
+      return visible.length ? keyboards.get(visible[0].id) : null;
+    }
+    document.addEventListener("keydown",e=>{
+      if(e.repeat || ["INPUT","SELECT","TEXTAREA"].includes(document.activeElement?.tagName)) return;
+      const offset=COMPUTER_KEYS.indexOf(e.key.toLowerCase()); if(offset<0) return;
+      const kb=activeKeyboard(); if(!kb) return;
+      const midi=kb.startMidi+12+offset; const key=kb.keyMap.get(midi); if(!key) return;
+      e.preventDefault(); const token=`computer:${e.key.toLowerCase()}`; computerHeld.set(e.key.toLowerCase(),{token,key});
+      key.classList.add("pressed"); startHeldMidi(token,midi); kb.onTrigger?.(midi,Number(key.dataset.pc),key);
+    });
+    document.addEventListener("keyup",e=>{
+      const item=computerHeld.get(e.key.toLowerCase()); if(!item) return;
+      item.key.classList.remove("pressed"); stopHeldMidi(item.token); computerHeld.delete(e.key.toLowerCase());
+    });
+
+    function accidentalText(diff) {
+      const map={"-3":"♭♭♭","-2":"♭♭","-1":"♭","0":"","1":"♯","2":"𝄪","3":"♯♯♯"};
+      return map[String(diff)] ?? (diff>0?"♯".repeat(diff):"♭".repeat(-diff));
+    }
+    function normalizeDiff(diff){ while(diff>6)diff-=12; while(diff<-6)diff+=12; return diff; }
+    function spellChord(root,qualityKey) {
+      const chord=CHORDS[qualityKey];
+      return chord.intervals.map((interval,i)=>{
+        const letter=(root.letter+chord.degreeSteps[i])%7, targetPc=(root.pc+interval)%12;
+        const diff=normalizeDiff(targetPc-NATURAL_PCS[letter]);
+        return {latin:LATIN_LETTERS[letter]+accidentalText(diff),american:AMERICAN_LETTERS[letter]+accidentalText(diff),pc:targetPc,degree:chord.degreeLabels[i],roleLabel:chord.roleLabels[i],role:i,accidental:diff};
+      });
+    }
+    function chordSymbol(root,qualityKey,bassAmerican=null){ const base=root.american+CHORDS[qualityKey].short; return bassAmerican&&bassAmerican!==root.american?`${base}/${bassAmerican}`:base; }
+    function buildChordTones(root,qualityKey,inversion=0,baseRootMidi=48) {
+      const spelled=spellChord(root,qualityKey);
+      let tones=CHORDS[qualityKey].intervals.map((interval,i)=>({...spelled[i],midi:baseRootMidi+root.pc+interval}));
+      const inv=Math.min(Number(inversion),tones.length-1);
+      for(let i=0;i<inv;i++){ const first=tones.shift(); tones.push({...first,midi:first.midi+12}); }
+      while(Math.max(...tones.map(t=>t.midi))>72) tones=tones.map(t=>({...t,midi:t.midi-12}));
+      while(Math.min(...tones.map(t=>t.midi))<48) tones=tones.map(t=>({...t,midi:t.midi+12}));
+      return tones;
+    }
+    function rootById(id){ return ROOTS.find(r=>r.id===id)||ROOTS[0]; }
+    function inversionName(n,count){ return n===0?"posición fundamental":n===1?"primera inversión":n===2?"segunda inversión":n===3&&count===4?"tercera inversión":"inversión"; }
+    function octaveOf(midi){ return Math.floor(midi/12)-1; }
+    function demoChord(id,root,quality,inversion=0,arpeggio=false){ const tones=buildChordTones(root,quality,inversion); highlightChordOnKeyboard(id,tones); playChord(tones.map(t=>t.midi),arpeggio); return tones; }
+    const rootC=rootById("C");
+
+    // Navigation and learning states
+    const LESSON_COUNT=5;
+    const STATUS_LABELS={not_started:"Sin iniciar",explored:"Explorada",practiced:"Practicada",mastered:"Dominada"};
+    const STATUS_RANK={not_started:0,explored:1,practiced:2,mastered:3};
+    let lessonStates={1:"not_started",2:"not_started",3:"not_started",4:"not_started",5:"not_started"};
+    try { lessonStates={...lessonStates,...JSON.parse(localStorage.getItem("musicLessonStates")||"{}")}; } catch(_) {}
+    let currentLesson=1;
+    function setLessonState(n,state) {
+      n=Number(n); if(STATUS_RANK[state] <= STATUS_RANK[lessonStates[n]]) return;
+      lessonStates[n]=state; try { localStorage.setItem("musicLessonStates",JSON.stringify(lessonStates)); } catch (_) {} updateProgress();
+    }
+    function updateProgress() {
+      document.querySelectorAll(".lesson-link").forEach(btn=>{
+        const state=lessonStates[Number(btn.dataset.lesson)]||"not_started";
+        btn.classList.remove("explored","practiced","mastered"); if(state!=="not_started") btn.classList.add(state);
+        btn.querySelector(".lesson-status").textContent=STATUS_LABELS[state];
+      });
+      const mastered=Object.values(lessonStates).filter(s=>s==="mastered").length;
+      const practiced=Object.values(lessonStates).filter(s=>STATUS_RANK[s]>=2).length;
+      document.getElementById("progressFill").style.width=`${mastered/LESSON_COUNT*100}%`;
+      document.getElementById("progressSummary").textContent=`${mastered} de ${LESSON_COUNT} dominadas · ${practiced} practicadas`;
+    }
+    function showLesson(n,scroll=true) {
+      currentLesson=Number(n); setLessonState(currentLesson,"explored");
+      document.querySelectorAll(".lesson-panel").forEach(p=>p.classList.toggle("active",Number(p.dataset.lessonPanel)===currentLesson));
+      document.querySelectorAll(".lesson-link").forEach(b=>b.classList.toggle("active",Number(b.dataset.lesson)===currentLesson));
+      updateProgress(); if(scroll) window.scrollTo({top:document.querySelector(".mode-tabs").offsetTop-6,behavior:"smooth"});
+    }
+    function showMode(mode) {
+      const btn=document.querySelector(`.mode-tab[data-mode="${mode}"]`); if(!btn) return;
+      document.querySelectorAll(".mode-tab").forEach(b=>b.classList.toggle("active",b===btn));
+      document.querySelectorAll(".mode-panel").forEach(p=>p.classList.remove("active"));
+      document.getElementById(`mode-${mode}`).classList.add("active");
+      if(mode==="lab") renderLab(false);
+      window.scrollTo({top:document.querySelector(".mode-tabs").offsetTop-6,behavior:"smooth"});
+    }
+    document.querySelectorAll(".mode-tab").forEach(btn=>btn.addEventListener("click",()=>showMode(btn.dataset.mode)));
+    document.querySelectorAll(".lesson-link").forEach(btn=>btn.addEventListener("click",()=>showLesson(btn.dataset.lesson)));
+    document.querySelectorAll(".lesson-next").forEach(btn=>btn.addEventListener("click",()=>showLesson(btn.dataset.next)));
+    document.querySelectorAll(".lesson-prev").forEach(btn=>btn.addEventListener("click",()=>showLesson(btn.dataset.prev)));
+    document.getElementById("goToPractice").addEventListener("click",()=>showMode("practice"));
+    updateProgress(); showLesson(1,false);
+
+    // Lesson 1
+    let l1Step=0, firstDoMidi=null;
+    const l1Tasks=["Encuentra cualquier Do.","Encuentra otro Do en una octava diferente.","Ahora encuentra Mi.","Finalmente encuentra Sol."];
+    function renderL1Mission(){ document.getElementById("lesson1MissionText").textContent=`${Math.min(l1Step+1,4)} de 4 · ${l1Tasks[Math.min(l1Step,3)]}`; document.getElementById("lesson1Dots").textContent=[0,1,2,3].map(i=>i<l1Step?"●":"○").join(" "); }
+    function resetL1(){ l1Step=0; firstDoMidi=null; clearKeyboard("courseKeyboard1"); document.getElementById("lesson1Result").className="result-box"; document.getElementById("lesson1Result").textContent="Toca una tecla para comenzar."; renderL1Mission(); }
+    buildKeyboard("courseKeyboard1",(midi,pc)=>{
+      setLessonState(1,"explored"); const box=document.getElementById("lesson1Result"); let correct=false;
+      if(l1Step===0 && pc===0){ firstDoMidi=midi; correct=true; }
+      else if(l1Step===1 && pc===0 && midi!==firstDoMidi){ correct=true; }
+      else if(l1Step===2 && pc===4){ correct=true; }
+      else if(l1Step===3 && pc===7){ correct=true; }
+      if(correct){ l1Step++; if(l1Step===1)setLessonState(1,"practiced"); box.className="result-box status-good"; box.innerHTML=l1Step>=4?"<strong>¡Dominado!</strong> Reconociste Do en dos octavas, Mi y Sol.":`<strong>Correcto.</strong> Siguiente: ${l1Tasks[l1Step]}`; if(l1Step>=4)setLessonState(1,"mastered"); }
+      else { box.className="result-box status-bad"; box.innerHTML=`<strong>Aún no.</strong> Tocaste ${PC_KEY_LABELS[pc]}${octaveOf(midi)}. ${l1Tasks[l1Step]}`; }
+      renderL1Mission();
+    });
+    document.getElementById("restartLesson1").addEventListener("click",resetL1); renderL1Mission();
+
+    // Lesson 2
+    let intervalSelection=[], intervalMissionStage=-1;
+    const intervalChallenges=[
+      {text:"Toca Mi y luego Fa: un semitono ascendente.",test:(a,b)=>a%12===4&&b-a===1},
+      {text:"Toca Sol y luego La: un tono ascendente.",test:(a,b)=>a%12===7&&b-a===2},
+      {text:"Toca Do y luego el Si inmediatamente inferior: un semitono descendente.",test:(a,b)=>a%12===0&&b-a===-1}
+    ];
+    function buildIntervalMeter(distance=null){ const meter=document.getElementById("intervalMeter"); meter.innerHTML=""; for(let i=0;i<=12;i++){const c=document.createElement("div"); c.className=`interval-cell ${distance!==null&&i<=distance?"active":""}`; c.textContent=i; meter.appendChild(c);} }
+    function clearIntervalSelection(){ intervalSelection=[]; clearKeyboard("intervalKeyboard"); document.getElementById("playIntervalMelodic").disabled=true; document.getElementById("playIntervalHarmonic").disabled=true; buildIntervalMeter(); }
+    function updateIntervalMission(){ document.getElementById("intervalMissionDots").textContent=[0,1,2].map(i=>i<Math.max(intervalMissionStage,0)?"●":"○").join(" "); if(intervalMissionStage>=0&&intervalMissionStage<3)document.getElementById("intervalMissionText").textContent=`${intervalMissionStage+1} de 3 · ${intervalChallenges[intervalMissionStage].text}`; }
+    function evaluateIntervalMission(a,b){ if(intervalMissionStage<0||intervalMissionStage>=3)return; const box=document.getElementById("intervalResult"); if(intervalChallenges[intervalMissionStage].test(a,b)){ intervalMissionStage++; if(intervalMissionStage===1)setLessonState(2,"practiced"); if(intervalMissionStage>=3){setLessonState(2,"mastered"); box.className="result-box status-good"; box.innerHTML="<strong>¡Dominado!</strong> Construiste un semitono ascendente, un tono y un semitono descendente.";} else {box.className="result-box status-good"; box.innerHTML=`<strong>Correcto.</strong> Ahora: ${intervalChallenges[intervalMissionStage].text}`;} updateIntervalMission(); setTimeout(clearIntervalSelection,500); } else {box.className="result-box status-bad"; box.innerHTML=`<strong>Casi.</strong> ${intervalChallenges[intervalMissionStage].text} Cuenta cada paso hacia la tecla vecina.`; setTimeout(clearIntervalSelection,850);} }
+    buildIntervalMeter();
+    buildKeyboard("intervalKeyboard",midi=>{
+      setLessonState(2,"explored"); if(intervalSelection.length===2)clearIntervalSelection(); intervalSelection.push(midi); const kb=keyboards.get("intervalKeyboard"),key=kb.keyMap.get(midi);
+      if(intervalSelection.length===1){key?.classList.add("interval-start"); document.getElementById("intervalResult").innerHTML=`<strong>Inicio: ${PC_KEY_LABELS[midi%12]}${octaveOf(midi)}.</strong> Toca la segunda nota.`;}
+      else {const [a,b]=intervalSelection; kb.keyMap.get(a)?.classList.add("interval-start"); key?.classList.add("interval-end"); const distance=Math.abs(b-a),name=distance<=12?INTERVAL_NAMES[distance]:`${distance} semitonos`; document.getElementById("intervalResult").innerHTML=`<strong>${distance} semitono${distance===1?"":"s"}: ${name}.</strong><br>${PC_KEY_LABELS[a%12]}${octaveOf(a)} → ${PC_KEY_LABELS[b%12]}${octaveOf(b)}.`; buildIntervalMeter(Math.min(distance,12)); document.getElementById("playIntervalMelodic").disabled=false; document.getElementById("playIntervalHarmonic").disabled=false; evaluateIntervalMission(a,b);}
+    });
+    document.getElementById("startIntervalMission").addEventListener("click",()=>{intervalMissionStage=0; clearIntervalSelection(); updateIntervalMission(); document.getElementById("intervalResult").className="result-box"; document.getElementById("intervalResult").textContent=intervalChallenges[0].text;});
+    document.getElementById("resetInterval").addEventListener("click",()=>{clearIntervalSelection(); document.getElementById("intervalResult").className="result-box"; document.getElementById("intervalResult").textContent="Selecciona una primera nota para explorar.";});
+    document.getElementById("playIntervalMelodic").addEventListener("click",()=>intervalSelection.forEach((m,i)=>playMidi(m,.7,i*.55)));
+    document.getElementById("playIntervalHarmonic").addEventListener("click",()=>playChord(intervalSelection));
+
+    // Lesson 3
+    let mmSelected=new Set(), mmStage=0;
+    const mmTargets=[new Set([0,4,7]),new Set([0,3,7])];
+    function updateMMSelection(){ document.getElementById("majorMinorResult").className="result-box"; document.getElementById("majorMinorResult").innerHTML=mmSelected.size?`<strong>Seleccionaste:</strong> ${[...mmSelected].sort((a,b)=>a-b).map(pc=>PC_KEY_LABELS[pc]).join(" · ")}`:"Selecciona las notas del acorde. La octava no importa."; }
+    function clearMM(){mmSelected.clear(); clearKeyboard("majorMinorKeyboard"); updateMMSelection();}
+    function renderMMMission(){document.getElementById("majorMinorMissionText").textContent=mmStage===0?"Paso 1 de 2 · Selecciona Do, Mi y Sol para construir Do mayor.":mmStage===1?"Paso 2 de 2 · Baja solo la tercera: construye Do menor con Do, Mi♭ y Sol.":"Misión completada."; document.getElementById("majorMinorDots").textContent=[0,1].map(i=>i<mmStage?"●":"○").join(" ");}
+    buildKeyboard("majorMinorKeyboard",(midi,pc)=>{setLessonState(3,"explored"); togglePcSelection("majorMinorKeyboard",mmSelected,pc); updateMMSelection();});
+    document.getElementById("checkMajorMinor").addEventListener("click",()=>{const target=mmTargets[Math.min(mmStage,1)],correct=mmSelected.size===target.size&&[...target].every(pc=>mmSelected.has(pc)); const box=document.getElementById("majorMinorResult"); if(correct){mmStage++; if(mmStage===1)setLessonState(3,"practiced"); box.className="result-box status-good"; if(mmStage>=2){setLessonState(3,"mastered"); box.innerHTML="<strong>¡Dominado!</strong> Cambiaste únicamente Mi por Mi♭ y transformaste mayor en menor.";} else box.innerHTML="<strong>Do mayor correcto.</strong> Ahora baja solamente la tercera un semitono."; clearMM(); renderMMMission();} else {box.className="result-box status-bad"; const rootOk=mmSelected.has(0),fifthOk=mmSelected.has(7); box.innerHTML=`<strong>Aún no.</strong> ${!rootOk?"Falta la raíz Do. ":""}${!fifthOk?"Falta la quinta Sol. ":""}Revisa la tercera del paso actual.`;}});
+    document.getElementById("clearMajorMinor").addEventListener("click",clearMM);
+    document.getElementById("playCMajor").addEventListener("click",()=>{setLessonState(3,"explored"); demoChord("majorMinorKeyboard",rootC,"major"); document.getElementById("majorMinorResult").innerHTML="<strong>Do mayor:</strong> 0–4–7 semitonos.";});
+    document.getElementById("playCMinor").addEventListener("click",()=>{setLessonState(3,"explored"); demoChord("majorMinorKeyboard",rootC,"minor"); document.getElementById("majorMinorResult").innerHTML="<strong>Do menor:</strong> 0–3–7 semitonos.";});
+    document.getElementById("compareMajorMinor").addEventListener("click",()=>{const a=buildChordTones(rootC,"major"),b=buildChordTones(rootC,"minor"); highlightChordOnKeyboard("majorMinorKeyboard",a); playChord(a.map(t=>t.midi)); setTimeout(()=>{highlightChordOnKeyboard("majorMinorKeyboard",b);playChord(b.map(t=>t.midi));},1100);});
+    renderMMMission(); updateMMSelection();
+
+    // Lesson 4
+    let accidentalSelection=[], accidentalStage=-1;
+    const accidentalChallenges=[
+      {text:"Toca Do y luego Do♯: sube un semitono.",length:2,test:a=>a[0]%12===0&&a[1]-a[0]===1},
+      {text:"Toca Mi y luego Mi♭: baja un semitono.",length:2,test:a=>a[0]%12===4&&a[1]-a[0]===-1},
+      {text:"Toca una sola vez la tecla que puede llamarse Do♯ o Re♭.",length:1,test:a=>a[0]%12===1}
+    ];
+    function updateAccidentalMission(){document.getElementById("accidentalDots").textContent=[0,1,2].map(i=>i<Math.max(accidentalStage,0)?"●":"○").join(" "); if(accidentalStage>=0&&accidentalStage<3)document.getElementById("accidentalMissionText").textContent=`${accidentalStage+1} de 3 · ${accidentalChallenges[accidentalStage].text}`;}
+    function clearAccidental(){accidentalSelection=[]; clearKeyboard("accidentalKeyboard");}
+    buildKeyboard("accidentalKeyboard",midi=>{
+      setLessonState(4,"explored"); accidentalSelection.push(midi); const box=document.getElementById("accidentalResult");
+      if(accidentalStage<0){box.className="result-box"; box.innerHTML=`Tocaste <strong>${PC_KEY_LABELS[midi%12]}${octaveOf(midi)}</strong>.`; return;}
+      const challenge=accidentalChallenges[accidentalStage]; if(accidentalSelection.length<challenge.length){box.textContent="Ahora toca la segunda nota."; return;}
+      if(challenge.test(accidentalSelection)){accidentalStage++; if(accidentalStage===1)setLessonState(4,"practiced"); if(accidentalStage>=3){setLessonState(4,"mastered"); box.className="result-box status-good"; box.innerHTML="<strong>¡Dominado!</strong> Entiendes que ♯ sube, ♭ baja y una tecla puede tener dos nombres.";} else {box.className="result-box status-good"; box.innerHTML=`<strong>Correcto.</strong> Ahora: ${accidentalChallenges[accidentalStage].text}`;} updateAccidentalMission();} else {box.className="result-box status-bad"; box.innerHTML=`<strong>Casi.</strong> ${challenge.text}`;} setTimeout(clearAccidental,650);
+    });
+    document.getElementById("startAccidentalMission").addEventListener("click",()=>{accidentalStage=0; clearAccidental(); updateAccidentalMission(); document.getElementById("accidentalResult").className="result-box"; document.getElementById("accidentalResult").textContent=accidentalChallenges[0].text;});
+    document.getElementById("resetAccidental").addEventListener("click",()=>{clearAccidental(); document.getElementById("accidentalResult").className="result-box"; document.getElementById("accidentalResult").textContent="Selección reiniciada.";});
+    document.getElementById("playCSharpMajor").addEventListener("click",()=>playChord(buildChordTones(rootById("C#"),"major").map(t=>t.midi)));
+    document.getElementById("playDFlatMajor").addEventListener("click",()=>playChord(buildChordTones(rootById("Db"),"major").map(t=>t.midi)));
+
+    // Lesson 5
+    buildKeyboard("inversionKeyboard",null);
+    let currentInversionDemo=0, inversionChallenge=null, inversionCorrect=0, lastChallengeInv=null;
+    const fingerings={right:[[1,3,5],[1,2,5],[1,3,5]],left:[[5,3,1],[5,3,1],[5,2,1]]};
+    function updateFingering(){const hand=document.getElementById("inversionHand").value, handName=hand==="right"?"Mano derecha":"Mano izquierda"; document.getElementById("inversionFingering").innerHTML=`<strong>${handName}:</strong> dedos ${fingerings[hand][currentInversionDemo].join("–")} para practicar esta disposición de Do mayor de forma aislada.`;}
+    function renderInversionDemo(inv){currentInversionDemo=Number(inv); setLessonState(5,"explored"); const tones=buildChordTones(rootC,"major",inv); highlightChordOnKeyboard("inversionKeyboard",tones); playChord(tones.map(t=>t.midi)); const bass=tones[0]; document.querySelectorAll(".inversion-demo").forEach(b=>b.classList.toggle("secondary",Number(b.dataset.inversionDemo)!==currentInversionDemo)); document.getElementById("inversionInfo").innerHTML=`<div class="info-item"><span>Acorde</span><strong>Do mayor</strong></div><div class="info-item"><span>Raíz</span><strong>Do</strong></div><div class="info-item"><span>Bajo</span><strong>${bass.latin}</strong></div><div class="info-item"><span>Símbolo</span><strong>${chordSymbol(rootC,"major",bass.american)}</strong></div>`; updateFingering();}
+    document.querySelectorAll(".inversion-demo").forEach(b=>b.addEventListener("click",()=>renderInversionDemo(b.dataset.inversionDemo)));
+    document.getElementById("inversionHand").addEventListener("change",updateFingering);
+    function newInversionChallenge(){let inv; do{inv=Math.floor(Math.random()*3);}while(inv===lastChallengeInv); lastChallengeInv=inv; const tones=buildChordTones(rootC,"major",inv); inversionChallenge={inv,tones,bass:tones[0].american,symbol:chordSymbol(rootC,"major",tones[0].american)}; document.getElementById("inversionChallengeNotes").innerHTML=`Notas de grave a agudo: <strong>${tones.map(t=>t.latin).join(" – ")}</strong>`; document.getElementById("inversionChallengeResult").className="result-box"; document.getElementById("inversionChallengeResult").textContent="Identifica raíz, bajo y símbolo."; highlightChordOnKeyboard("inversionKeyboard",tones); playChord(tones.map(t=>t.midi));}
+    document.getElementById("newInversionChallenge").addEventListener("click",newInversionChallenge);
+    document.getElementById("checkInversionChallenge").addEventListener("click",()=>{const box=document.getElementById("inversionChallengeResult"); if(!inversionChallenge){box.className="result-box status-bad";box.textContent="Primero genera un desafío.";return;} const rootOk=document.getElementById("inversionRootAnswer").value==="C",bassOk=document.getElementById("inversionBassAnswer").value===inversionChallenge.bass,symbolOk=document.getElementById("inversionSymbolAnswer").value===inversionChallenge.symbol; if(rootOk&&bassOk&&symbolOk){inversionCorrect++; if(inversionCorrect===1)setLessonState(5,"practiced"); if(inversionCorrect>=2)setLessonState(5,"mastered"); document.getElementById("inversionChallengeDots").textContent=[0,1].map(i=>i<Math.min(inversionCorrect,2)?"●":"○").join(" "); box.className="result-box status-good"; box.innerHTML=inversionCorrect>=2?"<strong>¡Dominado!</strong> Diferenciaste raíz, bajo y símbolo en dos inversiones.":"<strong>Correcto.</strong> Resuelve otra disposición distinta.";} else {box.className="result-box status-bad"; box.innerHTML=`<strong>Revisa:</strong> ${!rootOk?"la raíz da el nombre al acorde. ":""}${!bassOk?"el bajo es la nota más grave. ":""}${!symbolOk?"la barra indica el bajo.":""}`;}});
+    document.getElementById("rightHandOnly").addEventListener("click",()=>{highlightMidiRoles("inversionKeyboard",[{midi:64,role:1},{midi:67,role:2},{midi:72,role:0}]); playChord([64,67,72]); document.getElementById("bothHandsResult").innerHTML="<strong>Solo mano derecha:</strong> Mi es la nota más grave, por lo que suena como C/E, primera inversión.";});
+    document.getElementById("bothHandsDemo").addEventListener("click",()=>{highlightMidiRoles("inversionKeyboard",[{midi:48,role:0},{midi:64,role:1},{midi:67,role:2},{midi:72,role:0}]); playChord([48,64,67,72]); document.getElementById("bothHandsResult").innerHTML="<strong>Con Do grave en la izquierda:</strong> el bajo global vuelve a ser Do. El acorde completo está en posición fundamental, aunque la derecha toque Mi–Sol–Do.";});
+    function showVoiceMap(lines,total,label){document.getElementById("voiceLeadingDiagram").innerHTML=`<strong>${label}</strong>${lines.map(([a,b,d])=>`<div class="voice-line"><strong>${a}</strong><span class="voice-arrow">→ ${d}</span><strong>${b}</strong></div>`).join("")}<div class="callout info compact-callout">Movimiento total aproximado: <strong>${total} semitonos</strong>.</div>`;}
+    document.getElementById("voiceLeadingRough").addEventListener("click",()=>{playChord([60,64,67]);setTimeout(()=>playChord([53,57,60]),1100);showVoiceMap([["Do","Fa","+5"],["Mi","La","+5"],["Sol","Do","+5"]],15,"Posiciones fundamentales");});
+    document.getElementById("voiceLeadingSmooth").addEventListener("click",()=>{playChord([60,64,67]);setTimeout(()=>playChord([60,65,69]),1100);showVoiceMap([["Do","Do","0"],["Mi","Fa","+1"],["Sol","La","+2"]],3,"Conexión C → F/C");});
+    renderInversionDemo(0);
+
+    // Laboratory
+    const PRACTICAL_ROOT_IDS=["C","Db","D","Eb","E","F","F#","G","Ab","A","Bb","B"];
+    const labRoot=document.getElementById("labRoot");
+    function populateLabRoots(){const mode=document.getElementById("labSpellingMode").value,previous=labRoot.value||"C",roots=mode==="practical"?ROOTS.filter(r=>PRACTICAL_ROOT_IDS.includes(r.id)):ROOTS; labRoot.innerHTML=""; roots.forEach(r=>labRoot.add(new Option(`${r.latin} / ${r.american}`,r.id))); labRoot.value=roots.some(r=>r.id===previous)?previous:"C";}
+    const qualitySelects=[document.getElementById("labQuality"),document.getElementById("compareA"),document.getElementById("compareB")];
+    Object.entries(CHORDS).forEach(([key,chord])=>qualitySelects.forEach(sel=>sel.add(new Option(chord.label[0].toUpperCase()+chord.label.slice(1),key))));
+    document.getElementById("labQuality").value="major"; document.getElementById("compareA").value="major"; document.getElementById("compareB").value="minor"; populateLabRoots(); buildKeyboard("labKeyboard",null);
+    function updateInversions(){const select=document.getElementById("labInversion"),quality=document.getElementById("labQuality").value,count=CHORDS[quality].intervals.length,previous=Number(select.value||0),labels=["Fundamental","Primera inversión","Segunda inversión","Tercera inversión"]; select.innerHTML=""; for(let i=0;i<count;i++)select.add(new Option(labels[i],i)); select.value=String(Math.min(previous,count-1));}
+    function renderLab(play=true,arpeggio=false){updateInversions(); const root=rootById(labRoot.value),quality=document.getElementById("labQuality").value,inversion=Number(document.getElementById("labInversion").value),chord=CHORDS[quality],tones=buildChordTones(root,quality,inversion),bass=tones[0],symbol=chordSymbol(root,quality,bass.american),spelled=spellChord(root,quality); highlightChordOnKeyboard("labKeyboard",tones); if(play)playChord(tones.map(t=>t.midi),arpeggio); document.getElementById("labNotes").innerHTML=tones.map((t,i)=>`<span class="note-chip role-${Math.min(t.role,3)}">${t.latin}<small>${t.degree}</small></span>${i<tones.length-1?'<span class="separator">+</span>':''}`).join(""); document.getElementById("labInfo").innerHTML=`<div class="info-item"><span>Símbolo</span><strong>${symbol}</strong></div><div class="info-item"><span>Raíz</span><strong>${root.latin}</strong></div><div class="info-item"><span>Bajo</span><strong>${bass.latin}</strong></div><div class="info-item"><span>Posición</span><strong>${inversionName(inversion,tones.length)}</strong></div><div class="info-item"><span>Fórmula</span><strong>${chord.degreeLabels.join(" – ")}</strong></div><div class="info-item"><span>Semitonos</span><strong>${chord.intervals.join(" – ")}</strong></div><div class="info-item"><span>Notas</span><strong>${tones.map(t=>t.latin).join(" – ")}</strong></div>`; const advanced=spelled.some(n=>Math.abs(n.accidental)>1); const mode=document.getElementById("labSpellingMode").value; document.getElementById("labExplanation").innerHTML=`<strong>${symbol}</strong> contiene ${spelled.map((n,i)=>`${n.latin} (${chord.roleLabels[i]})`).join(", ")}. En esta posición, <strong>${bass.latin}</strong> es el bajo. <br><span class="muted">Descripción orientativa: ${chord.feeling}; el contexto musical puede cambiar esa percepción.</span>${advanced?'<div class="callout">Esta grafía usa una alteración doble. Es correcta en teoría; el modo práctico prioriza raíces comunes, pero algunas familias avanzadas todavía pueden necesitarla.</div>':''}${mode==="advanced"?'<div class="callout info">Modo teórico avanzado: la escritura conserva estrictamente las letras de raíz, tercera, quinta y séptima.</div>':''}`;}
+    document.getElementById("labSpellingMode").addEventListener("change",()=>{populateLabRoots();renderLab(false);}); labRoot.addEventListener("change",()=>renderLab(false)); document.getElementById("labQuality").addEventListener("change",()=>{updateInversions();renderLab(false);}); document.getElementById("labInversion").addEventListener("change",()=>renderLab(false)); document.getElementById("labPlay").addEventListener("click",()=>renderLab(true,false)); document.getElementById("labArpeggio").addEventListener("click",()=>renderLab(true,true));
+    document.getElementById("playCompare").addEventListener("click",()=>{const root=rootById(labRoot.value),a=document.getElementById("compareA").value,b=document.getElementById("compareB").value,ta=buildChordTones(root,a),tb=buildChordTones(root,b); highlightChordOnKeyboard("labKeyboard",ta);playChord(ta.map(t=>t.midi));setTimeout(()=>{highlightChordOnKeyboard("labKeyboard",tb);playChord(tb.map(t=>t.midi));},1150); const max=Math.max(CHORDS[a].intervals.length,CHORDS[b].intervals.length),changes=[]; for(let i=0;i<max;i++){const x=CHORDS[a].intervals[i],y=CHORDS[b].intervals[i]; if(x===undefined||y===undefined)changes.push("cambia la cantidad de notas"); else if(x!==y)changes.push(`la nota ${i+1} cambia ${y-x>0?"+":""}${y-x} semitono${Math.abs(y-x)===1?"":"s"}`);} document.getElementById("compareExplanation").innerHTML=`<strong>${root.latin} ${CHORDS[a].label} → ${root.latin} ${CHORDS[b].label}</strong><br>${[...new Set(changes)].join("; ")||"Conservan la misma fórmula."}`;});
+
+    // Practice: build challenge
+    let buildSelected=new Set(),currentBuildChallenge=null,buildAttempts=0;
+    buildKeyboard("buildKeyboard",(midi,pc)=>{togglePcSelection("buildKeyboard",buildSelected,pc); document.getElementById("buildChallengeResult").className="result-box"; document.getElementById("buildChallengeResult").innerHTML=buildSelected.size?`<strong>Seleccionaste:</strong> ${[...buildSelected].sort((a,b)=>a-b).map(pc=>PC_KEY_LABELS[pc]).join(" · ")}`:"No hay notas seleccionadas.";});
+    function newBuildChallenge(){const roots=ROOTS.filter(r=>["C","D","E","F","G","A","B","F#","Bb","Eb"].includes(r.id)),qualities=["major","minor","diminished","augmented","sus2","sus4"],root=roots[Math.floor(Math.random()*roots.length)],quality=qualities[Math.floor(Math.random()*qualities.length)]; currentBuildChallenge={root,quality}; buildAttempts=0;buildSelected.clear();clearKeyboard("buildKeyboard");document.getElementById("buildChallengePrompt").innerHTML=`<div class="mission-title">Construye: ${root.latin} ${CHORDS[quality].label} (${root.american}${CHORDS[quality].short})</div><p>Usa la fórmula ${CHORDS[quality].degreeLabels.join(" – ")}.</p>`;document.getElementById("buildChallengeResult").className="result-box";document.getElementById("buildChallengeResult").textContent="Selecciona las notas del acorde.";}
+    document.getElementById("newBuildChallenge").addEventListener("click",newBuildChallenge);
+    document.getElementById("clearBuildSelection").addEventListener("click",()=>{buildSelected.clear();clearKeyboard("buildKeyboard");document.getElementById("buildChallengeResult").textContent="No hay notas seleccionadas.";});
+    document.getElementById("checkBuildChallenge").addEventListener("click",()=>{const box=document.getElementById("buildChallengeResult");if(!currentBuildChallenge){box.className="result-box status-bad";box.textContent="Primero genera un desafío.";return;} buildAttempts++;const correctPcs=new Set(CHORDS[currentBuildChallenge.quality].intervals.map(i=>(currentBuildChallenge.root.pc+i)%12)),correct=buildSelected.size===correctPcs.size&&[...correctPcs].every(pc=>buildSelected.has(pc)),notes=spellChord(currentBuildChallenge.root,currentBuildChallenge.quality).map(n=>n.latin);box.className=`result-box ${correct?"status-good":"status-bad"}`;if(correct){box.innerHTML=`<strong>¡Correcto!</strong> ${notes.join(" – ")}.`;playChord(buildChordTones(currentBuildChallenge.root,currentBuildChallenge.quality).map(t=>t.midi));}else if(buildAttempts===1){box.innerHTML=`<strong>Casi.</strong> Comprueba que incluiste la raíz ${currentBuildChallenge.root.latin} y la cantidad correcta de notas.`;}else if(buildAttempts===2){box.innerHTML=`<strong>Segunda pista:</strong> los semitonos desde la raíz son ${CHORDS[currentBuildChallenge.quality].intervals.join(" – ")}.`;}else{box.innerHTML=`<strong>Respuesta:</strong> ${notes.join(" – ")}. Vuelve a construirla antes de generar otro desafío.`;}});
+
+    // Ear training
+    let earQuestion=null,earAnswered=false,earStats={correct:0,total:0};
+    function earQualities(){return Number(document.getElementById("earLevel").value)===3?["major","minor","augmented","diminished"]:["major","minor"];}
+    function renderEarOptions(){const c=document.getElementById("earOptions");c.innerHTML="";earQualities().forEach(q=>{const b=document.createElement("button");b.className="btn secondary";b.textContent=CHORDS[q].label[0].toUpperCase()+CHORDS[q].label.slice(1);b.addEventListener("click",()=>answerEar(q));c.appendChild(b);});}
+    function newEarQuestion(){renderEarOptions();const level=Number(document.getElementById("earLevel").value),qualities=earQualities(),quality=qualities[Math.floor(Math.random()*qualities.length)],pool=ROOTS.filter(r=>["C","D","E","F","G","A","Bb","Eb","F#"].includes(r.id)),root=level===1?rootC:pool[Math.floor(Math.random()*pool.length)];earQuestion={root,quality,tones:buildChordTones(root,quality)};earAnswered=false;playChord(earQuestion.tones.map(t=>t.midi));document.getElementById("earFeedback").className="result-box";document.getElementById("earFeedback").textContent="Puedes repetir antes de responder.";document.getElementById("earRepeat").disabled=false;document.getElementById("earExplain").disabled=false;document.getElementById("earNext").disabled=true;}
+    function answerEar(answer){const box=document.getElementById("earFeedback");if(!earQuestion){box.className="result-box status-bad";box.textContent="Primero pulsa “Nuevo acorde”.";return;}if(earAnswered)return;earAnswered=true;earStats.total++;const correct=answer===earQuestion.quality;if(correct)earStats.correct++;box.className=`result-box ${correct?"status-good":"status-bad"}`;box.innerHTML=correct?`<strong>¡Correcto!</strong> Era ${earQuestion.root.latin} ${CHORDS[earQuestion.quality].label}.`:`<strong>No esta vez.</strong> Era ${earQuestion.root.latin} ${CHORDS[earQuestion.quality].label}. Escucha la pista para aislar la nota decisiva.`;document.getElementById("earNext").disabled=false;updateEarStats();}
+    function updateEarStats(){document.getElementById("earCorrect").textContent=earStats.correct;document.getElementById("earTotal").textContent=earStats.total;document.getElementById("earAccuracy").textContent=earStats.total?`${Math.round(earStats.correct/earStats.total*100)}%`:"—";}
+    document.getElementById("earNew").addEventListener("click",newEarQuestion);document.getElementById("earNext").addEventListener("click",newEarQuestion);document.getElementById("earRepeat").addEventListener("click",()=>earQuestion&&playChord(earQuestion.tones.map(t=>t.midi)));document.getElementById("earExplain").addEventListener("click",()=>{if(!earQuestion)return;const idx=["augmented","diminished"].includes(earQuestion.quality)?2:1,rootMidi=earQuestion.tones.find(t=>t.role===0)?.midi??earQuestion.tones[0].midi,decisive=earQuestion.tones.find(t=>t.role===idx)?.midi??earQuestion.tones[idx].midi;playMidi(rootMidi,.65,0);playMidi(decisive,.65,.65);playChord(earQuestion.tones.map(t=>t.midi),false,1.4);document.getElementById("earFeedback").innerHTML=`<strong>Pista:</strong> raíz, luego ${CHORDS[earQuestion.quality].roleLabels[idx]}, después el acorde. Fórmula: ${CHORDS[earQuestion.quality].intervals.join(" – ")}.`;});document.getElementById("earLevel").addEventListener("change",()=>{earQuestion=null;earAnswered=false;renderEarOptions();document.getElementById("earFeedback").textContent="Pulsa “Nuevo acorde” para empezar.";});renderEarOptions();
+
+    document.querySelectorAll(".reference-chord-demo").forEach(b=>b.addEventListener("click",()=>playChord(buildChordTones(rootC,b.dataset.quality).map(t=>t.midi))));
+    updateInversions(); renderLab(false);
+  </script>
+</body>
+</html>
