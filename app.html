@@ -1316,7 +1316,15 @@
     });
 
     // ========== Lesson 7: Major scale builder ==========
-    buildKeyboard("scaleKeyboard",null,{octaves:2});
+    // Keyboard is touch-playable: pressing any key plays its note and shows whether it belongs to the current scale
+    buildKeyboard("scaleKeyboard",(midi,pc)=>{
+      setLessonState(7,"explored");
+      const root=rootById(scaleRootSelect.value);
+      const scalePcs=new Set(buildScaleTones(root).map(t=>t.pc));
+      const box=document.getElementById("scaleResult");
+      if(scalePcs.has(pc)){ box.className="result-box status-good"; box.innerHTML=`<strong>${PC_KEY_LABELS[pc]}</strong> pertenece a la escala de ${root.latin} mayor.`; }
+      else { box.className="result-box"; box.innerHTML=`<strong>${PC_KEY_LABELS[pc]}</strong> no pertenece a la escala de ${root.latin} mayor.`; }
+    },{octaves:2});
     const scaleRootSelect=document.getElementById("scaleRoot");
     const SCALE_ROOT_IDS=["C","G","D","A","E","F","Bb","Eb"];
     ROOTS.filter(r=>SCALE_ROOT_IDS.includes(r.id)).forEach(r=>scaleRootSelect.add(new Option(`${r.latin} mayor`,r.id)));
