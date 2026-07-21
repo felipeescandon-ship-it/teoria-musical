@@ -307,7 +307,7 @@
       <div class="lesson-layout">
         <aside class="card lesson-sidebar">
           <h3>Ruta esencial</h3>
-          <div id="progressSummary" class="progress-summary">0 de 5 dominadas</div>
+          <div id="progressSummary" class="progress-summary">0 de 6 dominadas</div>
           <div class="progress-track" aria-label="Progreso de dominio"><div id="progressFill" class="progress-fill"></div></div>
           <div class="lesson-list">
             <button class="lesson-link active" data-lesson="1"><span>1. Nota y teclado</span><small class="lesson-status">Sin iniciar</small></button>
@@ -315,6 +315,7 @@
             <button class="lesson-link" data-lesson="3"><span>3. Mayor y menor</span><small class="lesson-status">Sin iniciar</small></button>
             <button class="lesson-link" data-lesson="4"><span>4. ♯ y ♭</span><small class="lesson-status">Sin iniciar</small></button>
             <button class="lesson-link" data-lesson="5"><span>5. Inversiones</span><small class="lesson-status">Sin iniciar</small></button>
+            <button class="lesson-link" data-lesson="6"><span>6. Grados</span><small class="lesson-status">Sin iniciar</small></button>
           </div>
           <div class="callout info compact-callout">
             Puedes explorar libremente. La app solo marca una lección como <strong>dominada</strong> cuando completas su misión.
@@ -543,6 +544,59 @@
               <div class="lesson-actions">
                 <button class="btn secondary lesson-prev" data-prev="4">Volver</button>
                 <button id="goToPractice" class="btn good">Ir a practicar</button>
+              </div>
+            </section>
+          </article>
+
+          <article class="lesson-panel" data-lesson-panel="6">
+            <section class="card">
+              <div class="eyebrow">Lección 6 de 6</div>
+              <h2>Los grados son lugares dentro de una escala</h2>
+              <p>
+                Cada nota de una escala ocupa un <strong>grado</strong>: 1ª, 2ª, 3ª, 4ª, 5ª, 6ª, 7ª. Los grados tienen nombres que describen su función armónica.
+                En Do mayor: Do (tónica), Re (supertónica), Mi (mediante), Fa (subdominante), Sol (dominante), La (submediante), Si (sensible).
+              </p>
+              <div class="big-idea">Cada grado tiene una función<br>y un acorde natural</div>
+              <div class="callout info">
+                Cuando construyes un acorde sobre cada grado de una escala mayor, obtienes los <strong>acordes diatónicos</strong>. Esto será clave en la próxima lección.
+              </div>
+              <div class="mission">
+                <div class="mission-title">Misión de exploración</div>
+                <p id="lesson6MissionText">Toca cada grado. Escucha cómo suenan. Observa los acordes diatónicos.</p>
+                <div class="mission-progress"><span id="lesson6Dots">○ ○ ○ ○ ○ ○ ○</span></div>
+              </div>
+              <div class="keyboard-wrap"><div id="lesson6Keyboard" class="keyboard" aria-label="Piano para explorar grados"></div></div>
+              <div id="lesson6Result" class="result-box">Toca una tecla para comenzar a explorar los grados.</div>
+
+              <div class="mt">
+                <div class="eyebrow">Acordes diatónicos en Do mayor</div>
+                <div class="info-grid">
+                  <div class="info-item"><span>I</span><strong>Do mayor</strong></div>
+                  <div class="info-item"><span>ii</span><strong>Re menor</strong></div>
+                  <div class="info-item"><span>iii</span><strong>Mi menor</strong></div>
+                  <div class="info-item"><span>IV</span><strong>Fa mayor</strong></div>
+                  <div class="info-item"><span>V</span><strong>Sol mayor</strong></div>
+                  <div class="info-item"><span>vi</span><strong>La menor</strong></div>
+                  <div class="info-item"><span>vii°</span><strong>Si disminuido</strong></div>
+                </div>
+              </div>
+
+              <div class="mt">
+                <p class="muted">Nota: los grados se escriben con números romanos (I, ii, iii...). Mayúsculas para mayores; minúsculas para menores; ° para disminuidos. Aquí puedes escuchar cada uno:</p>
+                <div class="controls" style="flex-wrap: wrap;">
+                  <button id="playGradeMajor" class="btn small">I: Do mayor</button>
+                  <button id="playGradeMin2" class="btn small">ii: Re menor</button>
+                  <button id="playGradeMin3" class="btn small">iii: Mi menor</button>
+                  <button id="playGrade4" class="btn small">IV: Fa mayor</button>
+                  <button id="playGrade5" class="btn small">V: Sol mayor</button>
+                  <button id="playGrade6" class="btn small">vi: La menor</button>
+                  <button id="playGradeDim7" class="btn small">vii°: Si disminuido</button>
+                </div>
+              </div>
+
+              <div class="lesson-actions">
+                <button class="btn secondary lesson-prev" data-prev="5">Volver</button>
+                <button class="btn lesson-next" data-next="6">Continuar a Escala mayor</button>
               </div>
             </section>
           </article>
@@ -989,10 +1043,10 @@
     const rootC=rootById("C");
 
     // ========== Navigation and lesson state management ==========
-    const LESSON_COUNT=5;
+    const LESSON_COUNT=6;
     const STATUS_LABELS={not_started:"Sin iniciar",explored:"Explorada",practiced:"Practicada",mastered:"Dominada"};
     const STATUS_RANK={not_started:0,explored:1,practiced:2,mastered:3}; // Only upgrades state, never downgrades
-    let lessonStates={1:"not_started",2:"not_started",3:"not_started",4:"not_started",5:"not_started"};
+    let lessonStates={1:"not_started",2:"not_started",3:"not_started",4:"not_started",5:"not_started",6:"not_started"};
     // Load persisted lesson states from browser storage
     try { lessonStates={...lessonStates,...JSON.parse(localStorage.getItem("musicLessonStates")||"{}")}; } catch(_) {}
     let currentLesson=1;
@@ -1128,6 +1182,48 @@
     document.getElementById("voiceLeadingRough").addEventListener("click",()=>{playChord([60,64,67]);setTimeout(()=>playChord([53,57,60]),1100);showVoiceMap([["Do","Fa","+5"],["Mi","La","+5"],["Sol","Do","+5"]],15,"Posiciones fundamentales");});
     document.getElementById("voiceLeadingSmooth").addEventListener("click",()=>{playChord([60,64,67]);setTimeout(()=>playChord([60,65,69]),1100);showVoiceMap([["Do","Do","0"],["Mi","Fa","+1"],["Sol","La","+2"]],3,"Conexión C → F/C");});
     renderInversionDemo(0);
+
+    // ========== Lesson 6: Degrees and diatonic chords ==========
+    const DIATONIC_CHORDS = [
+      {pc:0, root:"C", quality:"major", roman:"I", name:"Do mayor"},
+      {pc:2, root:"D", quality:"minor", roman:"ii", name:"Re menor"},
+      {pc:4, root:"E", quality:"minor", roman:"iii", name:"Mi menor"},
+      {pc:5, root:"F", quality:"major", roman:"IV", name:"Fa mayor"},
+      {pc:7, root:"G", quality:"major", roman:"V", name:"Sol mayor"},
+      {pc:9, root:"A", quality:"minor", roman:"vi", name:"La menor"},
+      {pc:11, root:"B", quality:"diminished", roman:"vii°", name:"Si disminuido"}
+    ];
+    let lesson6Explored=new Set();
+    buildKeyboard("lesson6Keyboard",(midi,pc)=>{
+      setLessonState(6,"explored");
+      const diatonic=DIATONIC_CHORDS.find(d=>d.pc===pc);
+      if(diatonic){
+        lesson6Explored.add(pc);
+        document.getElementById("lesson6Dots").textContent=[0,1,2,3,4,5,6].map(i=>lesson6Explored.has(DIATONIC_CHORDS[i].pc)?"●":"○").join(" ");
+        if(lesson6Explored.size===1)setLessonState(6,"practiced");
+        if(lesson6Explored.size===7)setLessonState(6,"mastered");
+        const tones=buildChordTones(rootById(diatonic.root),diatonic.quality);
+        highlightChordOnKeyboard("lesson6Keyboard",tones);
+        playChord(tones.map(t=>t.midi));
+        document.getElementById("lesson6Result").className="result-box status-good";
+        document.getElementById("lesson6Result").innerHTML=`<strong>Grado ${diatonic.roman}:</strong> ${diatonic.name}. Construido sobre ${diatonic.root}.`;
+      }
+    });
+    const gradePlayButtons=[
+      {id:"playGradeMajor",root:"C",quality:"major"},
+      {id:"playGradeMin2",root:"D",quality:"minor"},
+      {id:"playGradeMin3",root:"E",quality:"minor"},
+      {id:"playGrade4",root:"F",quality:"major"},
+      {id:"playGrade5",root:"G",quality:"major"},
+      {id:"playGrade6",root:"A",quality:"minor"},
+      {id:"playGradeDim7",root:"B",quality:"diminished"}
+    ];
+    gradePlayButtons.forEach(btn=>{
+      document.getElementById(btn.id).addEventListener("click",()=>{
+        setLessonState(6,"explored");
+        demoChord("lesson6Keyboard",rootById(btn.root),btn.quality);
+      });
+    });
 
     // ========== Lab mode: free exploration of chords ==========
     const PRACTICAL_ROOT_IDS=["C","Db","D","Eb","E","F","F#","G","Ab","A","Bb","B"];
