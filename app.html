@@ -307,7 +307,7 @@
       <div class="lesson-layout">
         <aside class="card lesson-sidebar">
           <h3>Ruta esencial</h3>
-          <div id="progressSummary" class="progress-summary">0 de 8 dominadas</div>
+          <div id="progressSummary" class="progress-summary">0 de 9 dominadas</div>
           <div class="progress-track" aria-label="Progreso de dominio"><div id="progressFill" class="progress-fill"></div></div>
           <div class="lesson-list">
             <button class="lesson-link active" data-lesson="1"><span>1. Nota y teclado</span><small class="lesson-status">Sin iniciar</small></button>
@@ -318,6 +318,7 @@
             <button class="lesson-link" data-lesson="6"><span>6. Grados</span><small class="lesson-status">Sin iniciar</small></button>
             <button class="lesson-link" data-lesson="7"><span>7. Escala mayor</span><small class="lesson-status">Sin iniciar</small></button>
             <button class="lesson-link" data-lesson="8"><span>8. Función armónica</span><small class="lesson-status">Sin iniciar</small></button>
+            <button class="lesson-link" data-lesson="9"><span>9. Progresiones</span><small class="lesson-status">Sin iniciar</small></button>
           </div>
           <div class="callout info compact-callout">
             Puedes explorar libremente. La app solo marca una lección como <strong>dominada</strong> cuando completas su misión.
@@ -704,7 +705,61 @@
 
               <div class="lesson-actions">
                 <button class="btn secondary lesson-prev" data-prev="7">Volver</button>
-                <button id="goToLab" class="btn good">Ir al laboratorio</button>
+                <button class="btn lesson-next" data-next="9">Continuar a Progresiones</button>
+              </div>
+            </section>
+          </article>
+
+          <article class="lesson-panel" data-lesson-panel="9">
+            <section class="card">
+              <div class="eyebrow">Lección 9 de 9</div>
+              <h2>Las progresiones conectan acordes; el acompañamiento sostiene el pulso</h2>
+              <p>
+                Una <strong>progresión</strong> es una secuencia de acordes diatónicos que crea movimiento armónico.
+                El <strong>acompañamiento</strong> es cómo la mano izquierda sostiene esos acordes mientras la derecha
+                toca la tríada o una melodía.
+              </p>
+              <div class="callout info">
+                Recuerda la Lección 8: I, iii, vi son tónica; IV, ii son subdominante; V, vii° son dominante.
+                Las progresiones de abajo alternan entre estas funciones para crear tensión y resolución.
+              </div>
+
+              <div class="controls">
+                <div class="field"><label for="progressionKey">Tonalidad</label><select id="progressionKey"></select></div>
+                <div class="field"><label for="progressionType">Progresión</label><select id="progressionType"></select></div>
+                <div class="field"><label for="progressionPattern">Acompañamiento (mano izquierda)</label>
+                  <select id="progressionPattern">
+                    <option value="bass">Bajo simple</option>
+                    <option value="block">Bloque (tríada completa)</option>
+                    <option value="alberti">Arpegio (bajo Alberti)</option>
+                  </select>
+                </div>
+                <button id="playProgression" class="btn">Tocar progresión</button>
+              </div>
+
+              <div class="keyboard-wrap"><div id="progressionKeyboard" class="keyboard" aria-label="Piano para progresiones"></div></div>
+              <div id="progressionRoman" class="pill-row"></div>
+              <div id="progressionResult" class="result-box">Selecciona tonalidad, progresión y patrón, luego pulsa "Tocar progresión".</div>
+
+              <div class="mission mt">
+                <div class="mission-title">Misión: escucha tres progresiones distintas</div>
+                <p id="progressionMissionText">Escucha I–IV–V–I, luego I–V–vi–IV, luego ii–V–I. Nota cómo cada una "se siente" distinta aunque compartan acordes.</p>
+                <div class="mission-progress"><span id="progressionMissionDots">○ ○ ○</span></div>
+              </div>
+              <div class="controls">
+                <button id="progressionMission1" class="btn small">1. I–IV–V–I</button>
+                <button id="progressionMission2" class="btn small">2. I–V–vi–IV</button>
+                <button id="progressionMission3" class="btn small">3. ii–V–I</button>
+              </div>
+
+              <div class="callout good mt">
+                Prueba distintos patrones de acompañamiento con la misma progresión: el bajo simple es más estable,
+                el bloque suena más denso, y el arpegio Alberti da movimiento sin cambiar la armonía.
+              </div>
+
+              <div class="lesson-actions">
+                <button class="btn secondary lesson-prev" data-prev="8">Volver</button>
+                <button id="goToLabFinal" class="btn good">Ir al laboratorio</button>
               </div>
             </section>
           </article>
@@ -923,6 +978,14 @@
     // Harmonic function groups: Tónica (stable/home), Subdominante (movement away), Dominante (tension resolving to tonic)
     const DIATONIC_FUNCTIONS = ["Tónica", "Subdominante", "Tónica", "Subdominante", "Dominante", "Tónica", "Dominante"];
     const FUNCTION_COLOR_VAR = { "Tónica": "green", "Subdominante": "orange", "Dominante": "red" };
+
+    // Common diatonic chord progressions, written as roman numeral sequences (universal for any major key)
+    const PROGRESSIONS = {
+      "I-IV-V-I": ["I", "IV", "V", "I"],
+      "I-V-vi-IV": ["I", "V", "vi", "IV"],
+      "vi-IV-I-V": ["vi", "IV", "I", "V"],
+      "ii-V-I": ["ii", "V", "I"]
+    };
 
     // Chord types and their intervallic structure. Key musical insight: major (0-4-7) and minor (0-3-7) differ only in the 3rd.
     const CHORDS = {
@@ -1183,10 +1246,10 @@
     const rootC=rootById("C");
 
     // ========== Navigation and lesson state management ==========
-    const LESSON_COUNT=8;
+    const LESSON_COUNT=9;
     const STATUS_LABELS={not_started:"Sin iniciar",explored:"Explorada",practiced:"Practicada",mastered:"Dominada"};
     const STATUS_RANK={not_started:0,explored:1,practiced:2,mastered:3}; // Only upgrades state, never downgrades
-    let lessonStates={1:"not_started",2:"not_started",3:"not_started",4:"not_started",5:"not_started",6:"not_started",7:"not_started",8:"not_started"};
+    let lessonStates={1:"not_started",2:"not_started",3:"not_started",4:"not_started",5:"not_started",6:"not_started",7:"not_started",8:"not_started",9:"not_started"};
     // Load persisted lesson states from browser storage
     try { lessonStates={...lessonStates,...JSON.parse(localStorage.getItem("musicLessonStates")||"{}")}; } catch(_) {}
     let currentLesson=1;
@@ -1498,8 +1561,69 @@
     }
     document.getElementById("functionNewChallenge").addEventListener("click",newFunctionChallenge);
     document.getElementById("functionRepeat").addEventListener("click",()=>functionQuizChord&&playChord(functionQuizChord.tones.map(t=>t.midi)));
-    document.getElementById("goToLab").addEventListener("click",()=>showMode("lab"));
     renderFunctionOptions();
+
+    // ========== Lesson 9: Progressions and basic accompaniment (Epic B2) ==========
+    buildKeyboard("progressionKeyboard",null,{octaves:2});
+    const progressionKeySelect=document.getElementById("progressionKey");
+    ROOTS.filter(r=>SCALE_ROOT_IDS.includes(r.id)).forEach(r=>progressionKeySelect.add(new Option(`${r.latin} mayor`,r.id)));
+    progressionKeySelect.value="C";
+    const progressionTypeSelect=document.getElementById("progressionType");
+    Object.keys(PROGRESSIONS).forEach(key=>progressionTypeSelect.add(new Option(key,key)));
+    // Resolve a roman numeral to its diatonic chord for a given key
+    function getProgressionChords(rootId,progressionKey){
+      const root=rootById(rootId), diatonic=buildDiatonicChords(root);
+      return PROGRESSIONS[progressionKey].map(roman=>diatonic[DIATONIC_ROMANS.indexOf(roman)]);
+    }
+    // Play one chord's right-hand triad plus a left-hand accompaniment pattern (bass note, block triad, or Alberti-style broken chord)
+    function playAccompaniedChord(chord,pattern,delay,stepMs){
+      const rightHand=buildChordTones(chord.root,chord.quality);
+      const leftHand=buildChordTones(chord.root,chord.quality,0,36); // Octave 1 lower, for left hand register
+      setTimeout(()=>{
+        highlightChordOnKeyboard("progressionKeyboard",rightHand);
+        playChord(rightHand.map(t=>t.midi));
+        if(pattern==="bass"){
+          playMidi(leftHand[0].midi,stepMs/1000*.9,0,.1);
+        } else if(pattern==="block"){
+          playChord(leftHand.map(t=>t.midi),false,0);
+        } else if(pattern==="alberti"){
+          const order=[leftHand[0],leftHand[2]||leftHand[1],leftHand[1],leftHand[2]||leftHand[1]];
+          const beat=stepMs/1000/4;
+          order.forEach((t,j)=>playMidi(t.midi,beat*.9,j*beat,.1));
+        }
+      },delay);
+    }
+    function renderProgression(play=true){
+      const rootId=progressionKeySelect.value, progressionKey=progressionTypeSelect.value, pattern=document.getElementById("progressionPattern").value;
+      const chords=getProgressionChords(rootId,progressionKey);
+      document.getElementById("progressionRoman").innerHTML=chords.map(c=>`<span class="pill">${c.roman} · ${c.name}</span>`).join("");
+      document.getElementById("progressionResult").innerHTML=`<strong>${progressionKey}</strong> en ${rootById(rootId).latin} mayor. Patrón de acompañamiento: ${document.getElementById("progressionPattern").selectedOptions[0].textContent}.`;
+      if(play){ const stepMs=1300; chords.forEach((chord,i)=>playAccompaniedChord(chord,pattern,i*stepMs,stepMs)); }
+      return chords;
+    }
+    progressionKeySelect.addEventListener("change",()=>{setLessonState(9,"explored"); renderProgression(false);});
+    progressionTypeSelect.addEventListener("change",()=>{setLessonState(9,"explored"); renderProgression(false);});
+    document.getElementById("progressionPattern").addEventListener("change",()=>{setLessonState(9,"explored"); renderProgression(false);});
+    document.getElementById("playProgression").addEventListener("click",()=>{setLessonState(9,"explored"); renderProgression(true);});
+    renderProgression(false);
+    // Mission: listen to three contrasting progressions to feel the difference in harmonic movement
+    let progressionMissionHeard=new Set();
+    function playProgressionMission(progressionKey){
+      setLessonState(9,"explored");
+      progressionTypeSelect.value=progressionKey;
+      renderProgression(true);
+      progressionMissionHeard.add(progressionKey);
+      if(progressionMissionHeard.size===1)setLessonState(9,"practiced");
+      document.getElementById("progressionMissionDots").textContent=["I-IV-V-I","I-V-vi-IV","ii-V-I"].map(k=>progressionMissionHeard.has(k)?"●":"○").join(" ");
+      if(progressionMissionHeard.size===3){
+        setLessonState(9,"mastered");
+        document.getElementById("progressionMissionText").innerHTML="<strong>¡Dominado!</strong> Escuchaste tres progresiones distintas construidas con los mismos acordes diatónicos.";
+      }
+    }
+    document.getElementById("progressionMission1").addEventListener("click",()=>playProgressionMission("I-IV-V-I"));
+    document.getElementById("progressionMission2").addEventListener("click",()=>playProgressionMission("I-V-vi-IV"));
+    document.getElementById("progressionMission3").addEventListener("click",()=>playProgressionMission("ii-V-I"));
+    document.getElementById("goToLabFinal").addEventListener("click",()=>showMode("lab"));
 
     // ========== Lab mode: free exploration of chords ==========
     const PRACTICAL_ROOT_IDS=["C","Db","D","Eb","E","F","F#","G","Ab","A","Bb","B"];
