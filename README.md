@@ -21,10 +21,16 @@ Una aplicación web interactiva para aprender teoría musical de forma visual y 
 
 ## Cómo Usar
 
-1. Abre `app.html` en tu navegador
-2. Comienza con la Ruta Guiada o explora libremente
-3. Haz clic en las teclas del piano (o usa el teclado: A-K)
-4. Escucha los acordes y aprende las relaciones musicales
+`app.html` usa módulos ES (`js/*.js`), así que los navegadores lo bloquean si se abre por doble clic (`file://`). Sirve la carpeta con un servidor local:
+
+```bash
+python3 -m http.server 8811
+# abre http://localhost:8811/app.html
+```
+
+1. Comienza con la Ruta Guiada o explora libremente
+2. Haz clic en las teclas del piano (o usa el teclado: A-K)
+3. Escucha los acordes y aprende las relaciones musicales
 
 ## Conceptos Cubiertos
 
@@ -62,13 +68,14 @@ El app registra tu progreso:
 ```bash
 git clone https://github.com/felipeescandon-ship-it/teoria-musical.git
 cd teoria-musical
-# Abre teoria_musical_piano_interactiva(2).html en tu navegador
+python3 -m http.server 8811
+# abre http://localhost:8811/app.html
 ```
 
 ## Notas
 
 - Los datos de progreso se guardan localmente en tu navegador
-- Funciona completamente offline
+- Requiere servidor local (por los módulos ES); funciona offline una vez servido
 - Compatible con navegadores modernos (Chrome, Firefox, Safari, Edge)
 
 ---
