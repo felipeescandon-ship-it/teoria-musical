@@ -395,6 +395,10 @@
                 Una tríada mayor o menor contiene raíz, tercera y quinta. La tercera está a cuatro semitonos en el acorde mayor
                 y a tres semitonos en el menor.
               </p>
+              <div class="big-idea">El patrón es universal:<br>Mayor: 0–4–7 · Menor: 0–3–7</div>
+              <div class="callout info">
+                <strong>Esto funciona con cualquier raíz.</strong> Do mayor es 0–4–7 desde Do. Sol mayor es 0–4–7 desde Sol. Fa mayor es 0–4–7 desde Fa. Solo cambia la raíz, el patrón permanece.
+              </div>
               <div class="comparison">
                 <div class="compare-card">
                   <div class="eyebrow">Mayor</div><h3>Do – Mi – Sol</h3><p><strong>0 – 4 – 7</strong> semitonos.</p>
@@ -423,6 +427,24 @@
                 <div class="fingering-card"><strong>Mano izquierda</strong><span>Do–Mi–Sol: dedos 5–3–1</span></div>
               </div>
               <div class="callout info">Son digitaciones iniciales para tocar el acorde aislado; pueden cambiar según lo que venga antes y después.</div>
+
+              <details class="advanced-details mt">
+                <summary>Desafío opcional: aplica el patrón a otra raíz (Fa mayor y Fa menor)</summary>
+                <p>Si comprendiste el patrón 0–4–7 para mayor y 0–3–7 para menor, puedes construir <strong>cualquier acorde mayor o menor</strong> contando desde una raíz diferente. Aquí exploramos Fa, que usa un bemol en la tercera menor.</p>
+                <div class="comparison">
+                  <div class="compare-card">
+                    <div class="eyebrow">Mayor</div><h3>Fa – La – Do</h3><p><strong>0 – 4 – 7</strong> semitonos (mismo patrón).</p>
+                    <button id="playFMajor" class="btn small">Escuchar Fa mayor</button>
+                  </div>
+                  <div class="compare-vs">VS.</div>
+                  <div class="compare-card">
+                    <div class="eyebrow">Menor</div><h3>Fa – La♭ – Do</h3><p><strong>0 – 3 – 7</strong> semitonos (mismo patrón).</p>
+                    <button id="playFMinor" class="btn small">Escuchar Fa menor</button>
+                  </div>
+                </div>
+                <p style="margin-top: 14px; color: var(--muted); font-size: .9rem;"><strong>Nota:</strong> Fa mayor tiene un bemol al escribirse (Fa – La – Do♭), aunque en el piano la tercera sea La natural. Explicamos esto en la próxima lección sobre alteraciones.</p>
+              </details>
+
               <div class="lesson-actions">
                 <button class="btn secondary lesson-prev" data-prev="2">Volver</button>
                 <button class="btn lesson-next" data-next="4">Continuar: sostenidos y bemoles</button>
@@ -1023,6 +1045,8 @@
     document.getElementById("playCMajor").addEventListener("click",()=>{setLessonState(3,"explored"); demoChord("majorMinorKeyboard",rootC,"major"); document.getElementById("majorMinorResult").innerHTML="<strong>Do mayor:</strong> 0–4–7 semitonos.";});
     document.getElementById("playCMinor").addEventListener("click",()=>{setLessonState(3,"explored"); demoChord("majorMinorKeyboard",rootC,"minor"); document.getElementById("majorMinorResult").innerHTML="<strong>Do menor:</strong> 0–3–7 semitonos.";});
     document.getElementById("compareMajorMinor").addEventListener("click",()=>{const a=buildChordTones(rootC,"major"),b=buildChordTones(rootC,"minor"); highlightChordOnKeyboard("majorMinorKeyboard",a); playChord(a.map(t=>t.midi)); setTimeout(()=>{highlightChordOnKeyboard("majorMinorKeyboard",b);playChord(b.map(t=>t.midi));},1100);});
+    document.getElementById("playFMajor").addEventListener("click",()=>{setLessonState(3,"explored"); demoChord("majorMinorKeyboard",rootById("F"),"major"); document.getElementById("majorMinorResult").innerHTML="<strong>Fa mayor:</strong> 0–4–7 semitonos. El patrón es idéntico al de Do mayor.";});
+    document.getElementById("playFMinor").addEventListener("click",()=>{setLessonState(3,"explored"); demoChord("majorMinorKeyboard",rootById("F"),"minor"); document.getElementById("majorMinorResult").innerHTML="<strong>Fa menor:</strong> 0–3–7 semitonos. El patrón es idéntico al de Do menor.";});
     renderMMMission(); updateMMSelection();
 
     // Lesson 4
