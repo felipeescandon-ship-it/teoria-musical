@@ -719,14 +719,19 @@
   <script>
     "use strict";
 
+    // ========== Musical data constants ==========
+    // NATURAL_PCS: pitch classes of white keys (Do, Re, Mi, Fa, Sol, La, Si) mapped to semitones 0-11
     const NATURAL_PCS = [0, 2, 4, 5, 7, 9, 11];
+    // Note names in Latin (Do, Re, Mi...) and American (C, D, E...) systems
     const LATIN_LETTERS = ["Do", "Re", "Mi", "Fa", "Sol", "La", "Si"];
     const AMERICAN_LETTERS = ["C", "D", "E", "F", "G", "A", "B"];
+    // Sharp/flat variations for notation and display
     const PC_SHARP_LATIN = ["Do", "Do♯", "Re", "Re♯", "Mi", "Fa", "Fa♯", "Sol", "Sol♯", "La", "La♯", "Si"];
     const PC_FLAT_LATIN = ["Do", "Re♭", "Re", "Mi♭", "Mi", "Fa", "Sol♭", "Sol", "La♭", "La", "Si♭", "Si"];
     const PC_KEY_LABELS = ["Do", "Do♯/Re♭", "Re", "Re♯/Mi♭", "Mi", "Fa", "Fa♯/Sol♭", "Sol", "Sol♯/La♭", "La", "La♯/Si♭", "Si"];
     const PC_KEY_SHORT = ["C", "C♯/D♭", "D", "D♯/E♭", "E", "F", "F♯/G♭", "G", "G♯/A♭", "A", "A♯/B♭", "B"];
 
+    // All 12 roots (naturals + sharps + flats) with pitch class (pc), letter index, accidental, and notation in both systems
     const ROOTS = [
       { id:"C", pc:0, letter:0, accidental:0, latin:"Do", american:"C" },
       { id:"C#", pc:1, letter:0, accidental:1, latin:"Do♯", american:"C♯" },
@@ -747,6 +752,7 @@
       { id:"B", pc:11, letter:6, accidental:0, latin:"Si", american:"B" }
     ];
 
+    // Chord types and their intervallic structure. Key musical insight: major (0-4-7) and minor (0-3-7) differ only in the 3rd.
     const CHORDS = {
       major: { label:"mayor", short:"", intervals:[0,4,7], degreeSteps:[0,2,4], degreeLabels:["1","3","5"], roleLabels:["raíz","3ª mayor","5ª justa"], feeling:"estable y luminoso" },
       minor: { label:"menor", short:"m", intervals:[0,3,7], degreeSteps:[0,2,4], degreeLabels:["1","♭3","5"], roleLabels:["raíz","3ª menor","5ª justa"], feeling:"estable con color menor" },
@@ -759,30 +765,34 @@
       min7: { label:"séptima menor", short:"m7", intervals:[0,3,7,10], degreeSteps:[0,2,4,6], degreeLabels:["1","♭3","5","♭7"], roleLabels:["raíz","3ª menor","5ª justa","7ª menor"], feeling:"menor, amplio y flexible" }
     };
 
+    // Interval names indexed by semitone distance; used for displaying interval sizes
     const INTERVAL_NAMES = [
       "unísono", "segunda menor", "segunda mayor", "tercera menor", "tercera mayor", "cuarta justa",
       "tritono", "quinta justa", "sexta menor", "sexta mayor", "séptima menor", "séptima mayor", "octava"
     ];
 
+    // ========== Audio synthesis via Web Audio API ==========
     let audioCtx;
-    const heldVoices = new Map();
+    const heldVoices = new Map(); // Tracks sustained notes from piano key presses
     function getAudioContext() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === "suspended") audioCtx.resume();
       return audioCtx;
     }
+    // Convert MIDI note number to frequency (A4 = 69 = 440 Hz)
     function midiToFreq(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
+    // Create a note with additive synthesis: fundamental + 2nd and 3rd harmonics for timbral richness
     function makeVoice(midi, volume=.11, when=null) {
       const ctx = getAudioContext();
       const now = when ?? ctx.currentTime;
       const master = ctx.createGain();
       master.gain.setValueAtTime(.0001, now);
-      master.gain.exponentialRampToValueAtTime(volume, now + .018);
+      master.gain.exponentialRampToValueAtTime(volume, now + .018); // Fast attack
       master.connect(ctx.destination);
       const layers = [
-        {type:"triangle", ratio:1, gain:1},
-        {type:"sine", ratio:2, gain:.18},
-        {type:"sine", ratio:3, gain:.07}
+        {type:"triangle", ratio:1, gain:1},       // Fundamental
+        {type:"sine", ratio:2, gain:.18},         // 2nd harmonic (octave)
+        {type:"sine", ratio:3, gain:.07}          // 3rd harmonic (perfect 5th)
       ];
       const oscillators = layers.map(layer => {
         const osc = ctx.createOscillator();
@@ -796,17 +806,20 @@
       });
       return {ctx, master, oscillators, started:now};
     }
+    // Play a single note: starts, fades, and stops; duration in seconds
     function playMidi(midi, duration=.78, delay=0, volume=.12) {
       const ctx = getAudioContext();
       const when = ctx.currentTime + delay;
       const voice = makeVoice(midi, volume, when);
-      voice.master.gain.exponentialRampToValueAtTime(.0001, when + duration);
+      voice.master.gain.exponentialRampToValueAtTime(.0001, when + duration); // Decay
       voice.oscillators.forEach(osc => osc.stop(when + duration + .05));
     }
+    // Start a held note (key pressed); sustains until stopHeldMidi is called
     function startHeldMidi(token, midi, volume=.11) {
       if (heldVoices.has(token)) return;
       heldVoices.set(token, makeVoice(midi, volume));
     }
+    // Release a held note with a quick fade
     function stopHeldMidi(token) {
       const voice = heldVoices.get(token);
       if (!voice) return;
@@ -817,11 +830,14 @@
       voice.oscillators.forEach(osc => { try { osc.stop(now + .15); } catch (_) {} });
       heldVoices.delete(token);
     }
+    // Play multiple notes as a chord (simultaneous or arpegiated)
     function playChord(midis, arpeggio=false, delayStart=0) {
       midis.forEach((m,i) => playMidi(m, arpeggio ? .72 : .95, delayStart + (arpeggio ? i*.16 : 0), arpeggio ? .13 : .09));
     }
 
-    const keyboards = new Map();
+    // ========== Piano keyboard and interaction ==========
+    const keyboards = new Map(); // Global registry of keyboard instances
+    // Bind pointer and audio events to a single key (white or black)
     function bindKeyInteraction(id, key, midi, pc, onTrigger) {
       const token = `${id}:${midi}`;
       const press = event => {
@@ -837,18 +853,20 @@
       key.addEventListener("pointerleave", release);
       key.addEventListener("contextmenu", e => e.preventDefault());
     }
+    // Build a visual piano keyboard with white and black keys, mapped to MIDI notes
     function buildKeyboard(id, onTrigger, options={}) {
       const container = document.getElementById(id);
       if (!container) return null;
-      const startMidi = options.startMidi || 48;
+      const startMidi = options.startMidi || 48; // Start at C3 by default
       const octaves = options.octaves || 2;
-      const whitePattern = [0,2,4,5,7,9,11];
-      const blackAfterWhite = {0:1,1:3,3:6,4:8,5:10};
-      const keyMap = new Map();
+      const whitePattern = [0,2,4,5,7,9,11]; // White keys: Do, Re, Mi, Fa, Sol, La, Si
+      const blackAfterWhite = {0:1,1:3,3:6,4:8,5:10}; // Black keys positioned after specific white keys
+      const keyMap = new Map(); // MIDI → DOM key element
       container.innerHTML = "";
       const whiteContainer = document.createElement("div");
       whiteContainer.className = "white-keys";
       container.appendChild(whiteContainer);
+      // Generate white keys
       for (let octave=0; octave<octaves; octave++) {
         whitePattern.forEach(pc => {
           const midi = startMidi + octave*12 + pc;
@@ -858,11 +876,13 @@
           bindKeyInteraction(id,key,midi,pc,onTrigger); whiteContainer.appendChild(key); keyMap.set(midi,key);
         });
       }
+      // Final Do (octave boundary)
       const finalMidi = startMidi + octaves*12;
       const finalKey = document.createElement("button");
       finalKey.type="button"; finalKey.className="key white"; finalKey.dataset.midi=finalMidi; finalKey.dataset.pc=0;
       finalKey.innerHTML='<span>Do<br><small>C</small></span>';
       bindKeyInteraction(id,finalKey,finalMidi,0,onTrigger); whiteContainer.appendChild(finalKey); keyMap.set(finalMidi,finalKey);
+      // Generate black keys (positioned absolutely between white keys)
       const totalWhite = octaves*7+1;
       let globalWhite=0;
       for (let octave=0; octave<octaves; octave++) {
@@ -880,35 +900,43 @@
       }
       const obj={container,keyMap,startMidi,octaves,onTrigger}; keyboards.set(id,obj); return obj;
     }
+    // Remove all visual highlighting classes from a keyboard
     function clearKeyboard(id) {
       const kb=keyboards.get(id); if(!kb) return;
       const classes=["role-0","role-1","role-2","role-3","interval-start","interval-end","correct","wrong","selected"];
       kb.keyMap.forEach(k=>k.classList.remove(...classes));
     }
+    // Find a MIDI note in the keyboard that matches the pitch class (pc), preferring notes near a target
     function findVisibleMidi(kb,pc,preferred=60) {
       const candidates=[...kb.keyMap.keys()].filter(m=>((m%12)+12)%12===pc);
       return candidates.sort((a,b)=>Math.abs(a-preferred)-Math.abs(b-preferred))[0] ?? null;
     }
+    // Highlight chord notes on keyboard with role-based colors (root, 3rd, 5th, 7th)
     function highlightChordOnKeyboard(id,tones) {
       clearKeyboard(id); const kb=keyboards.get(id); if(!kb) return;
       tones.forEach(t=>{ const key=kb.keyMap.get(t.midi)||kb.keyMap.get(findVisibleMidi(kb,t.pc,t.midi)); key?.classList.add(`role-${Math.min(t.role,3)}`); });
     }
+    // Highlight specific MIDI notes by role (used for voice leading demonstrations)
     function highlightMidiRoles(id,items) {
       clearKeyboard(id); const kb=keyboards.get(id); if(!kb) return;
       items.forEach(({midi,role})=>kb.keyMap.get(midi)?.classList.add(`role-${Math.min(role,3)}`));
     }
+    // Toggle pitch class selection (for building chord missions)
     function togglePcSelection(id,set,pc) {
       const kb=keyboards.get(id); if(!kb) return;
       if(set.has(pc)) set.delete(pc); else set.add(pc);
       kb.keyMap.forEach(k=>{ if(Number(k.dataset.pc)===pc) k.classList.toggle("selected",set.has(pc)); });
     }
 
+    // ========== Computer keyboard support ==========
+    // Map computer keys A-K to piano keys (starting from the 2nd octave): A=C, W=C#, S=D, etc.
     const COMPUTER_KEYS=["a","w","s","e","d","f","t","g","y","h","u","j","k"];
     const computerHeld=new Map();
     function activeKeyboard() {
       const visible=[...document.querySelectorAll(".keyboard")].filter(el=>el.offsetParent!==null);
       return visible.length ? keyboards.get(visible[0].id) : null;
     }
+    // Enable piano playing via computer keyboard (only if input field not focused)
     document.addEventListener("keydown",e=>{
       if(e.repeat || ["INPUT","SELECT","TEXTAREA"].includes(document.activeElement?.tagName)) return;
       const offset=COMPUTER_KEYS.indexOf(e.key.toLowerCase()); if(offset<0) return;
@@ -922,11 +950,15 @@
       item.key.classList.remove("pressed"); stopHeldMidi(item.token); computerHeld.delete(e.key.toLowerCase());
     });
 
+    // ========== Chord theory utilities ==========
+    // Convert accidental difference to notation (♯, ♭, etc.)
     function accidentalText(diff) {
       const map={"-3":"♭♭♭","-2":"♭♭","-1":"♭","0":"","1":"♯","2":"𝄪","3":"♯♯♯"};
       return map[String(diff)] ?? (diff>0?"♯".repeat(diff):"♭".repeat(-diff));
     }
+    // Normalize accidental difference to ±6 range (no double-flats in simple cases)
     function normalizeDiff(diff){ while(diff>6)diff-=12; while(diff<-6)diff+=12; return diff; }
+    // Spell a chord from a root: generates note names respecting scale degrees, not just pitch classes
     function spellChord(root,qualityKey) {
       const chord=CHORDS[qualityKey];
       return chord.intervals.map((interval,i)=>{
@@ -935,12 +967,16 @@
         return {latin:LATIN_LETTERS[letter]+accidentalText(diff),american:AMERICAN_LETTERS[letter]+accidentalText(diff),pc:targetPc,degree:chord.degreeLabels[i],roleLabel:chord.roleLabels[i],role:i,accidental:diff};
       });
     }
+    // Generate chord symbol (e.g., "Cm" or "C/E" for first inversion)
     function chordSymbol(root,qualityKey,bassAmerican=null){ const base=root.american+CHORDS[qualityKey].short; return bassAmerican&&bassAmerican!==root.american?`${base}/${bassAmerican}`:base; }
+    // Build complete chord with MIDI values, respecting inversions and octave constraints
     function buildChordTones(root,qualityKey,inversion=0,baseRootMidi=48) {
       const spelled=spellChord(root,qualityKey);
       let tones=CHORDS[qualityKey].intervals.map((interval,i)=>({...spelled[i],midi:baseRootMidi+root.pc+interval}));
+      // Apply inversion by rotating notes and octaving them up
       const inv=Math.min(Number(inversion),tones.length-1);
       for(let i=0;i<inv;i++){ const first=tones.shift(); tones.push({...first,midi:first.midi+12}); }
+      // Keep all notes within a playable range (MIDI 48–72)
       while(Math.max(...tones.map(t=>t.midi))>72) tones=tones.map(t=>({...t,midi:t.midi-12}));
       while(Math.min(...tones.map(t=>t.midi))<48) tones=tones.map(t=>({...t,midi:t.midi+12}));
       return tones;
@@ -948,20 +984,24 @@
     function rootById(id){ return ROOTS.find(r=>r.id===id)||ROOTS[0]; }
     function inversionName(n,count){ return n===0?"posición fundamental":n===1?"primera inversión":n===2?"segunda inversión":n===3&&count===4?"tercera inversión":"inversión"; }
     function octaveOf(midi){ return Math.floor(midi/12)-1; }
+    // Convenience: build, highlight, and play a chord in one call
     function demoChord(id,root,quality,inversion=0,arpeggio=false){ const tones=buildChordTones(root,quality,inversion); highlightChordOnKeyboard(id,tones); playChord(tones.map(t=>t.midi),arpeggio); return tones; }
     const rootC=rootById("C");
 
-    // Navigation and learning states
+    // ========== Navigation and lesson state management ==========
     const LESSON_COUNT=5;
     const STATUS_LABELS={not_started:"Sin iniciar",explored:"Explorada",practiced:"Practicada",mastered:"Dominada"};
-    const STATUS_RANK={not_started:0,explored:1,practiced:2,mastered:3};
+    const STATUS_RANK={not_started:0,explored:1,practiced:2,mastered:3}; // Only upgrades state, never downgrades
     let lessonStates={1:"not_started",2:"not_started",3:"not_started",4:"not_started",5:"not_started"};
+    // Load persisted lesson states from browser storage
     try { lessonStates={...lessonStates,...JSON.parse(localStorage.getItem("musicLessonStates")||"{}")}; } catch(_) {}
     let currentLesson=1;
+    // Upgrade a lesson to a new state (only moves forward: explored → practiced → mastered)
     function setLessonState(n,state) {
       n=Number(n); if(STATUS_RANK[state] <= STATUS_RANK[lessonStates[n]]) return;
       lessonStates[n]=state; try { localStorage.setItem("musicLessonStates",JSON.stringify(lessonStates)); } catch (_) {} updateProgress();
     }
+    // Update visual progress bar and lesson link labels
     function updateProgress() {
       document.querySelectorAll(".lesson-link").forEach(btn=>{
         const state=lessonStates[Number(btn.dataset.lesson)]||"not_started";
@@ -973,12 +1013,14 @@
       document.getElementById("progressFill").style.width=`${mastered/LESSON_COUNT*100}%`;
       document.getElementById("progressSummary").textContent=`${mastered} de ${LESSON_COUNT} dominadas · ${practiced} practicadas`;
     }
+    // Switch to a lesson and update sidebar/content
     function showLesson(n,scroll=true) {
       currentLesson=Number(n); setLessonState(currentLesson,"explored");
       document.querySelectorAll(".lesson-panel").forEach(p=>p.classList.toggle("active",Number(p.dataset.lessonPanel)===currentLesson));
       document.querySelectorAll(".lesson-link").forEach(b=>b.classList.toggle("active",Number(b.dataset.lesson)===currentLesson));
       updateProgress(); if(scroll) window.scrollTo({top:document.querySelector(".mode-tabs").offsetTop-6,behavior:"smooth"});
     }
+    // Switch between app modes (course, lab, practice, reference)
     function showMode(mode) {
       const btn=document.querySelector(`.mode-tab[data-mode="${mode}"]`); if(!btn) return;
       document.querySelectorAll(".mode-tab").forEach(b=>b.classList.toggle("active",b===btn));
@@ -994,7 +1036,7 @@
     document.getElementById("goToPractice").addEventListener("click",()=>showMode("practice"));
     updateProgress(); showLesson(1,false);
 
-    // Lesson 1
+    // ========== Lesson 1: Note recognition and octaves ==========
     let l1Step=0, firstDoMidi=null;
     const l1Tasks=["Encuentra cualquier Do.","Encuentra otro Do en una octava diferente.","Ahora encuentra Mi.","Finalmente encuentra Sol."];
     function renderL1Mission(){ document.getElementById("lesson1MissionText").textContent=`${Math.min(l1Step+1,4)} de 4 · ${l1Tasks[Math.min(l1Step,3)]}`; document.getElementById("lesson1Dots").textContent=[0,1,2,3].map(i=>i<l1Step?"●":"○").join(" "); }
@@ -1011,7 +1053,7 @@
     });
     document.getElementById("restartLesson1").addEventListener("click",resetL1); renderL1Mission();
 
-    // Lesson 2
+    // ========== Lesson 2: Intervals (semitones and tones) ==========
     let intervalSelection=[], intervalMissionStage=-1;
     const intervalChallenges=[
       {text:"Toca Mi y luego Fa: un semitono ascendente.",test:(a,b)=>a%12===4&&b-a===1},
@@ -1033,7 +1075,7 @@
     document.getElementById("playIntervalMelodic").addEventListener("click",()=>intervalSelection.forEach((m,i)=>playMidi(m,.7,i*.55)));
     document.getElementById("playIntervalHarmonic").addEventListener("click",()=>playChord(intervalSelection));
 
-    // Lesson 3
+    // ========== Lesson 3: Major and minor triads (0–4–7 vs 0–3–7) ==========
     let mmSelected=new Set(), mmStage=0;
     const mmTargets=[new Set([0,4,7]),new Set([0,3,7])];
     function updateMMSelection(){ document.getElementById("majorMinorResult").className="result-box"; document.getElementById("majorMinorResult").innerHTML=mmSelected.size?`<strong>Seleccionaste:</strong> ${[...mmSelected].sort((a,b)=>a-b).map(pc=>PC_KEY_LABELS[pc]).join(" · ")}`:"Selecciona las notas del acorde. La octava no importa."; }
@@ -1049,7 +1091,7 @@
     document.getElementById("playFMinor").addEventListener("click",()=>{setLessonState(3,"explored"); demoChord("majorMinorKeyboard",rootById("F"),"minor"); document.getElementById("majorMinorResult").innerHTML="<strong>Fa menor:</strong> 0–3–7 semitonos. El patrón es idéntico al de Do menor.";});
     renderMMMission(); updateMMSelection();
 
-    // Lesson 4
+    // ========== Lesson 4: Accidentals (sharps and flats) ==========
     let accidentalSelection=[], accidentalStage=-1;
     const accidentalChallenges=[
       {text:"Toca Do y luego Do♯: sube un semitono.",length:2,test:a=>a[0]%12===0&&a[1]-a[0]===1},
@@ -1069,7 +1111,7 @@
     document.getElementById("playCSharpMajor").addEventListener("click",()=>playChord(buildChordTones(rootById("C#"),"major").map(t=>t.midi)));
     document.getElementById("playDFlatMajor").addEventListener("click",()=>playChord(buildChordTones(rootById("Db"),"major").map(t=>t.midi)));
 
-    // Lesson 5
+    // ========== Lesson 5: Chord inversions (root position, 1st, 2nd inversion) ==========
     buildKeyboard("inversionKeyboard",null);
     let currentInversionDemo=0, inversionChallenge=null, inversionCorrect=0, lastChallengeInv=null;
     const fingerings={right:[[1,3,5],[1,2,5],[1,3,5]],left:[[5,3,1],[5,3,1],[5,2,1]]};
@@ -1087,7 +1129,7 @@
     document.getElementById("voiceLeadingSmooth").addEventListener("click",()=>{playChord([60,64,67]);setTimeout(()=>playChord([60,65,69]),1100);showVoiceMap([["Do","Do","0"],["Mi","Fa","+1"],["Sol","La","+2"]],3,"Conexión C → F/C");});
     renderInversionDemo(0);
 
-    // Laboratory
+    // ========== Lab mode: free exploration of chords ==========
     const PRACTICAL_ROOT_IDS=["C","Db","D","Eb","E","F","F#","G","Ab","A","Bb","B"];
     const labRoot=document.getElementById("labRoot");
     function populateLabRoots(){const mode=document.getElementById("labSpellingMode").value,previous=labRoot.value||"C",roots=mode==="practical"?ROOTS.filter(r=>PRACTICAL_ROOT_IDS.includes(r.id)):ROOTS; labRoot.innerHTML=""; roots.forEach(r=>labRoot.add(new Option(`${r.latin} / ${r.american}`,r.id))); labRoot.value=roots.some(r=>r.id===previous)?previous:"C";}
@@ -1099,7 +1141,7 @@
     document.getElementById("labSpellingMode").addEventListener("change",()=>{populateLabRoots();renderLab(false);}); labRoot.addEventListener("change",()=>renderLab(false)); document.getElementById("labQuality").addEventListener("change",()=>{updateInversions();renderLab(false);}); document.getElementById("labInversion").addEventListener("change",()=>renderLab(false)); document.getElementById("labPlay").addEventListener("click",()=>renderLab(true,false)); document.getElementById("labArpeggio").addEventListener("click",()=>renderLab(true,true));
     document.getElementById("playCompare").addEventListener("click",()=>{const root=rootById(labRoot.value),a=document.getElementById("compareA").value,b=document.getElementById("compareB").value,ta=buildChordTones(root,a),tb=buildChordTones(root,b); highlightChordOnKeyboard("labKeyboard",ta);playChord(ta.map(t=>t.midi));setTimeout(()=>{highlightChordOnKeyboard("labKeyboard",tb);playChord(tb.map(t=>t.midi));},1150); const max=Math.max(CHORDS[a].intervals.length,CHORDS[b].intervals.length),changes=[]; for(let i=0;i<max;i++){const x=CHORDS[a].intervals[i],y=CHORDS[b].intervals[i]; if(x===undefined||y===undefined)changes.push("cambia la cantidad de notas"); else if(x!==y)changes.push(`la nota ${i+1} cambia ${y-x>0?"+":""}${y-x} semitono${Math.abs(y-x)===1?"":"s"}`);} document.getElementById("compareExplanation").innerHTML=`<strong>${root.latin} ${CHORDS[a].label} → ${root.latin} ${CHORDS[b].label}</strong><br>${[...new Set(changes)].join("; ")||"Conservan la misma fórmula."}`;});
 
-    // Practice: build challenge
+    // ========== Practice mode: build and ear training challenges ==========
     let buildSelected=new Set(),currentBuildChallenge=null,buildAttempts=0;
     buildKeyboard("buildKeyboard",(midi,pc)=>{togglePcSelection("buildKeyboard",buildSelected,pc); document.getElementById("buildChallengeResult").className="result-box"; document.getElementById("buildChallengeResult").innerHTML=buildSelected.size?`<strong>Seleccionaste:</strong> ${[...buildSelected].sort((a,b)=>a-b).map(pc=>PC_KEY_LABELS[pc]).join(" · ")}`:"No hay notas seleccionadas.";});
     function newBuildChallenge(){const roots=ROOTS.filter(r=>["C","D","E","F","G","A","B","F#","Bb","Eb"].includes(r.id)),qualities=["major","minor","diminished","augmented","sus2","sus4"],root=roots[Math.floor(Math.random()*roots.length)],quality=qualities[Math.floor(Math.random()*qualities.length)]; currentBuildChallenge={root,quality}; buildAttempts=0;buildSelected.clear();clearKeyboard("buildKeyboard");document.getElementById("buildChallengePrompt").innerHTML=`<div class="mission-title">Construye: ${root.latin} ${CHORDS[quality].label} (${root.american}${CHORDS[quality].short})</div><p>Usa la fórmula ${CHORDS[quality].degreeLabels.join(" – ")}.</p>`;document.getElementById("buildChallengeResult").className="result-box";document.getElementById("buildChallengeResult").textContent="Selecciona las notas del acorde.";}
@@ -1107,7 +1149,7 @@
     document.getElementById("clearBuildSelection").addEventListener("click",()=>{buildSelected.clear();clearKeyboard("buildKeyboard");document.getElementById("buildChallengeResult").textContent="No hay notas seleccionadas.";});
     document.getElementById("checkBuildChallenge").addEventListener("click",()=>{const box=document.getElementById("buildChallengeResult");if(!currentBuildChallenge){box.className="result-box status-bad";box.textContent="Primero genera un desafío.";return;} buildAttempts++;const correctPcs=new Set(CHORDS[currentBuildChallenge.quality].intervals.map(i=>(currentBuildChallenge.root.pc+i)%12)),correct=buildSelected.size===correctPcs.size&&[...correctPcs].every(pc=>buildSelected.has(pc)),notes=spellChord(currentBuildChallenge.root,currentBuildChallenge.quality).map(n=>n.latin);box.className=`result-box ${correct?"status-good":"status-bad"}`;if(correct){box.innerHTML=`<strong>¡Correcto!</strong> ${notes.join(" – ")}.`;playChord(buildChordTones(currentBuildChallenge.root,currentBuildChallenge.quality).map(t=>t.midi));}else if(buildAttempts===1){box.innerHTML=`<strong>Casi.</strong> Comprueba que incluiste la raíz ${currentBuildChallenge.root.latin} y la cantidad correcta de notas.`;}else if(buildAttempts===2){box.innerHTML=`<strong>Segunda pista:</strong> los semitonos desde la raíz son ${CHORDS[currentBuildChallenge.quality].intervals.join(" – ")}.`;}else{box.innerHTML=`<strong>Respuesta:</strong> ${notes.join(" – ")}. Vuelve a construirla antes de generar otro desafío.`;}});
 
-    // Ear training
+    // ========== Ear training: identify chord quality by listening ==========
     let earQuestion=null,earAnswered=false,earStats={correct:0,total:0};
     function earQualities(){return Number(document.getElementById("earLevel").value)===3?["major","minor","augmented","diminished"]:["major","minor"];}
     function renderEarOptions(){const c=document.getElementById("earOptions");c.innerHTML="";earQualities().forEach(q=>{const b=document.createElement("button");b.className="btn secondary";b.textContent=CHORDS[q].label[0].toUpperCase()+CHORDS[q].label.slice(1);b.addEventListener("click",()=>answerEar(q));c.appendChild(b);});}
