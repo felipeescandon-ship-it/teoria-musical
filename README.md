@@ -21,11 +21,13 @@ Una aplicación web interactiva para aprender teoría musical de forma visual y 
 
 ## Cómo Usar
 
-`app.html` usa módulos ES (`js/*.js`), así que los navegadores lo bloquean si se abre por doble clic (`file://`). Sirve la carpeta con un servidor local:
+**En línea (recomendado, funciona en cualquier dispositivo):** https://felipeescandon-ship-it.github.io/teoria-musical/
+
+**En local:** `index.html` usa módulos ES (`js/*.js`), así que los navegadores lo bloquean si se abre por doble clic (`file://`). Sirve la carpeta con un servidor local:
 
 ```bash
 python3 -m http.server 8811
-# abre http://localhost:8811/app.html
+# abre http://localhost:8811/
 ```
 
 1. Comienza con la Ruta Guiada o explora libremente
@@ -69,7 +71,7 @@ El app registra tu progreso:
 git clone https://github.com/felipeescandon-ship-it/teoria-musical.git
 cd teoria-musical
 python3 -m http.server 8811
-# abre http://localhost:8811/app.html
+# abre http://localhost:8811/
 ```
 
 ## Notas
