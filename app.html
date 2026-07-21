@@ -999,70 +999,12 @@
       buildChordTones, spellScale, buildScaleTones, buildDiatonicChords, rootById,
       inversionName, octaveOf
     } from "./js/theory.js";
+    import {
+      getAudioContext, midiToFreq, computeEnvelope, makeVoice,
+      playMidi, startHeldMidi, stopHeldMidi, playChord
+    } from "./js/audio.js";
 
-    // ========== Audio synthesis via Web Audio API ==========
-    let audioCtx;
-    const heldVoices = new Map(); // Tracks sustained notes from piano key presses
-    function getAudioContext() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === "suspended") audioCtx.resume();
-      return audioCtx;
-    }
-    // Convert MIDI note number to frequency (A4 = 69 = 440 Hz)
-    function midiToFreq(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
-    // Create a note with additive synthesis: fundamental + 2nd and 3rd harmonics for timbral richness
-    function makeVoice(midi, volume=.11, when=null) {
-      const ctx = getAudioContext();
-      const now = when ?? ctx.currentTime;
-      const master = ctx.createGain();
-      master.gain.setValueAtTime(.0001, now);
-      master.gain.exponentialRampToValueAtTime(volume, now + .018); // Fast attack
-      master.connect(ctx.destination);
-      const layers = [
-        {type:"triangle", ratio:1, gain:1},       // Fundamental
-        {type:"sine", ratio:2, gain:.18},         // 2nd harmonic (octave)
-        {type:"sine", ratio:3, gain:.07}          // 3rd harmonic (perfect 5th)
-      ];
-      const oscillators = layers.map(layer => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = layer.type;
-        osc.frequency.setValueAtTime(midiToFreq(midi) * layer.ratio, now);
-        gain.gain.value = layer.gain;
-        osc.connect(gain).connect(master);
-        osc.start(now);
-        return osc;
-      });
-      return {ctx, master, oscillators, started:now};
-    }
-    // Play a single note: starts, fades, and stops; duration in seconds
-    function playMidi(midi, duration=.78, delay=0, volume=.12) {
-      const ctx = getAudioContext();
-      const when = ctx.currentTime + delay;
-      const voice = makeVoice(midi, volume, when);
-      voice.master.gain.exponentialRampToValueAtTime(.0001, when + duration); // Decay
-      voice.oscillators.forEach(osc => osc.stop(when + duration + .05));
-    }
-    // Start a held note (key pressed); sustains until stopHeldMidi is called
-    function startHeldMidi(token, midi, volume=.11) {
-      if (heldVoices.has(token)) return;
-      heldVoices.set(token, makeVoice(midi, volume));
-    }
-    // Release a held note with a quick fade
-    function stopHeldMidi(token) {
-      const voice = heldVoices.get(token);
-      if (!voice) return;
-      const now = voice.ctx.currentTime;
-      voice.master.gain.cancelScheduledValues(now);
-      voice.master.gain.setValueAtTime(Math.max(voice.master.gain.value, .0001), now);
-      voice.master.gain.exponentialRampToValueAtTime(.0001, now + .12);
-      voice.oscillators.forEach(osc => { try { osc.stop(now + .15); } catch (_) {} });
-      heldVoices.delete(token);
-    }
-    // Play multiple notes as a chord (simultaneous or arpegiated)
-    function playChord(midis, arpeggio=false, delayStart=0) {
-      midis.forEach((m,i) => playMidi(m, arpeggio ? .72 : .95, delayStart + (arpeggio ? i*.16 : 0), arpeggio ? .13 : .09));
-    }
+    // ========== Audio synthesis (see js/audio.js — ADSR + velocity) ==========
 
     // ========== Piano keyboard and interaction ==========
     const keyboards = new Map(); // Global registry of keyboard instances
