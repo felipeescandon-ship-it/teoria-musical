@@ -1,11 +1,11 @@
 import { loadLessonStates, saveLessonStates } from "./storage.js";
 
 // ========== Navigation and lesson state management ==========
-export const LESSON_COUNT=10;
+export const LESSON_COUNT=11;
 const STATUS_LABELS={not_started:"Sin iniciar",explored:"Explorada",practiced:"Practicada",mastered:"Dominada"};
 const STATUS_RANK={not_started:0,explored:1,practiced:2,mastered:3}; // Only upgrades state, never downgrades
 // Load persisted lesson states from versioned browser storage (js/storage.js)
-let lessonStates=loadLessonStates({1:"not_started",2:"not_started",3:"not_started",4:"not_started",5:"not_started",6:"not_started",7:"not_started",8:"not_started",9:"not_started",10:"not_started"});
+let lessonStates=loadLessonStates({1:"not_started",2:"not_started",3:"not_started",4:"not_started",5:"not_started",6:"not_started",7:"not_started",8:"not_started",9:"not_started",10:"not_started",11:"not_started"});
 let currentLesson=1;
 
 // The Lab tab needs its own re-render whenever it becomes visible; lab.js registers itself here

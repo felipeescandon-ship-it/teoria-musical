@@ -307,7 +307,7 @@
       <div class="lesson-layout">
         <aside class="card lesson-sidebar">
           <h3>Ruta esencial</h3>
-          <div id="progressSummary" class="progress-summary">0 de 10 dominadas</div>
+          <div id="progressSummary" class="progress-summary">0 de 11 dominadas</div>
           <div class="progress-track" aria-label="Progreso de dominio"><div id="progressFill" class="progress-fill"></div></div>
           <div class="lesson-list">
             <button class="lesson-link active" data-lesson="1"><span>1. Nota y teclado</span><small class="lesson-status">Sin iniciar</small></button>
@@ -320,6 +320,7 @@
             <button class="lesson-link" data-lesson="8"><span>8. Función armónica</span><small class="lesson-status">Sin iniciar</small></button>
             <button class="lesson-link" data-lesson="9"><span>9. Progresiones</span><small class="lesson-status">Sin iniciar</small></button>
             <button class="lesson-link" data-lesson="10"><span>10. Voicings avanzados</span><small class="lesson-status">Sin iniciar</small></button>
+            <button class="lesson-link" data-lesson="11"><span>11. Conexión con música real</span><small class="lesson-status">Sin iniciar</small></button>
           </div>
           <div class="callout info compact-callout">
             Puedes explorar libremente. La app solo marca una lección como <strong>dominada</strong> cuando completas su misión.
@@ -811,7 +812,18 @@
 
               <div class="lesson-actions">
                 <button class="btn secondary lesson-prev" data-prev="9">Volver</button>
-                <button id="goToLabFinal" class="btn good">Ir al laboratorio</button>
+                <button id="goToLabFinal" class="btn secondary">Ir al laboratorio</button>
+                <button class="btn lesson-next" data-next="11">Continuar a Música real</button>
+              </div>
+            </section>
+          </article>
+
+          <article class="lesson-panel" data-lesson-panel="11">
+            <section class="card">
+              <div class="eyebrow">Lección 11 de 11 · Bonus</div>
+              <lesson-real-music></lesson-real-music>
+              <div class="lesson-actions">
+                <button class="btn secondary lesson-prev" data-prev="10">Volver</button>
               </div>
             </section>
           </article>
