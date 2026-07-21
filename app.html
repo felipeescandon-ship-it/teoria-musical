@@ -307,7 +307,7 @@
       <div class="lesson-layout">
         <aside class="card lesson-sidebar">
           <h3>Ruta esencial</h3>
-          <div id="progressSummary" class="progress-summary">0 de 9 dominadas</div>
+          <div id="progressSummary" class="progress-summary">0 de 10 dominadas</div>
           <div class="progress-track" aria-label="Progreso de dominio"><div id="progressFill" class="progress-fill"></div></div>
           <div class="lesson-list">
             <button class="lesson-link active" data-lesson="1"><span>1. Nota y teclado</span><small class="lesson-status">Sin iniciar</small></button>
@@ -319,6 +319,7 @@
             <button class="lesson-link" data-lesson="7"><span>7. Escala mayor</span><small class="lesson-status">Sin iniciar</small></button>
             <button class="lesson-link" data-lesson="8"><span>8. Función armónica</span><small class="lesson-status">Sin iniciar</small></button>
             <button class="lesson-link" data-lesson="9"><span>9. Progresiones</span><small class="lesson-status">Sin iniciar</small></button>
+            <button class="lesson-link" data-lesson="10"><span>10. Voicings avanzados</span><small class="lesson-status">Sin iniciar</small></button>
           </div>
           <div class="callout info compact-callout">
             Puedes explorar libremente. La app solo marca una lección como <strong>dominada</strong> cuando completas su misión.
@@ -712,7 +713,7 @@
 
           <article class="lesson-panel" data-lesson-panel="9">
             <section class="card">
-              <div class="eyebrow">Lección 9 de 9</div>
+              <div class="eyebrow">Lección 9 de 10</div>
               <h2>Las progresiones conectan acordes; el acompañamiento sostiene el pulso</h2>
               <p>
                 Una <strong>progresión</strong> es una secuencia de acordes diatónicos que crea movimiento armónico.
@@ -759,6 +760,57 @@
 
               <div class="lesson-actions">
                 <button class="btn secondary lesson-prev" data-prev="8">Volver</button>
+                <button class="btn lesson-next" data-next="10">Continuar a Voicings avanzados</button>
+              </div>
+            </section>
+          </article>
+
+          <article class="lesson-panel" data-lesson-panel="10">
+            <section class="card">
+              <div class="eyebrow">Lección 10 de 10</div>
+              <h2>El mismo acorde suena distinto según cómo se distribuyan sus notas</h2>
+              <p>
+                Un <strong>voicing</strong> es la forma específica en que se organizan las notas de un acorde: qué nota
+                va abajo, cuáles se separan en octavas distintas, cuáles se omiten. La tríada sigue siendo la misma
+                (mismas 3-4 notas), pero el voicing cambia el color, la densidad y el espacio sonoro.
+              </p>
+              <div class="callout info">
+                Recuerda la Lección 5: una <strong>inversión</strong> cambia qué nota va en el bajo. Un <strong>voicing</strong>
+                va más allá: también decide qué notas se separan en octavas o se omiten, incluso manteniendo la misma nota en el bajo.
+              </div>
+
+              <div class="controls">
+                <div class="field"><label for="voicingRoot">Raíz</label><select id="voicingRoot"></select></div>
+                <div class="field"><label for="voicingQuality">Tipo de acorde</label><select id="voicingQuality"></select></div>
+                <div class="field"><label for="voicingType">Voicing</label><select id="voicingType"></select></div>
+                <button id="playVoicing" class="btn">Tocar acorde</button>
+              </div>
+
+              <div id="voicingDescription" class="callout good compact-callout">Selecciona un voicing para ver su descripción.</div>
+
+              <div class="keyboard-wrap"><div id="voicingKeyboard" class="keyboard" aria-label="Piano para voicings"></div></div>
+              <div id="voicingNotes" class="note-row"></div>
+              <div id="voicingInfo" class="info-grid"></div>
+
+              <div class="mission mt">
+                <div class="mission-title">Misión: escucha Do mayor en los 4 voicings</div>
+                <p id="voicingMissionText">Escucha el mismo acorde de Do mayor en cerrado, abierto, drop 2 y cáscara. Nota cómo cambia el color aunque las notas base sean casi las mismas.</p>
+                <div class="mission-progress"><span id="voicingMissionDots">○ ○ ○ ○</span></div>
+              </div>
+              <div class="controls">
+                <button id="voicingMission1" class="btn small" data-voicing="closed">1. Cerrado</button>
+                <button id="voicingMission2" class="btn small" data-voicing="open">2. Abierto</button>
+                <button id="voicingMission3" class="btn small" data-voicing="drop2">3. Drop 2</button>
+                <button id="voicingMission4" class="btn small" data-voicing="shell">4. Cáscara</button>
+              </div>
+
+              <div class="callout good mt">
+                El voicing abierto y drop 2 son comunes en piano y arreglo orquestal: dan más espacio y evitan que las
+                notas graves suenen "embarradas". La cáscara es típica en jazz cuando otro instrumento ya toca la quinta.
+              </div>
+
+              <div class="lesson-actions">
+                <button class="btn secondary lesson-prev" data-prev="9">Volver</button>
                 <button id="goToLabFinal" class="btn good">Ir al laboratorio</button>
               </div>
             </section>
@@ -1006,6 +1058,27 @@
       "tritono", "quinta justa", "sexta menor", "sexta mayor", "séptima menor", "séptima mayor", "octava"
     ];
 
+    // ========== Voicing types: closed, open (jazz), drop2, shell ==========
+    // Redistribute chord tones across octaves (see applyVoicing() below, defined near buildChordTones)
+    const VOICING_TYPES = {
+      "closed": {
+        label: "Cerrado (3 notas juntas)",
+        description: "Las notas del acorde dentro de una octava; sonido compacto"
+      },
+      "open": {
+        label: "Abierto (jazz)",
+        description: "La tercera sube una octava; raíz y quinta quedan abajo; sonido espacioso"
+      },
+      "drop2": {
+        label: "Drop 2 (de bajo)",
+        description: "La quinta baja una octava; abre espacio entre la raíz y el resto del acorde"
+      },
+      "shell": {
+        label: "Cáscara (raíz–tercera–séptima)",
+        description: "Omite la quinta; deja solo raíz, tercera y séptima (si existe); sonido limpio"
+      }
+    };
+
     // ========== Audio synthesis via Web Audio API ==========
     let audioCtx;
     const heldVoices = new Map(); // Tracks sustained notes from piano key presses
@@ -1204,13 +1277,38 @@
     }
     // Generate chord symbol (e.g., "Cm" or "C/E" for first inversion)
     function chordSymbol(root,qualityKey,bassAmerican=null){ const base=root.american+CHORDS[qualityKey].short; return bassAmerican&&bassAmerican!==root.american?`${base}/${bassAmerican}`:base; }
-    // Build complete chord with MIDI values, respecting inversions and octave constraints
-    function buildChordTones(root,qualityKey,inversion=0,baseRootMidi=48) {
+
+    // ========== Voicing: redistribute an already-built chord's notes across octaves ==========
+    // Applied after inversion, using each tone's stable `role` (0=root,1=3rd,2=5th,3=7th) so it
+    // works no matter which note the inversion put in the bass.
+    function sortByMidi(tones) { return [...tones].sort((a,b) => a.midi - b.midi); }
+    function applyVoicing(tones, voicingType) {
+      const byRole = r => tones.find(t => t.role === r);
+      if (voicingType === "open") {
+        // Spread the 3rd up an octave: root and 5th stay put, 3rd rings out above
+        const third = byRole(1); if (!third) return tones;
+        return sortByMidi(tones.map(t => t===third ? {...t, midi:t.midi+12} : t));
+      }
+      if (voicingType === "drop2") {
+        // Drop the 5th down an octave: opens space between root and the rest
+        const fifth = byRole(2); if (!fifth) return tones;
+        return sortByMidi(tones.map(t => t===fifth ? {...t, midi:t.midi-12} : t));
+      }
+      if (voicingType === "shell") {
+        // Omit the 5th entirely: keep only root, 3rd, and 7th (if present)
+        return tones.filter(t => t.role !== 2);
+      }
+      return tones; // "closed": leave as-is
+    }
+    // Build complete chord with MIDI values, respecting inversion (which note is in the bass),
+    // voicing type (how notes spread across octaves), and octave constraints
+    function buildChordTones(root,qualityKey,inversion=0,baseRootMidi=48,voicingType="closed") {
       const spelled=spellChord(root,qualityKey);
       let tones=CHORDS[qualityKey].intervals.map((interval,i)=>({...spelled[i],midi:baseRootMidi+root.pc+interval}));
       // Apply inversion by rotating notes and octaving them up
       const inv=Math.min(Number(inversion),tones.length-1);
       for(let i=0;i<inv;i++){ const first=tones.shift(); tones.push({...first,midi:first.midi+12}); }
+      tones=applyVoicing(tones,voicingType);
       // Keep all notes within a playable range (MIDI 48–72)
       while(Math.max(...tones.map(t=>t.midi))>72) tones=tones.map(t=>({...t,midi:t.midi-12}));
       while(Math.min(...tones.map(t=>t.midi))<48) tones=tones.map(t=>({...t,midi:t.midi+12}));
@@ -1246,10 +1344,10 @@
     const rootC=rootById("C");
 
     // ========== Navigation and lesson state management ==========
-    const LESSON_COUNT=9;
+    const LESSON_COUNT=10;
     const STATUS_LABELS={not_started:"Sin iniciar",explored:"Explorada",practiced:"Practicada",mastered:"Dominada"};
     const STATUS_RANK={not_started:0,explored:1,practiced:2,mastered:3}; // Only upgrades state, never downgrades
-    let lessonStates={1:"not_started",2:"not_started",3:"not_started",4:"not_started",5:"not_started",6:"not_started",7:"not_started",8:"not_started",9:"not_started"};
+    let lessonStates={1:"not_started",2:"not_started",3:"not_started",4:"not_started",5:"not_started",6:"not_started",7:"not_started",8:"not_started",9:"not_started",10:"not_started"};
     // Load persisted lesson states from browser storage
     try { lessonStates={...lessonStates,...JSON.parse(localStorage.getItem("musicLessonStates")||"{}")}; } catch(_) {}
     let currentLesson=1;
@@ -1623,6 +1721,53 @@
     document.getElementById("progressionMission1").addEventListener("click",()=>playProgressionMission("I-IV-V-I"));
     document.getElementById("progressionMission2").addEventListener("click",()=>playProgressionMission("I-V-vi-IV"));
     document.getElementById("progressionMission3").addEventListener("click",()=>playProgressionMission("ii-V-I"));
+
+    // ========== Lesson 10: Advanced voicings ==========
+    const VOICING_QUALITY_IDS=["major","minor","dom7","maj7","min7"];
+    buildKeyboard("voicingKeyboard",null,{octaves:2});
+    const voicingRootSelect=document.getElementById("voicingRoot");
+    ROOTS.filter(r=>SCALE_ROOT_IDS.includes(r.id)).forEach(r=>voicingRootSelect.add(new Option(r.latin,r.id)));
+    voicingRootSelect.value="C";
+    const voicingQualitySelect=document.getElementById("voicingQuality");
+    VOICING_QUALITY_IDS.forEach(key=>voicingQualitySelect.add(new Option(CHORDS[key].label[0].toUpperCase()+CHORDS[key].label.slice(1),key)));
+    voicingQualitySelect.value="major";
+    const voicingTypeSelect=document.getElementById("voicingType");
+    Object.entries(VOICING_TYPES).forEach(([key,v])=>voicingTypeSelect.add(new Option(v.label,key)));
+    voicingTypeSelect.value="closed";
+    function renderVoicing(play=true){
+      const root=rootById(voicingRootSelect.value),quality=voicingQualitySelect.value,voicingType=voicingTypeSelect.value;
+      const tones=buildChordTones(root,quality,0,48,voicingType);
+      const symbol=chordSymbol(root,quality);
+      highlightChordOnKeyboard("voicingKeyboard",tones);
+      if(play)playChord(tones.map(t=>t.midi));
+      document.getElementById("voicingDescription").textContent=VOICING_TYPES[voicingType].description;
+      document.getElementById("voicingNotes").innerHTML=tones.map((t,i)=>`<span class="note-chip role-${Math.min(t.role,3)}">${t.latin}<small>${t.degree}</small></span>${i<tones.length-1?'<span class="separator">+</span>':''}`).join("");
+      document.getElementById("voicingInfo").innerHTML=`<div class="info-item"><span>Símbolo</span><strong>${symbol}</strong></div><div class="info-item"><span>Voicing</span><strong>${VOICING_TYPES[voicingType].label}</strong></div><div class="info-item"><span>Notas (grave a agudo)</span><strong>${tones.map(t=>t.latin).join(" – ")}</strong></div><div class="info-item"><span>Cantidad de notas</span><strong>${tones.length}</strong></div>`;
+      return tones;
+    }
+    voicingRootSelect.addEventListener("change",()=>{setLessonState(10,"explored"); renderVoicing(false);});
+    voicingQualitySelect.addEventListener("change",()=>{setLessonState(10,"explored"); renderVoicing(false);});
+    voicingTypeSelect.addEventListener("change",()=>{setLessonState(10,"explored"); renderVoicing(false);});
+    document.getElementById("playVoicing").addEventListener("click",()=>{setLessonState(10,"explored"); renderVoicing(true);});
+    renderVoicing(false);
+    // Mission: hear Do mayor in all 4 voicing types to feel how the same notes can sound different
+    let voicingMissionHeard=new Set();
+    function playVoicingMission(voicingType){
+      setLessonState(10,"explored");
+      voicingRootSelect.value="C"; voicingQualitySelect.value="major"; voicingTypeSelect.value=voicingType;
+      renderVoicing(true);
+      voicingMissionHeard.add(voicingType);
+      if(voicingMissionHeard.size===1)setLessonState(10,"practiced");
+      document.getElementById("voicingMissionDots").textContent=["closed","open","drop2","shell"].map(k=>voicingMissionHeard.has(k)?"●":"○").join(" ");
+      if(voicingMissionHeard.size===4){
+        setLessonState(10,"mastered");
+        document.getElementById("voicingMissionText").innerHTML="<strong>¡Dominado!</strong> Escuchaste el mismo Do mayor distribuido en cuatro voicings distintos.";
+      }
+    }
+    document.getElementById("voicingMission1").addEventListener("click",()=>playVoicingMission("closed"));
+    document.getElementById("voicingMission2").addEventListener("click",()=>playVoicingMission("open"));
+    document.getElementById("voicingMission3").addEventListener("click",()=>playVoicingMission("drop2"));
+    document.getElementById("voicingMission4").addEventListener("click",()=>playVoicingMission("shell"));
     document.getElementById("goToLabFinal").addEventListener("click",()=>showMode("lab"));
 
     // ========== Lab mode: free exploration of chords ==========
