@@ -594,6 +594,13 @@
                 </div>
               </div>
 
+              <div class="mt">
+                <div class="callout good">
+                  <strong>Ejemplo: progresión común.</strong> La secuencia I–IV–V–I es una de las más usadas en música popular y clásica. Escúchala:
+                  <button id="playCommonProgression" class="btn small" style="margin-top: 8px;">I → IV → V → I</button>
+                </div>
+              </div>
+
               <div class="lesson-actions">
                 <button class="btn secondary lesson-prev" data-prev="5">Volver</button>
                 <button class="btn lesson-next" data-next="6">Continuar a Escala mayor</button>
@@ -1222,6 +1229,25 @@
       document.getElementById(btn.id).addEventListener("click",()=>{
         setLessonState(6,"explored");
         demoChord("lesson6Keyboard",rootById(btn.root),btn.quality);
+      });
+    });
+    // Play the I–IV–V–I progression to show harmonic function
+    document.getElementById("playCommonProgression").addEventListener("click",()=>{
+      setLessonState(6,"explored");
+      const progression=[
+        {root:"C",quality:"major"},
+        {root:"F",quality:"major"},
+        {root:"G",quality:"major"},
+        {root:"C",quality:"major"}
+      ];
+      let delay=0;
+      progression.forEach((chord,i)=>{
+        const tones=buildChordTones(rootById(chord.root),chord.quality);
+        setTimeout(()=>{
+          highlightChordOnKeyboard("lesson6Keyboard",tones);
+          playChord(tones.map(t=>t.midi));
+        },delay);
+        delay+=1200;
       });
     });
 
