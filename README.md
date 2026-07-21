@@ -21,7 +21,7 @@ Una aplicación web interactiva para aprender teoría musical de forma visual y 
 
 ## Cómo Usar
 
-1. Abre `teoria_musical_piano_interactiva(2).html` en tu navegador
+1. Abre `app.html` en tu navegador
 2. Comienza con la Ruta Guiada o explora libremente
 3. Haz clic en las teclas del piano (o usa el teclado: A-K)
 4. Escucha los acordes y aprende las relaciones musicales
