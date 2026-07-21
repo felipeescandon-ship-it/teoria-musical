@@ -307,7 +307,7 @@
       <div class="lesson-layout">
         <aside class="card lesson-sidebar">
           <h3>Ruta esencial</h3>
-          <div id="progressSummary" class="progress-summary">0 de 6 dominadas</div>
+          <div id="progressSummary" class="progress-summary">0 de 7 dominadas</div>
           <div class="progress-track" aria-label="Progreso de dominio"><div id="progressFill" class="progress-fill"></div></div>
           <div class="lesson-list">
             <button class="lesson-link active" data-lesson="1"><span>1. Nota y teclado</span><small class="lesson-status">Sin iniciar</small></button>
@@ -316,6 +316,7 @@
             <button class="lesson-link" data-lesson="4"><span>4. ♯ y ♭</span><small class="lesson-status">Sin iniciar</small></button>
             <button class="lesson-link" data-lesson="5"><span>5. Inversiones</span><small class="lesson-status">Sin iniciar</small></button>
             <button class="lesson-link" data-lesson="6"><span>6. Grados</span><small class="lesson-status">Sin iniciar</small></button>
+            <button class="lesson-link" data-lesson="7"><span>7. Escala mayor</span><small class="lesson-status">Sin iniciar</small></button>
           </div>
           <div class="callout info compact-callout">
             Puedes explorar libremente. La app solo marca una lección como <strong>dominada</strong> cuando completas su misión.
@@ -603,7 +604,54 @@
 
               <div class="lesson-actions">
                 <button class="btn secondary lesson-prev" data-prev="5">Volver</button>
-                <button class="btn lesson-next" data-next="6">Continuar a Escala mayor</button>
+                <button class="btn lesson-next" data-next="7">Continuar a Escala mayor</button>
+              </div>
+            </section>
+          </article>
+
+          <article class="lesson-panel" data-lesson-panel="7">
+            <section class="card">
+              <div class="eyebrow">Lección 7 de 7</div>
+              <h2>La escala mayor sigue un patrón fijo de tonos y semitonos</h2>
+              <p>
+                Toda escala mayor sigue la misma fórmula: <strong>Tono–Tono–Semitono–Tono–Tono–Tono–Semitono</strong>.
+                En semitonos desde la raíz: 0–2–4–5–7–9–11–12. Esto es universal, igual que el patrón 0–4–7 para acordes mayores.
+              </p>
+              <div class="big-idea">T–T–S–T–T–T–S<br>El mismo patrón, cualquier raíz</div>
+              <div class="callout info">
+                <strong>Do mayor</strong> usa solo teclas blancas porque su patrón coincide naturalmente con ellas: Do–Re–Mi–Fa–Sol–La–Si–Do.
+                Otras raíces necesitan sostenidos o bemoles para mantener el mismo patrón de distancias.
+              </div>
+
+              <div class="controls">
+                <div class="field"><label for="scaleRoot">Raíz de la escala</label><select id="scaleRoot"></select></div>
+                <button id="playScale" class="btn">Tocar escala ascendente</button>
+                <button id="playScaleDescending" class="btn secondary">Tocar descendente</button>
+              </div>
+
+              <div class="keyboard-wrap"><div id="scaleKeyboard" class="keyboard" aria-label="Piano para construir escalas"></div></div>
+              <div id="scaleNotes" class="note-row"></div>
+              <div id="scaleResult" class="result-box">Selecciona una raíz y pulsa "Tocar escala ascendente".</div>
+
+              <div class="mission mt">
+                <div class="mission-title">Misión: reconoce el patrón en distintas raíces</div>
+                <p id="scaleMissionText">Escucha la escala de Do mayor, luego la de Sol mayor y la de Fa mayor. Confirma que el patrón T–T–S–T–T–T–S se mantiene en las tres.</p>
+                <div class="mission-progress"><span id="scaleMissionDots">○ ○ ○</span></div>
+              </div>
+              <div class="controls">
+                <button id="scaleMissionC" class="btn small">1. Escuchar Do mayor</button>
+                <button id="scaleMissionG" class="btn small">2. Escuchar Sol mayor</button>
+                <button id="scaleMissionF" class="btn small">3. Escuchar Fa mayor</button>
+              </div>
+
+              <div class="callout good mt">
+                Fíjate: los acordes diatónicos de la Lección 6 (I, ii, iii, IV, V, vi, vii°) se construyen apilando terceras
+                sobre cada nota de esta escala. La escala es el mapa; los acordes diatónicos son las paradas.
+              </div>
+
+              <div class="lesson-actions">
+                <button class="btn secondary lesson-prev" data-prev="6">Volver</button>
+                <button id="goToLab" class="btn good">Ir al laboratorio</button>
               </div>
             </section>
           </article>
@@ -812,6 +860,9 @@
       { id:"Bb", pc:10, letter:6, accidental:-1, latin:"Si♭", american:"B♭" },
       { id:"B", pc:11, letter:6, accidental:0, latin:"Si", american:"B" }
     ];
+
+    // Major scale formula in semitones from root: Tone-Tone-Semitone-Tone-Tone-Tone-Semitone (universal for any root)
+    const MAJOR_SCALE_INTERVALS = [0, 2, 4, 5, 7, 9, 11, 12];
 
     // Chord types and their intervallic structure. Key musical insight: major (0-4-7) and minor (0-3-7) differ only in the 3rd.
     const CHORDS = {
@@ -1042,6 +1093,19 @@
       while(Math.min(...tones.map(t=>t.midi))<48) tones=tones.map(t=>({...t,midi:t.midi+12}));
       return tones;
     }
+    // Spell a major scale from a root: one note per letter, respecting the universal T-T-S-T-T-T-S pattern
+    function spellScale(root) {
+      return MAJOR_SCALE_INTERVALS.map((interval,i) => {
+        const letter=(root.letter+i)%7, targetPc=(root.pc+interval)%12;
+        const diff=normalizeDiff(targetPc-NATURAL_PCS[letter]);
+        return {latin:LATIN_LETTERS[letter]+accidentalText(diff),american:AMERICAN_LETTERS[letter]+accidentalText(diff),pc:targetPc,degree:i+1,accidental:diff};
+      });
+    }
+    // Build the full major scale (8 notes, root to octave) with MIDI values
+    function buildScaleTones(root,baseRootMidi=48) {
+      const spelled=spellScale(root);
+      return spelled.map((note,i)=>({...note,midi:baseRootMidi+root.pc+MAJOR_SCALE_INTERVALS[i],role:i===0||i===7?0:1}));
+    }
     function rootById(id){ return ROOTS.find(r=>r.id===id)||ROOTS[0]; }
     function inversionName(n,count){ return n===0?"posición fundamental":n===1?"primera inversión":n===2?"segunda inversión":n===3&&count===4?"tercera inversión":"inversión"; }
     function octaveOf(midi){ return Math.floor(midi/12)-1; }
@@ -1050,10 +1114,10 @@
     const rootC=rootById("C");
 
     // ========== Navigation and lesson state management ==========
-    const LESSON_COUNT=6;
+    const LESSON_COUNT=7;
     const STATUS_LABELS={not_started:"Sin iniciar",explored:"Explorada",practiced:"Practicada",mastered:"Dominada"};
     const STATUS_RANK={not_started:0,explored:1,practiced:2,mastered:3}; // Only upgrades state, never downgrades
-    let lessonStates={1:"not_started",2:"not_started",3:"not_started",4:"not_started",5:"not_started",6:"not_started"};
+    let lessonStates={1:"not_started",2:"not_started",3:"not_started",4:"not_started",5:"not_started",6:"not_started",7:"not_started"};
     // Load persisted lesson states from browser storage
     try { lessonStates={...lessonStates,...JSON.parse(localStorage.getItem("musicLessonStates")||"{}")}; } catch(_) {}
     let currentLesson=1;
@@ -1250,6 +1314,45 @@
         delay+=1200;
       });
     });
+
+    // ========== Lesson 7: Major scale builder ==========
+    buildKeyboard("scaleKeyboard",null,{octaves:2});
+    const scaleRootSelect=document.getElementById("scaleRoot");
+    const SCALE_ROOT_IDS=["C","G","D","A","E","F","Bb","Eb"];
+    ROOTS.filter(r=>SCALE_ROOT_IDS.includes(r.id)).forEach(r=>scaleRootSelect.add(new Option(`${r.latin} mayor`,r.id)));
+    scaleRootSelect.value="C";
+    function renderScale(playDirection=null){
+      const root=rootById(scaleRootSelect.value);
+      const tones=buildScaleTones(root);
+      highlightChordOnKeyboard("scaleKeyboard",tones);
+      document.getElementById("scaleNotes").innerHTML=tones.map((t,i)=>`<span class="note-chip role-${t.role}">${t.latin}<small>${t.degree}</small></span>${i<tones.length-1?'<span class="separator">–</span>':''}`).join("");
+      document.getElementById("scaleResult").innerHTML=`<strong>${root.latin} mayor:</strong> ${tones.map(t=>t.latin).join(" – ")}. Semitonos desde la raíz: ${MAJOR_SCALE_INTERVALS.join("–")}.`;
+      if(playDirection==="asc") tones.forEach((t,i)=>playMidi(t.midi,.55,i*.32));
+      else if(playDirection==="desc") [...tones].reverse().forEach((t,i)=>playMidi(t.midi,.55,i*.32));
+      return tones;
+    }
+    scaleRootSelect.addEventListener("change",()=>{setLessonState(7,"explored"); renderScale();});
+    document.getElementById("playScale").addEventListener("click",()=>{setLessonState(7,"explored"); renderScale("asc");});
+    document.getElementById("playScaleDescending").addEventListener("click",()=>{setLessonState(7,"explored"); renderScale("desc");});
+    // Mission: listen to the same pattern applied to three different roots
+    let scaleMissionHeard=new Set();
+    function playScaleMission(rootId){
+      setLessonState(7,"explored");
+      scaleRootSelect.value=rootId;
+      renderScale("asc");
+      scaleMissionHeard.add(rootId);
+      if(scaleMissionHeard.size===1)setLessonState(7,"practiced");
+      document.getElementById("scaleMissionDots").textContent=["C","G","F"].map(id=>scaleMissionHeard.has(id)?"●":"○").join(" ");
+      if(scaleMissionHeard.size===3){
+        setLessonState(7,"mastered");
+        document.getElementById("scaleMissionText").innerHTML="<strong>¡Dominado!</strong> Escuchaste el mismo patrón T–T–S–T–T–T–S en tres raíces distintas.";
+      }
+    }
+    document.getElementById("scaleMissionC").addEventListener("click",()=>playScaleMission("C"));
+    document.getElementById("scaleMissionG").addEventListener("click",()=>playScaleMission("G"));
+    document.getElementById("scaleMissionF").addEventListener("click",()=>playScaleMission("F"));
+    document.getElementById("goToLab").addEventListener("click",()=>showMode("lab"));
+    renderScale();
 
     // ========== Lab mode: free exploration of chords ==========
     const PRACTICAL_ROOT_IDS=["C","Db","D","Eb","E","F","F#","G","Ab","A","Bb","B"];
