@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep *)",
+      "Bash(git status *)",
+      "Bash(cat *)",
+      "Bash(ls *)",
+      "Bash(git log *)",
+      "Bash(find *)",
+      "Bash(git diff *)",
+      "Bash(gh run *)",
+      "Bash(jq *)",
+      "Bash(which *)",
+      "Bash(git remote *)",
+      "Bash(gh auth *)",
+      "Bash(git ls-remote)",
+      "mcp__Claude_Browser__read_page",
+      "mcp__Claude_Browser__read_console_messages",
+      "mcp__Claude_Browser__preview_start",
+      "mcp__Claude_Browser__preview_stop",
+      "mcp__Claude_Browser__get_page_text",
+      "mcp__Claude_Browser__preview_logs",
+      "mcp__Claude_Browser__read_network_requests"
+    ]
+  }
+}
