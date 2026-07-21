@@ -91,3 +91,6 @@ export const VOICING_TYPES = {
 
 // Root ids commonly used in "practical" spelling mode (lab lesson root picker)
 export const PRACTICAL_ROOT_IDS = ["C","Db","D","Eb","E","F","F#","G","Ab","A","Bb","B"];
+
+// Root ids offered for "choose a major key" selectors (scale/function/progression/voicing lessons)
+export const SCALE_ROOT_IDS = ["C","G","D","A","E","F","Bb","Eb"];

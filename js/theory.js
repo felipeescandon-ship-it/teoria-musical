@@ -82,5 +82,7 @@ export function buildDiatonicChords(root) {
   });
 }
 export function rootById(id){ return ROOTS.find(r=>r.id===id)||ROOTS[0]; }
+// Do (C) as root — used as the default demo root across several lessons
+export const rootC = rootById("C");
 export function inversionName(n,count){ return n===0?"posición fundamental":n===1?"primera inversión":n===2?"segunda inversión":n===3&&count===4?"tercera inversión":"inversión"; }
 export function octaveOf(midi){ return Math.floor(midi/12)-1; }
