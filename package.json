@@ -1,0 +1,24 @@
+{
+  "name": "teoria-musical",
+  "version": "1.0.0",
+  "description": "Una aplicación web interactiva para aprender teoría musical de forma visual y auditiva usando un piano virtual.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/felipeescandon-ship-it/teoria-musical.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/felipeescandon-ship-it/teoria-musical/issues"
+  },
+  "homepage": "https://github.com/felipeescandon-ship-it/teoria-musical#readme",
+  "devDependencies": {
+    "jest": "^30.4.2"
+  }
+}
