@@ -307,7 +307,7 @@
       <div class="lesson-layout">
         <aside class="card lesson-sidebar">
           <h3>Ruta esencial</h3>
-          <div id="progressSummary" class="progress-summary">0 de 7 dominadas</div>
+          <div id="progressSummary" class="progress-summary">0 de 8 dominadas</div>
           <div class="progress-track" aria-label="Progreso de dominio"><div id="progressFill" class="progress-fill"></div></div>
           <div class="lesson-list">
             <button class="lesson-link active" data-lesson="1"><span>1. Nota y teclado</span><small class="lesson-status">Sin iniciar</small></button>
@@ -317,6 +317,7 @@
             <button class="lesson-link" data-lesson="5"><span>5. Inversiones</span><small class="lesson-status">Sin iniciar</small></button>
             <button class="lesson-link" data-lesson="6"><span>6. Grados</span><small class="lesson-status">Sin iniciar</small></button>
             <button class="lesson-link" data-lesson="7"><span>7. Escala mayor</span><small class="lesson-status">Sin iniciar</small></button>
+            <button class="lesson-link" data-lesson="8"><span>8. Función armónica</span><small class="lesson-status">Sin iniciar</small></button>
           </div>
           <div class="callout info compact-callout">
             Puedes explorar libremente. La app solo marca una lección como <strong>dominada</strong> cuando completas su misión.
@@ -651,6 +652,58 @@
 
               <div class="lesson-actions">
                 <button class="btn secondary lesson-prev" data-prev="6">Volver</button>
+                <button class="btn lesson-next" data-next="8">Continuar a Función armónica</button>
+              </div>
+            </section>
+          </article>
+
+          <article class="lesson-panel" data-lesson-panel="8">
+            <section class="card">
+              <div class="eyebrow">Lección 8 de 8</div>
+              <h2>Los acordes diatónicos cumplen tres funciones</h2>
+              <p>
+                Los siete acordes diatónicos se agrupan en tres familias según su función armónica: <strong>Tónica</strong> (estable, "casa"),
+                <strong>Subdominante</strong> (movimiento, se aleja de casa) y <strong>Dominante</strong> (tensión que pide resolver a la tónica).
+                Esta agrupación es la misma en cualquier tonalidad mayor.
+              </p>
+              <div class="grid three">
+                <div class="compare-card" style="border-left: 4px solid var(--green);">
+                  <div class="eyebrow">Tónica</div><h3>I · iii · vi</h3><p>Estable. Punto de reposo y de llegada.</p>
+                </div>
+                <div class="compare-card" style="border-left: 4px solid var(--orange);">
+                  <div class="eyebrow">Subdominante</div><h3>IV · ii</h3><p>Movimiento. Se aleja de la tónica, prepara la dominante.</p>
+                </div>
+                <div class="compare-card" style="border-left: 4px solid var(--red);">
+                  <div class="eyebrow">Dominante</div><h3>V · vii°</h3><p>Tensión. Pide resolver de vuelta a la tónica.</p>
+                </div>
+              </div>
+
+              <div class="callout info mt">
+                <strong>Esto es universal:</strong> igual que el patrón 0–4–7 funciona en cualquier raíz, la agrupación funcional
+                (I-iii-vi = tónica, IV-ii = subdominante, V-vii° = dominante) funciona en cualquier tonalidad mayor. Solo cambian las notas, no la lógica.
+              </div>
+
+              <div class="controls mt">
+                <div class="field"><label for="functionKeyRoot">Tonalidad</label><select id="functionKeyRoot"></select></div>
+              </div>
+              <div id="functionChordsGrid" class="info-grid"></div>
+              <div class="keyboard-wrap"><div id="functionKeyboard" class="keyboard" aria-label="Piano para función armónica"></div></div>
+              <div id="functionResult" class="result-box">Selecciona una tonalidad para ver sus acordes diatónicos agrupados por función.</div>
+
+              <div class="mission mt">
+                <div class="mission-title">Misión: reconoce la función al oído</div>
+                <p id="functionMissionText">Se reproducirá un acorde diatónico. Identifica su función: Tónica, Subdominante o Dominante.</p>
+                <div class="mission-progress"><span id="functionMissionDots">○ ○ ○</span></div>
+              </div>
+              <div class="controls">
+                <button id="functionNewChallenge" class="btn">Nuevo acorde</button>
+                <button id="functionRepeat" class="btn secondary" disabled>Repetir</button>
+              </div>
+              <div id="functionOptions" class="quiz-options"></div>
+              <div id="functionFeedback" class="result-box">Pulsa "Nuevo acorde" para comenzar.</div>
+
+              <div class="lesson-actions">
+                <button class="btn secondary lesson-prev" data-prev="7">Volver</button>
                 <button id="goToLab" class="btn good">Ir al laboratorio</button>
               </div>
             </section>
@@ -863,6 +916,13 @@
 
     // Major scale formula in semitones from root: Tone-Tone-Semitone-Tone-Tone-Tone-Semitone (universal for any root)
     const MAJOR_SCALE_INTERVALS = [0, 2, 4, 5, 7, 9, 11, 12];
+
+    // Diatonic chord qualities by degree (universal for any major key): I, ii, iii, IV, V, vi, vii°
+    const DIATONIC_QUALITIES = ["major", "minor", "minor", "major", "major", "minor", "diminished"];
+    const DIATONIC_ROMANS = ["I", "ii", "iii", "IV", "V", "vi", "vii°"];
+    // Harmonic function groups: Tónica (stable/home), Subdominante (movement away), Dominante (tension resolving to tonic)
+    const DIATONIC_FUNCTIONS = ["Tónica", "Subdominante", "Tónica", "Subdominante", "Dominante", "Tónica", "Dominante"];
+    const FUNCTION_COLOR_VAR = { "Tónica": "green", "Subdominante": "orange", "Dominante": "red" };
 
     // Chord types and their intervallic structure. Key musical insight: major (0-4-7) and minor (0-3-7) differ only in the 3rd.
     const CHORDS = {
@@ -1106,6 +1166,15 @@
       const spelled=spellScale(root);
       return spelled.map((note,i)=>({...note,midi:baseRootMidi+root.pc+MAJOR_SCALE_INTERVALS[i],role:i===0||i===7?0:1}));
     }
+    // Build the 7 diatonic chords for any major key: one chord per scale degree, with roman numeral and harmonic function
+    function buildDiatonicChords(root) {
+      const scale=spellScale(root);
+      return DIATONIC_QUALITIES.map((quality,i) => {
+        const scaleNote=scale[i];
+        const chordRoot={id:scaleNote.american, pc:scaleNote.pc, letter:(root.letter+i)%7, accidental:scaleNote.accidental, latin:scaleNote.latin, american:scaleNote.american};
+        return {quality, roman:DIATONIC_ROMANS[i], func:DIATONIC_FUNCTIONS[i], root:chordRoot, name:`${scaleNote.latin} ${CHORDS[quality].label}`};
+      });
+    }
     function rootById(id){ return ROOTS.find(r=>r.id===id)||ROOTS[0]; }
     function inversionName(n,count){ return n===0?"posición fundamental":n===1?"primera inversión":n===2?"segunda inversión":n===3&&count===4?"tercera inversión":"inversión"; }
     function octaveOf(midi){ return Math.floor(midi/12)-1; }
@@ -1114,10 +1183,10 @@
     const rootC=rootById("C");
 
     // ========== Navigation and lesson state management ==========
-    const LESSON_COUNT=7;
+    const LESSON_COUNT=8;
     const STATUS_LABELS={not_started:"Sin iniciar",explored:"Explorada",practiced:"Practicada",mastered:"Dominada"};
     const STATUS_RANK={not_started:0,explored:1,practiced:2,mastered:3}; // Only upgrades state, never downgrades
-    let lessonStates={1:"not_started",2:"not_started",3:"not_started",4:"not_started",5:"not_started",6:"not_started",7:"not_started"};
+    let lessonStates={1:"not_started",2:"not_started",3:"not_started",4:"not_started",5:"not_started",6:"not_started",7:"not_started",8:"not_started"};
     // Load persisted lesson states from browser storage
     try { lessonStates={...lessonStates,...JSON.parse(localStorage.getItem("musicLessonStates")||"{}")}; } catch(_) {}
     let currentLesson=1;
@@ -1359,8 +1428,78 @@
     document.getElementById("scaleMissionC").addEventListener("click",()=>playScaleMission("C"));
     document.getElementById("scaleMissionG").addEventListener("click",()=>playScaleMission("G"));
     document.getElementById("scaleMissionF").addEventListener("click",()=>playScaleMission("F"));
-    document.getElementById("goToLab").addEventListener("click",()=>showMode("lab"));
     renderScale();
+
+    // ========== Lesson 8: Harmonic function (Tónica/Subdominante/Dominante) ==========
+    buildKeyboard("functionKeyboard",null,{octaves:2});
+    const functionKeyRootSelect=document.getElementById("functionKeyRoot");
+    ROOTS.filter(r=>SCALE_ROOT_IDS.includes(r.id)).forEach(r=>functionKeyRootSelect.add(new Option(`${r.latin} mayor`,r.id)));
+    functionKeyRootSelect.value="C";
+    function renderFunctionChords(){
+      const root=rootById(functionKeyRootSelect.value);
+      const chords=buildDiatonicChords(root);
+      const grid=document.getElementById("functionChordsGrid");
+      grid.innerHTML=chords.map((c,i)=>`<div class="info-item" style="border-left:4px solid var(--${FUNCTION_COLOR_VAR[c.func]});"><span>${c.roman} · ${c.func}</span><strong>${c.name}</strong><button type="button" class="btn small function-chord-btn" data-index="${i}" style="margin-top:8px;">Oír</button></div>`).join("");
+      grid.querySelectorAll(".function-chord-btn").forEach(btn=>{
+        btn.addEventListener("click",()=>{
+          setLessonState(8,"explored");
+          const c=chords[Number(btn.dataset.index)];
+          const tones=buildChordTones(c.root,c.quality);
+          highlightChordOnKeyboard("functionKeyboard",tones);
+          playChord(tones.map(t=>t.midi));
+          document.getElementById("functionResult").className="result-box status-good";
+          document.getElementById("functionResult").innerHTML=`<strong>${c.roman} (${c.name}):</strong> función ${c.func}.`;
+        });
+      });
+    }
+    functionKeyRootSelect.addEventListener("change",()=>{setLessonState(8,"explored"); renderFunctionChords();});
+    renderFunctionChords();
+    // Ear-training quiz: listen to a diatonic chord in a random key and identify its harmonic function
+    const FUNCTION_QUIZ_ROOTS=["C","G","F"];
+    let functionQuizChord=null, functionQuizAnswered=false, functionMissionCorrect=0;
+    function renderFunctionOptions(){
+      const c=document.getElementById("functionOptions"); c.innerHTML="";
+      ["Tónica","Subdominante","Dominante"].forEach(fn=>{
+        const b=document.createElement("button"); b.className="btn secondary"; b.textContent=fn;
+        b.addEventListener("click",()=>answerFunctionQuiz(fn));
+        c.appendChild(b);
+      });
+    }
+    function newFunctionChallenge(){
+      setLessonState(8,"explored");
+      renderFunctionOptions();
+      const root=rootById(FUNCTION_QUIZ_ROOTS[Math.floor(Math.random()*FUNCTION_QUIZ_ROOTS.length)]);
+      const chords=buildDiatonicChords(root);
+      const chord=chords[Math.floor(Math.random()*chords.length)];
+      functionQuizChord={root,chord,tones:buildChordTones(chord.root,chord.quality)};
+      functionQuizAnswered=false;
+      playChord(functionQuizChord.tones.map(t=>t.midi));
+      document.getElementById("functionFeedback").className="result-box";
+      document.getElementById("functionFeedback").textContent="Puedes repetir antes de responder.";
+      document.getElementById("functionRepeat").disabled=false;
+    }
+    function answerFunctionQuiz(answer){
+      const box=document.getElementById("functionFeedback");
+      if(!functionQuizChord){box.className="result-box status-bad";box.textContent="Primero pulsa “Nuevo acorde”.";return;}
+      if(functionQuizAnswered)return;
+      functionQuizAnswered=true;
+      const correct=answer===functionQuizChord.chord.func;
+      box.className=`result-box ${correct?"status-good":"status-bad"}`;
+      box.innerHTML=correct?`<strong>¡Correcto!</strong> ${functionQuizChord.chord.roman} (${functionQuizChord.chord.name}) es ${functionQuizChord.chord.func}.`:`<strong>No esta vez.</strong> Era ${functionQuizChord.chord.roman} (${functionQuizChord.chord.name}): ${functionQuizChord.chord.func}.`;
+      if(correct){
+        functionMissionCorrect++;
+        if(functionMissionCorrect===1)setLessonState(8,"practiced");
+        document.getElementById("functionMissionDots").textContent=[0,1,2].map(i=>i<Math.min(functionMissionCorrect,3)?"●":"○").join(" ");
+        if(functionMissionCorrect>=3){
+          setLessonState(8,"mastered");
+          document.getElementById("functionMissionText").innerHTML="<strong>¡Dominado!</strong> Reconoces la función armónica de tónica, subdominante y dominante.";
+        }
+      }
+    }
+    document.getElementById("functionNewChallenge").addEventListener("click",newFunctionChallenge);
+    document.getElementById("functionRepeat").addEventListener("click",()=>functionQuizChord&&playChord(functionQuizChord.tones.map(t=>t.midi)));
+    document.getElementById("goToLab").addEventListener("click",()=>showMode("lab"));
+    renderFunctionOptions();
 
     // ========== Lab mode: free exploration of chords ==========
     const PRACTICAL_ROOT_IDS=["C","Db","D","Eb","E","F","F#","G","Ab","A","Bb","B"];
