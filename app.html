@@ -1003,6 +1003,7 @@
       getAudioContext, midiToFreq, computeEnvelope, makeVoice,
       playMidi, startHeldMidi, stopHeldMidi, playChord
     } from "./js/audio.js";
+    import { loadLessonStates, saveLessonStates } from "./js/storage.js";
 
     // ========== Audio synthesis (see js/audio.js — ADSR + velocity) ==========
 
@@ -1130,14 +1131,13 @@
     const LESSON_COUNT=10;
     const STATUS_LABELS={not_started:"Sin iniciar",explored:"Explorada",practiced:"Practicada",mastered:"Dominada"};
     const STATUS_RANK={not_started:0,explored:1,practiced:2,mastered:3}; // Only upgrades state, never downgrades
-    let lessonStates={1:"not_started",2:"not_started",3:"not_started",4:"not_started",5:"not_started",6:"not_started",7:"not_started",8:"not_started",9:"not_started",10:"not_started"};
-    // Load persisted lesson states from browser storage
-    try { lessonStates={...lessonStates,...JSON.parse(localStorage.getItem("musicLessonStates")||"{}")}; } catch(_) {}
+    // Load persisted lesson states from versioned browser storage (js/storage.js)
+    let lessonStates=loadLessonStates({1:"not_started",2:"not_started",3:"not_started",4:"not_started",5:"not_started",6:"not_started",7:"not_started",8:"not_started",9:"not_started",10:"not_started"});
     let currentLesson=1;
     // Upgrade a lesson to a new state (only moves forward: explored → practiced → mastered)
     function setLessonState(n,state) {
       n=Number(n); if(STATUS_RANK[state] <= STATUS_RANK[lessonStates[n]]) return;
-      lessonStates[n]=state; try { localStorage.setItem("musicLessonStates",JSON.stringify(lessonStates)); } catch (_) {} updateProgress();
+      lessonStates[n]=state; saveLessonStates(lessonStates); updateProgress();
     }
     // Update visual progress bar and lesson link labels
     function updateProgress() {
