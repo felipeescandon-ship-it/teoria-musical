@@ -50,3 +50,12 @@ export function saveLessonStates(lessonStates) {
   state = { ...state, data: { ...state.data, lessonStates } };
   persist();
 }
+
+export function loadTheme(defaultTheme) {
+  return state.data.theme || defaultTheme;
+}
+
+export function saveTheme(theme) {
+  state = { ...state, data: { ...state.data, theme } };
+  persist();
+}

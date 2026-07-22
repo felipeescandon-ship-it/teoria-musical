@@ -1,6 +1,7 @@
 import { rootC, buildChordTones } from "./theory.js";
 import { playChord } from "./audio.js";
 
+import "./theme.js";
 import "./nav.js";
 
 import "./lessons/lesson01.js";
