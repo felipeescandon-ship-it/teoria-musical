@@ -22,7 +22,7 @@ export function computeEnvelope(volume = 0.11, velocity = null) {
   const attack = 0.05 - v * 0.044;       // 50ms (soft) down to ~6ms (hard)
   const decay = 0.08;                     // fixed: peak settles into sustain
   const sustainRatio = 0.55 + v * 0.2;    // 0.55 (soft, decays more) – 0.75 (hard, rings out)
-  const release = 0.05;                   // fixed fade-out once the note is released
+  const release = 0.18;                   // fixed exponential fade-out once the note is released
   const brightness = 0.12 + v * 0.35;     // harmonic gain multiplier driving timbre
   return {
     velocity: v,
@@ -67,11 +67,19 @@ export function makeVoice(midi, volume = .11, when = null, velocity = null) {
 // (not cancelScheduledValues + setValueAtTime) is essential here: reading `.value` on the
 // main thread at schedule time gives whatever the gain is *right now*, not at the future
 // offTime, so pinning to that stale reading produced an audible jump/click at release.
+// The fade itself is EXPONENTIAL, not linear: a linear ramp toward zero keeps a constant
+// slope and then hits a hard corner at the end, which the ear hears as a click/pop. An
+// exponential decay flattens naturally into silence (how real instruments and speakers
+// actually fade), so there's no discontinuity. We stop the oscillators only after the gain
+// has reached the effectively-silent floor, so the stop itself is inaudible too.
+const SILENCE_FLOOR = .0001;
 function scheduleRelease(voice, offTime) {
   const {master, oscillators, env} = voice;
   master.gain.cancelAndHoldAtTime(offTime);
-  master.gain.linearRampToValueAtTime(.0001, offTime + env.release);
-  oscillators.forEach(osc => { try { osc.stop(offTime + env.release + .02); } catch (_) {} });
+  master.gain.setTargetAtTime(SILENCE_FLOOR, offTime, env.release / 4); // exponential decay toward silence
+  const stopAt = offTime + env.release + .05;
+  master.gain.setValueAtTime(SILENCE_FLOOR, stopAt); // pin to silence before cutting the oscillators
+  oscillators.forEach(osc => { try { osc.stop(stopAt); } catch (_) {} });
 }
 
 // Play a single note: starts, sustains, and releases; duration in seconds
