@@ -55,11 +55,15 @@ export function createTransport({ onScheduleBeat }) {
     scheduler(ownGeneration);
   }
 
-  function stop() {
+  // cancel:true (default) = the user pressed Stop: kill everything, including notes already
+  // scheduled into the lookahead window that haven't become audible yet.
+  // cancel:false = the sequence finished on its own (a single, non-looping pass): halt the
+  // scheduler but let the notes already scheduled ring out naturally to their own release.
+  function stop({ cancel = true } = {}) {
     generation += 1; // invalidate any in-flight start()'s await and any pending scheduler tick
     running = false;
     if (timerId !== null) { clearTimeout(timerId); timerId = null; }
-    cancelVoices(voices);
+    if (cancel) cancelVoices(voices); else voices.clear();
   }
 
   // Applies from the next scheduler tick onward (within LOOKAHEAD_MS) — beats already collected

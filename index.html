@@ -244,6 +244,7 @@
     .field { display: grid; gap: 6px; min-width: 155px; }
     label { color: var(--muted); font-size: .84rem; font-weight: 800; }
     select, input[type="number"] { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; background: var(--panel); color: var(--text); }
+    input[type="range"] { width: 100%; accent-color: var(--accent); }
 
     .keyboard-wrap { margin-top: 16px; overflow-x: auto; padding: 12px; background: var(--kb-bg); border-radius: 14px; transition: background .2s; }
     .keyboard { position: relative; height: 220px; min-width: 840px; user-select: none; touch-action: manipulation; }
@@ -838,6 +839,27 @@
                   </select>
                 </div>
                 <button id="playProgression" class="btn">Tocar progresión</button>
+              </div>
+
+              <div class="callout info">
+                Tocar la progresión una vez te muestra <em>qué</em> acordes son. Tocarla <strong>en bucle con pulso</strong>
+                te entrena a <em>cambiar de acorde a tiempo</em>, que es lo que hace falta para acompañar una canción de verdad.
+                Empieza lento: es mejor llegar siempre al acorde que ir rápido y tropezar.
+              </div>
+
+              <div class="controls">
+                <div class="field">
+                  <label for="progressionTempo">Tempo: <output id="progressionTempoValue">60</output> BPM</label>
+                  <input type="range" id="progressionTempo" min="40" max="120" step="1" value="60">
+                </div>
+                <div class="field"><label for="progressionDensity">Acordes por compás</label>
+                  <select id="progressionDensity">
+                    <option value="1">1 · un compás entero por acorde</option>
+                    <option value="2">2 · medio compás por acorde</option>
+                  </select>
+                </div>
+                <button id="loopProgression" class="btn good">▶ Bucle con pulso</button>
+                <button id="stopProgression" class="btn secondary" disabled>■ Detener</button>
               </div>
 
               <div class="keyboard-wrap"><div id="progressionKeyboard" class="keyboard" aria-label="Piano para progresiones"></div></div>
