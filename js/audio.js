@@ -63,11 +63,13 @@ export function makeVoice(midi, volume = .11, when = null, velocity = null) {
 }
 
 // Release a voice at a real note-off time (not a duration guessed in advance) — the release
-// ramp always starts from wherever the gain actually is at that moment.
+// ramp always starts from wherever the gain actually is at that moment. cancelAndHoldAtTime
+// (not cancelScheduledValues + setValueAtTime) is essential here: reading `.value` on the
+// main thread at schedule time gives whatever the gain is *right now*, not at the future
+// offTime, so pinning to that stale reading produced an audible jump/click at release.
 function scheduleRelease(voice, offTime) {
   const {master, oscillators, env} = voice;
-  master.gain.cancelScheduledValues(offTime);
-  master.gain.setValueAtTime(Math.max(master.gain.value, .0001), offTime);
+  master.gain.cancelAndHoldAtTime(offTime);
   master.gain.linearRampToValueAtTime(.0001, offTime + env.release);
   oscillators.forEach(osc => { try { osc.stop(offTime + env.release + .02); } catch (_) {} });
 }
