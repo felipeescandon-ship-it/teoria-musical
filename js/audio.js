@@ -1,11 +1,23 @@
 // ========== Audio synthesis via Web Audio API ==========
 let audioCtx;
 const heldVoices = new Map(); // Tracks sustained notes from piano key presses
+const SILENCE_FLOOR = .0001;
 
 export function getAudioContext() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if (audioCtx.state === "suspended") audioCtx.resume();
-  return audioCtx;
+  if (audioCtx.state === "suspended") audioCtx.resume(); // fire-and-forget: fine for a direct
+  return audioCtx;                                        // click (existing lessons), which is
+}                                                          // itself the user gesture that unlocks it.
+
+// Unlike getAudioContext()'s fire-and-forget resume above, this genuinely WAITS for the
+// context to be running before returning it. Needed before a transport anchors its first beat
+// against ctx.currentTime — that clock doesn't advance while suspended, so reading it too early
+// would anchor the whole loop to the wrong instant.
+export async function resumeAudioContext() {
+  const ctx = getAudioContext();
+  if (ctx.state === "suspended") await ctx.resume();
+  if (ctx.state !== "running") throw new Error(`AudioContext no disponible: ${ctx.state}`);
+  return ctx;
 }
 // Convert MIDI note number to frequency (A4 = 69 = 440 Hz)
 export function midiToFreq(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
@@ -39,10 +51,12 @@ export function makeVoice(midi, volume = .11, when = null, velocity = null) {
   const now = when ?? ctx.currentTime;
   const env = computeEnvelope(volume, velocity);
   const master = ctx.createGain();
-  master.gain.setValueAtTime(.0001, now);
-  master.gain.linearRampToValueAtTime(env.peakGain, now + env.attack);       // Attack
-  master.gain.linearRampToValueAtTime(env.sustainGain, now + env.attack + env.decay); // Decay -> Sustain
-  master.connect(ctx.destination);
+  master.gain.value = SILENCE_FLOOR; // sets the AudioParam's own default, not just a scheduled
+  master.gain.setValueAtTime(SILENCE_FLOOR, now); // event — so cancelling all events before any
+  master.gain.linearRampToValueAtTime(env.peakGain, now + env.attack);       // of them ever took
+  master.gain.linearRampToValueAtTime(env.sustainGain, now + env.attack + env.decay); // effect (a
+  master.connect(ctx.destination);                                          // future voice getting
+  // cancelled before it starts) reverts to silence, not to GainNode's real default of 1.0.
   const brightnessMul = env.brightness / (0.12 + 0.73 * 0.35); // normalized so old defaults sound unchanged
   const layers = [
     {type:"triangle", ratio:1, gain:1},                  // Fundamental
@@ -59,7 +73,7 @@ export function makeVoice(midi, volume = .11, when = null, velocity = null) {
     osc.start(now);
     return osc;
   });
-  return {ctx, master, oscillators, started:now, env};
+  return {ctx, master, oscillators, started:now, env, cancelled:false};
 }
 
 // Release a voice at a real note-off time (not a duration guessed in advance) — the release
@@ -72,7 +86,6 @@ export function makeVoice(midi, volume = .11, when = null, velocity = null) {
 // exponential decay flattens naturally into silence (how real instruments and speakers
 // actually fade), so there's no discontinuity. We stop the oscillators only after the gain
 // has reached the effectively-silent floor, so the stop itself is inaudible too.
-const SILENCE_FLOOR = .0001;
 function scheduleRelease(voice, offTime) {
   const {master, oscillators, env} = voice;
   master.gain.cancelAndHoldAtTime(offTime);
@@ -82,12 +95,47 @@ function scheduleRelease(voice, offTime) {
   oscillators.forEach(osc => { try { osc.stop(stopAt); } catch (_) {} });
 }
 
+// Cancel a voice outright — used by the transport (Épica C1) to stop a loop cleanly instead of
+// leaving already-scheduled future notes to sound after "stop" was pressed. Two cases:
+// - the voice hasn't started yet (cancelAt is before its scheduled start): silence its gain and
+//   stop its oscillators at their own start time, so they never become audible at all.
+// - the voice is already sounding: fall back to the same exponential scheduleRelease used for a
+//   normal note-off, so a manual stop sounds exactly as click-free as letting a note ring out.
+export function cancelVoice(voice, cancelAt = voice.ctx.currentTime) {
+  if (voice.cancelled) return;
+  voice.cancelled = true;
+  const {ctx, master, oscillators, started} = voice;
+  const now = Math.max(cancelAt, ctx.currentTime);
+  if (now < started) {
+    master.gain.cancelScheduledValues(now);
+    master.gain.setValueAtTime(SILENCE_FLOOR, now);
+    oscillators.forEach(osc => { try { osc.stop(started); } catch (_) {} });
+  } else {
+    scheduleRelease(voice, now);
+  }
+}
+export function cancelVoices(voices) {
+  voices.forEach(v => cancelVoice(v));
+  voices.clear?.();
+}
+
+// Play a single note anchored to an absolute AudioContext time (not "starting now + a delay") —
+// what a scheduler needs, since it decides in advance exactly when each beat should sound.
+export function playMidiAt(midi, when, duration=.78, volume=.12, velocity=null) {
+  const voice = makeVoice(midi, volume, when, velocity);
+  scheduleRelease(voice, when + duration);
+  return voice;
+}
+// Play several notes at the same absolute time, as a genuine chord (no per-note offset — for
+// an arpeggiated feel at an absolute time, call playMidiAt per note with its own `when`).
+export function playChordAt(midis, when, duration=.95, volume=.09, velocity=null) {
+  return midis.map(midi => playMidiAt(midi, when, duration, volume, velocity));
+}
+
 // Play a single note: starts, sustains, and releases; duration in seconds
 export function playMidi(midi, duration=.78, delay=0, volume=.12, velocity=null) {
   const ctx = getAudioContext();
-  const when = ctx.currentTime + delay;
-  const voice = makeVoice(midi, volume, when, velocity);
-  scheduleRelease(voice, when + duration);
+  return playMidiAt(midi, ctx.currentTime + delay, duration, volume, velocity);
 }
 // Start a held note (key pressed); sustains until stopHeldMidi is called
 export function startHeldMidi(token, midi, volume=.11, velocity=null) {
@@ -103,5 +151,5 @@ export function stopHeldMidi(token) {
 }
 // Play multiple notes as a chord (simultaneous or arpegiated)
 export function playChord(midis, arpeggio=false, delayStart=0, velocity=null) {
-  midis.forEach((m,i) => playMidi(m, arpeggio ? .72 : .95, delayStart + (arpeggio ? i*.16 : 0), arpeggio ? .13 : .09, velocity));
+  return midis.map((m,i) => playMidi(m, arpeggio ? .72 : .95, delayStart + (arpeggio ? i*.16 : 0), arpeggio ? .13 : .09, velocity));
 }
