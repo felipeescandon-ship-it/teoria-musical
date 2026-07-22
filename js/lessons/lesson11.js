@@ -1,5 +1,5 @@
 import { rootById, buildChordTones } from "../theory.js";
-import { playChord } from "../audio.js";
+import { getAudioContext, playChordAt } from "../audio.js";
 import { setLessonState } from "../nav.js";
 
 // ========== Lesson 11: Connecting voicings to real music (Web Component) ==========
@@ -43,10 +43,18 @@ const CONTEXTS = [
   }
 ];
 
+// Schedules the whole (short, finite — 3 chords) progression up front against the
+// AudioContext's own clock, instead of setTimeout deciding when each chord sounds. A finite
+// sequence like this can just be scheduled all at once; the lookahead scheduler in
+// transport.js is reserved for Lesson 9's open-ended loop, which can't know its beats in
+// advance the way this fixed 3-chord sequence can.
 function playProgressionWithVoicing(voicingType, stepMs) {
+  const ctx = getAudioContext();
+  const startTime = ctx.currentTime + 0.08; // same small buffer used elsewhere before a first sound
+  const stepSeconds = stepMs / 1000;
   PROGRESSION.forEach((chord, i) => {
     const tones = buildChordTones(chord.root, chord.quality, 0, 48, voicingType);
-    setTimeout(() => playChord(tones.map(t => t.midi)), i * stepMs);
+    playChordAt(tones.map(t => t.midi), startTime + i * stepSeconds);
   });
 }
 
