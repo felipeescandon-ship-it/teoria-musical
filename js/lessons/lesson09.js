@@ -4,7 +4,7 @@ import { getAudioContext, playMidiAt, playChordAt } from "../audio.js";
 import { createTransport } from "../transport.js";
 import { progressionEventAtBeat } from "../timing.js";
 import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js";
-import { setLessonState } from "../nav.js";
+import { setLessonState, onNavigate } from "../nav.js";
 
 // ========== Lesson 9: Progressions and accompaniment (Epic B2) + tempo/loop (Epic C1) ==========
 // Both "play once" and "loop with a pulse" run through the SAME transport — they differ only in
@@ -97,6 +97,10 @@ export function stopProgressionPlayback(){
   visualTimeouts.forEach(id=>clearTimeout(id)); visualTimeouts.clear();
   updatePlaybackButtons();
 }
+// Otherwise a loop keeps sounding forever after leaving the lesson, switching modes, or
+// backgrounding the tab — none of those are a "Detener" click, so nothing else would stop it.
+onNavigate(stopProgressionPlayback);
+document.addEventListener("visibilitychange",()=>{ if(document.hidden) stopProgressionPlayback(); });
 // Refresh the labels and the chord list the transport reads; never plays on its own.
 function renderProgression(){
   const rootId=progressionKeySelect.value, progressionKey=progressionTypeSelect.value;

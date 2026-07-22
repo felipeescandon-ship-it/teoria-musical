@@ -13,6 +13,15 @@ let currentLesson=1;
 let labRenderer=null;
 export function registerLabRenderer(fn){ labRenderer=fn; }
 
+// Same pattern for "stop whatever's playing when the user navigates away" — Lesson 9's tempo
+// loop (Épica C1) registers itself here instead of nav.js importing lesson09.js directly.
+// Fired on every lesson/mode switch (not just switches away from lesson 9): the listener is
+// responsible for deciding whether it actually needs to stop anything, which keeps this generic
+// enough for future lessons that schedule audio ahead of time to reuse without changes here.
+const navigationListeners=[];
+export function onNavigate(fn){ navigationListeners.push(fn); }
+function notifyNavigation(){ navigationListeners.forEach(fn=>fn()); }
+
 // Upgrade a lesson to a new state (only moves forward: explored → practiced → mastered)
 export function setLessonState(n,state) {
   n=Number(n); if(STATUS_RANK[state] <= STATUS_RANK[lessonStates[n]]) return;
@@ -32,6 +41,7 @@ export function updateProgress() {
 }
 // Switch to a lesson and update sidebar/content
 export function showLesson(n,scroll=true) {
+  notifyNavigation();
   currentLesson=Number(n); setLessonState(currentLesson,"explored");
   document.querySelectorAll(".lesson-panel").forEach(p=>p.classList.toggle("active",Number(p.dataset.lessonPanel)===currentLesson));
   document.querySelectorAll(".lesson-link").forEach(b=>b.classList.toggle("active",Number(b.dataset.lesson)===currentLesson));
@@ -40,6 +50,7 @@ export function showLesson(n,scroll=true) {
 // Switch between app modes (course, lab, practice, reference)
 export function showMode(mode) {
   const btn=document.querySelector(`.mode-tab[data-mode="${mode}"]`); if(!btn) return;
+  notifyNavigation();
   document.querySelectorAll(".mode-tab").forEach(b=>b.classList.toggle("active",b===btn));
   document.querySelectorAll(".mode-panel").forEach(p=>p.classList.remove("active"));
   document.getElementById(`mode-${mode}`).classList.add("active");
