@@ -1,8 +1,8 @@
-import { PC_KEY_LABELS, INTERVAL_NAMES } from "../data.js";
-import { octaveOf } from "../theory.js";
-import { playMidi, playChord } from "../audio.js";
-import { buildKeyboard, clearKeyboard, getKeyboard } from "../keyboard.js";
-import { setLessonState } from "../nav.js";
+import { PC_KEY_LABELS, INTERVAL_NAMES } from "../data.js?v=3";
+import { octaveOf } from "../theory.js?v=3";
+import { playMidi, playChord } from "../audio.js?v=3";
+import { buildKeyboard, clearKeyboard, getKeyboard } from "../keyboard.js?v=3";
+import { setLessonState } from "../nav.js?v=3";
 
 // ========== Lesson 2: Intervals (semitones and tones) ==========
 let intervalSelection=[], intervalMissionStage=-1;

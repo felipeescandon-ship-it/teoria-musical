@@ -1,7 +1,7 @@
-import { rootC, buildChordTones, chordSymbol } from "../theory.js";
-import { playChord } from "../audio.js";
-import { buildKeyboard, highlightChordOnKeyboard, highlightMidiRoles } from "../keyboard.js";
-import { setLessonState } from "../nav.js";
+import { rootC, buildChordTones, chordSymbol } from "../theory.js?v=3";
+import { playChord } from "../audio.js?v=3";
+import { buildKeyboard, highlightChordOnKeyboard, highlightMidiRoles } from "../keyboard.js?v=3";
+import { setLessonState } from "../nav.js?v=3";
 
 // ========== Lesson 5: Chord inversions (root position, 1st, 2nd inversion) ==========
 buildKeyboard("inversionKeyboard",null);

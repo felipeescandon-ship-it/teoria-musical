@@ -1,8 +1,8 @@
-import { PC_KEY_LABELS, ROOTS, MAJOR_SCALE_INTERVALS, SCALE_ROOT_IDS } from "../data.js";
-import { rootById, buildScaleTones } from "../theory.js";
-import { playMidi } from "../audio.js";
-import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js";
-import { setLessonState } from "../nav.js";
+import { PC_KEY_LABELS, ROOTS, MAJOR_SCALE_INTERVALS, SCALE_ROOT_IDS } from "../data.js?v=3";
+import { rootById, buildScaleTones } from "../theory.js?v=3";
+import { playMidi } from "../audio.js?v=3";
+import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=3";
+import { setLessonState } from "../nav.js?v=3";
 
 // ========== Lesson 7: Major scale builder ==========
 const scaleRootSelect=document.getElementById("scaleRoot");

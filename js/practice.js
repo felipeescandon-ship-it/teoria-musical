@@ -1,7 +1,7 @@
-import { PC_KEY_LABELS, ROOTS, CHORDS } from "./data.js";
-import { spellChord, buildChordTones } from "./theory.js";
-import { playChord } from "./audio.js";
-import { buildKeyboard, clearKeyboard, togglePcSelection } from "./keyboard.js";
+import { PC_KEY_LABELS, ROOTS, CHORDS } from "./data.js?v=3";
+import { spellChord, buildChordTones } from "./theory.js?v=3";
+import { playChord } from "./audio.js?v=3";
+import { buildKeyboard, clearKeyboard, togglePcSelection } from "./keyboard.js?v=3";
 
 // ========== Practice mode: build and ear training challenges ==========
 let buildSelected=new Set(),currentBuildChallenge=null,buildAttempts=0;

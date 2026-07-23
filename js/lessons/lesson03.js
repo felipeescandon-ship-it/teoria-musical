@@ -1,8 +1,8 @@
-import { PC_KEY_LABELS } from "../data.js";
-import { rootById, rootC, buildChordTones } from "../theory.js";
-import { playChord } from "../audio.js";
-import { buildKeyboard, clearKeyboard, highlightChordOnKeyboard, togglePcSelection } from "../keyboard.js";
-import { setLessonState } from "../nav.js";
+import { PC_KEY_LABELS } from "../data.js?v=3";
+import { rootById, rootC, buildChordTones } from "../theory.js?v=3";
+import { playChord } from "../audio.js?v=3";
+import { buildKeyboard, clearKeyboard, highlightChordOnKeyboard, togglePcSelection } from "../keyboard.js?v=3";
+import { setLessonState } from "../nav.js?v=3";
 
 // ========== Lesson 3: Major and minor triads (0–4–7 vs 0–3–7) ==========
 let mmSelected=new Set(), mmStage=0;

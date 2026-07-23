@@ -1,8 +1,8 @@
-import { ROOTS, CHORDS, PRACTICAL_ROOT_IDS } from "./data.js";
-import { rootById, buildChordTones, chordSymbol, spellChord, inversionName } from "./theory.js";
-import { playChord } from "./audio.js";
-import { buildKeyboard, highlightChordOnKeyboard } from "./keyboard.js";
-import { registerLabRenderer } from "./nav.js";
+import { ROOTS, CHORDS, PRACTICAL_ROOT_IDS } from "./data.js?v=3";
+import { rootById, buildChordTones, chordSymbol, spellChord, inversionName } from "./theory.js?v=3";
+import { playChord } from "./audio.js?v=3";
+import { buildKeyboard, highlightChordOnKeyboard } from "./keyboard.js?v=3";
+import { registerLabRenderer } from "./nav.js?v=3";
 
 // ========== Lab mode: free exploration of chords ==========
 const labRoot=document.getElementById("labRoot");

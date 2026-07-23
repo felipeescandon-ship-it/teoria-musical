@@ -1,7 +1,7 @@
-import { PC_KEY_LABELS } from "../data.js";
-import { octaveOf } from "../theory.js";
-import { buildKeyboard, clearKeyboard } from "../keyboard.js";
-import { setLessonState } from "../nav.js";
+import { PC_KEY_LABELS } from "../data.js?v=3";
+import { octaveOf } from "../theory.js?v=3";
+import { buildKeyboard, clearKeyboard } from "../keyboard.js?v=3";
+import { setLessonState } from "../nav.js?v=3";
 
 // ========== Lesson 1: Note recognition and octaves ==========
 let l1Step=0, firstDoMidi=null;

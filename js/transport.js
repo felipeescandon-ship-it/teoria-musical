@@ -1,5 +1,5 @@
-import { resumeAudioContext, getAudioContext, cancelVoices } from "./audio.js";
-import { secondsPerBeat, collectScheduledBeats } from "./timing.js";
+import { resumeAudioContext, getAudioContext, cancelVoices } from "./audio.js?v=3";
+import { secondsPerBeat, collectScheduledBeats } from "./timing.js?v=3";
 
 // ========== Lookahead-scheduler transport (Épica C1: tempo, count-in, loop) ==========
 // setTimeout here NEVER decides when a note sounds — it only wakes the scheduler often enough

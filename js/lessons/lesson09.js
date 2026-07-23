@@ -1,10 +1,10 @@
-import { ROOTS, PROGRESSIONS, DIATONIC_ROMANS, SCALE_ROOT_IDS } from "../data.js";
-import { rootById, buildDiatonicChords, buildChordTones } from "../theory.js";
-import { getAudioContext, playMidiAt, playChordAt } from "../audio.js";
-import { createTransport } from "../transport.js";
-import { progressionEventAtBeat } from "../timing.js";
-import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js";
-import { setLessonState, onNavigate } from "../nav.js";
+import { ROOTS, PROGRESSIONS, DIATONIC_ROMANS, SCALE_ROOT_IDS } from "../data.js?v=3";
+import { rootById, buildDiatonicChords, buildChordTones } from "../theory.js?v=3";
+import { getAudioContext, playMidiAt, playChordAt } from "../audio.js?v=3";
+import { createTransport } from "../transport.js?v=3";
+import { progressionEventAtBeat } from "../timing.js?v=3";
+import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=3";
+import { setLessonState, onNavigate } from "../nav.js?v=3";
 
 // ========== Lesson 9: Progressions and accompaniment (Epic B2) + tempo/loop (Epic C1) ==========
 // Both "play once" and "loop with a pulse" run through the SAME transport — they differ only in

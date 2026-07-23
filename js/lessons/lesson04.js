@@ -1,8 +1,8 @@
-import { PC_KEY_LABELS } from "../data.js";
-import { octaveOf, rootById, buildChordTones } from "../theory.js";
-import { playChord } from "../audio.js";
-import { buildKeyboard, clearKeyboard } from "../keyboard.js";
-import { setLessonState } from "../nav.js";
+import { PC_KEY_LABELS } from "../data.js?v=3";
+import { octaveOf, rootById, buildChordTones } from "../theory.js?v=3";
+import { playChord } from "../audio.js?v=3";
+import { buildKeyboard, clearKeyboard } from "../keyboard.js?v=3";
+import { setLessonState } from "../nav.js?v=3";
 
 // ========== Lesson 4: Accidentals (sharps and flats) ==========
 let accidentalSelection=[], accidentalStage=-1;

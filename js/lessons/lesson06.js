@@ -1,7 +1,7 @@
-import { rootById, buildChordTones } from "../theory.js";
-import { playChord } from "../audio.js";
-import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js";
-import { setLessonState } from "../nav.js";
+import { rootById, buildChordTones } from "../theory.js?v=3";
+import { playChord } from "../audio.js?v=3";
+import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=3";
+import { setLessonState } from "../nav.js?v=3";
 
 // ========== Lesson 6: Degrees and diatonic chords ==========
 function demoChord(id,root,quality,inversion=0,arpeggio=false){ const tones=buildChordTones(root,quality,inversion); highlightChordOnKeyboard(id,tones); playChord(tones.map(t=>t.midi),arpeggio); return tones; }

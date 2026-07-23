@@ -1,7 +1,7 @@
 import {
   ROOTS, CHORDS, NATURAL_PCS, LATIN_LETTERS, AMERICAN_LETTERS,
   MAJOR_SCALE_INTERVALS, DIATONIC_QUALITIES, DIATONIC_ROMANS, DIATONIC_FUNCTIONS
-} from "./data.js";
+} from "./data.js?v=3";
 
 // ========== Chord theory utilities ==========
 // Convert accidental difference to notation (♯, ♭, etc.)

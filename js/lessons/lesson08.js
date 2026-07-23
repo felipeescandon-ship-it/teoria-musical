@@ -1,8 +1,8 @@
-import { ROOTS, FUNCTION_COLOR_VAR, SCALE_ROOT_IDS } from "../data.js";
-import { rootById, buildDiatonicChords, buildChordTones } from "../theory.js";
-import { playChord } from "../audio.js";
-import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js";
-import { setLessonState } from "../nav.js";
+import { ROOTS, FUNCTION_COLOR_VAR, SCALE_ROOT_IDS } from "../data.js?v=3";
+import { rootById, buildDiatonicChords, buildChordTones } from "../theory.js?v=3";
+import { playChord } from "../audio.js?v=3";
+import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=3";
+import { setLessonState } from "../nav.js?v=3";
 
 // ========== Lesson 8: Harmonic function (Tónica/Subdominante/Dominante) ==========
 buildKeyboard("functionKeyboard",null,{octaves:2});

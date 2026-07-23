@@ -1,6 +1,6 @@
-import { rootById, buildChordTones } from "../theory.js";
-import { getAudioContext, playChordAt } from "../audio.js";
-import { setLessonState } from "../nav.js";
+import { rootById, buildChordTones } from "../theory.js?v=3";
+import { getAudioContext, playChordAt } from "../audio.js?v=3";
+import { setLessonState } from "../nav.js?v=3";
 
 // ========== Lesson 11: Connecting voicings to real music (Web Component) ==========
 // Unlike lessons 1-10 (plain script attaching listeners to app.html's markup), this lesson

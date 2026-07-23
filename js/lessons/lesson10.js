@@ -1,8 +1,8 @@
-import { ROOTS, CHORDS, VOICING_TYPES, SCALE_ROOT_IDS } from "../data.js";
-import { rootById, buildChordTones, chordSymbol } from "../theory.js";
-import { playChord } from "../audio.js";
-import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js";
-import { setLessonState, showMode } from "../nav.js";
+import { ROOTS, CHORDS, VOICING_TYPES, SCALE_ROOT_IDS } from "../data.js?v=3";
+import { rootById, buildChordTones, chordSymbol } from "../theory.js?v=3";
+import { playChord } from "../audio.js?v=3";
+import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=3";
+import { setLessonState, showMode } from "../nav.js?v=3";
 
 // ========== Lesson 10: Advanced voicings ==========
 const VOICING_QUALITY_IDS=["major","minor","dom7","maj7","min7"];

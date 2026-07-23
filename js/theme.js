@@ -1,4 +1,4 @@
-import { loadTheme, saveTheme } from "./storage.js?v=2";
+import { loadTheme, saveTheme } from "./storage.js?v=3";
 
 // ========== Light/dark theme toggle ==========
 const root = document.documentElement;
