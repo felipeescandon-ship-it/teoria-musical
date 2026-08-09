@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-09T05:02:45Z",
+  "title": "Design System: Teoría Musical Interactiva",
+  "extensions": {
+    "colorMeta": {
+      "navy-partitura": { "role": "primary", "displayName": "Navy Partitura", "canonical": "#0B2948", "tonalRamp": ["#050d17", "#0a1c30", "#0B2948", "#123A61", "#1c4a7a", "#3d6aa6", "#8FB4DE", "#c7dcf0"] },
+      "terracota-raiz": { "role": "secondary", "displayName": "Terracota Raíz", "canonical": "#7a2323", "tonalRamp": ["#2e0d0d", "#4a1414", "#7a2323", "#a83535", "#c76158", "#e08a7c", "#f3d9d9", "#faecec"] },
+      "azul-tercera": { "role": "secondary", "displayName": "Azul Tercera", "canonical": "#3a5680", "tonalRamp": ["#151f2e", "#233349", "#3a5680", "#4f6f9e", "#7893bd", "#a4bcdb", "#dbe4f0", "#eef1f7"] },
+      "periwinkle-quinta": { "role": "secondary", "displayName": "Periwinkle Quinta", "canonical": "#7893bd", "tonalRamp": ["#232a37", "#3a4a63", "#57698c", "#7893bd", "#9db0d3", "#c1cee5", "#dde5f2", "#eef1f7"] },
+      "rosa-septima": { "role": "secondary", "displayName": "Rosa Séptima", "canonical": "#c54667", "tonalRamp": ["#3d0f19", "#631a2a", "#912941", "#c54667", "#dd7590", "#eda6b7", "#f8dde5", "#fcecf0"] },
+      "verde-correcto": { "role": "tertiary", "displayName": "Verde Correcto", "canonical": "#138a76", "tonalRamp": ["#052e27", "#0a5044", "#138a76", "#1eb098", "#5cc9b6", "#9dd9cc", "#c9ece3", "#e6f7f2"] },
+      "naranja-alerta": { "role": "tertiary", "displayName": "Naranja Alerta", "canonical": "#d98219", "tonalRamp": ["#3e2405", "#6b3d09", "#a3610e", "#d98219", "#e8a24f", "#f2c188", "#fbe2bd", "#fff4df"] },
+      "rojo-error": { "role": "tertiary", "displayName": "Rojo Error", "canonical": "#ca4560", "tonalRamp": ["#3d0e18", "#661728", "#98243b", "#ca4560", "#dd7387", "#efb3c1", "#f8d6dd", "#ffedf1"] },
+      "crema-papel": { "role": "neutral", "displayName": "Crema Papel", "canonical": "#FCFAF6", "tonalRamp": ["#1a1712", "#332c20", "#665640", "#998060", "#ccb397", "#e6d9c7", "#f5efe4", "#FCFAF6"] },
+      "texto-tinta": { "role": "neutral", "displayName": "Texto Tinta", "canonical": "#0D1B2A", "tonalRamp": ["#04080c", "#0D1B2A", "#1a3350", "#2d4d70", "#4d6e90", "#7d97ad", "#b3c2ce", "#dbe3e8"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Títulos del héroe y encabezados de lección." },
+      "headline": { "displayName": "Headline/Big Idea", "purpose": "Ideas centrales dentro de una lección." },
+      "music": { "displayName": "Music", "purpose": "Nombres de notas y acordes como contenido musical, nunca como UI." },
+      "body": { "displayName": "Body", "purpose": "Texto de párrafo." },
+      "label": { "displayName": "Label", "purpose": "Etiquetas de campo, eyebrows, badges de estado." }
+    },
+    "shadows": [
+      { "name": "hero", "value": "0 14px 38px rgba(20,32,45,.09)", "purpose": "Superficie más grande y elevada de la página." },
+      { "name": "card", "value": "0 6px 18px rgba(20,32,45,.07)", "purpose": "Tarjetas de contenido y comparación." },
+      { "name": "button", "value": "0 4px 10px rgba(11,41,72,.16)", "purpose": "Botón primario en reposo." },
+      { "name": "keyboard", "value": "0 4px 16px rgba(20,30,40,.06)", "purpose": "Contenedor del piano virtual." }
+    ],
+    "motion": [
+      { "name": "press-feedback", "value": "transform .1s ease-out, filter .1s ease-out, background .1s ease-out", "purpose": "Feedback táctil inmediato al presionar botones y teclas." },
+      { "name": "surface-transition", "value": "background .2s, color .2s, border-color .2s", "purpose": "Transición suave entre tema claro y oscuro." }
+    ],
+    "breakpoints": [
+      { "name": "sidebar-collapse", "value": "930px" },
+      { "name": "grid-collapse", "value": "760px" },
+      { "name": "compact", "value": "470px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Botón principal de acción (Comprobar, Nuevo desafío, Continuar).",
+      "html": "<button class=\"ds-btn-primary\">Comprobar</button>",
+      "css": ".ds-btn-primary { border: 0; border-radius: 12px; padding: 16px 24px; background: #0B2948; color: #ffffff; font-weight: 850; box-shadow: 0 4px 10px rgba(11,41,72,.16); font-family: Inter, ui-sans-serif, system-ui, sans-serif; transition: transform .1s ease-out, filter .1s ease-out, background .1s ease-out; } .ds-btn-primary:hover { background: #123A61; transform: translateY(-1px); } .ds-btn-primary:active { background: #071F38; transform: translateY(0) scale(.97); box-shadow: 0 2px 6px rgba(11,41,72,.2); } .ds-btn-primary:focus-visible { outline: 3px solid rgba(11,41,72,.28); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Botón secundario (Volver, opciones no destructivas).",
+      "html": "<button class=\"ds-btn-secondary\">Volver</button>",
+      "css": ".ds-btn-secondary { border: 1px solid #E4D9C9; border-radius: 12px; padding: 16px 24px; background: #F7F3EC; color: #0D1B2A; font-weight: 850; font-family: Inter, ui-sans-serif, system-ui, sans-serif; transition: transform .1s ease-out, filter .1s ease-out, background .1s ease-out; } .ds-btn-secondary:hover { filter: brightness(.97); } .ds-btn-secondary:active { transform: scale(.97); } .ds-btn-secondary:focus-visible { outline: 3px solid rgba(11,41,72,.28); outline-offset: 2px; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Tarjeta de contenido principal (lección, sección).",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Inversiones</h3><p class=\"ds-card-body\">La raíz da nombre al acorde; el bajo es la nota más grave que realmente suena.</p></div>",
+      "css": ".ds-card { background: #FFFFFF; border: 1px solid #E4D9C9; border-radius: 18px; padding: 22px; box-shadow: 0 6px 18px rgba(20,32,45,.07); font-family: Inter, ui-sans-serif, system-ui, sans-serif; } .ds-card-title { margin: 0 0 8px; font-weight: 850; color: #0D1B2A; } .ds-card-body { margin: 0; color: #626A73; line-height: 1.62; }"
+    },
+    {
+      "name": "Chord Role Chip",
+      "kind": "chip",
+      "refersTo": null,
+      "description": "Chip semántico que marca el rol de una nota dentro de un acorde (raíz/tercera/quinta/séptima) — componente insignia del sistema.",
+      "html": "<span class=\"ds-note-chip ds-role-0\">Do</span>",
+      "css": ".ds-note-chip { display: inline-block; min-width: 55px; text-align: center; padding: 11px 13px; border-radius: 16px; border: 1px solid transparent; font-weight: 850; font-size: 1.02rem; font-family: Inter, ui-sans-serif, system-ui, sans-serif; } .ds-role-0 { background: #f3d9d9; color: #7a2323; } .ds-role-1 { background: #dbe4f0; color: #3a5680; } .ds-role-2 { background: #eef1f7; color: #7893bd; } .ds-role-3 { background: #f8dde5; color: #c54667; }"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": null,
+      "description": "Select / input numérico estándar de la app.",
+      "html": "<select class=\"ds-select\"><option>Do</option><option>Mi</option><option>Sol</option></select>",
+      "css": ".ds-select { width: 100%; border: 1px solid #E4D9C9; border-radius: 12px; padding: 11px 12px; background: #FFFFFF; color: #0D1B2A; font-family: Inter, ui-sans-serif, system-ui, sans-serif; } .ds-select:focus-visible { outline: 3px solid rgba(11,41,72,.28); outline-offset: 2px; }"
+    },
+    {
+      "name": "Lesson Nav Link",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "Ítem de navegación de la barra lateral de lecciones, con estado activo y badge de progreso.",
+      "html": "<button class=\"ds-lesson-link ds-active\">5. Inversiones <span class=\"ds-lesson-status\">Practicada</span></button>",
+      "css": ".ds-lesson-link { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left; border: 1px solid transparent; background: transparent; color: #626A73; border-radius: 12px; padding: 10px; font-weight: 850; font-family: Inter, ui-sans-serif, system-ui, sans-serif; transition: transform .1s ease-out, background .1s ease-out, color .1s ease-out; } .ds-lesson-link:hover { background: #F7F3EC; color: #0D1B2A; } .ds-active { color: #FFFFFF; border-color: #0B2948; background: #0B2948; } .ds-lesson-status { flex: 0 0 auto; padding: 4px 7px; border-radius: 999px; background: rgba(255,255,255,.18); color: #FFFFFF; font-size: .65rem; }"
+    },
+    {
+      "name": "Piano Key",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Componente insignia: tecla de piano virtual, tintada por color de rol armónico cuando aplica.",
+      "html": "<div class=\"ds-key-white ds-key-role-0\">Do</div>",
+      "css": ".ds-key-white { position: relative; display: inline-flex; width: 62px; height: 220px; align-items: end; justify-content: center; padding: 0 3px 11px; border: 1px solid #aeb5c4; border-radius: 0 0 9px 9px; background: linear-gradient(#fff, #eef0f5); font-weight: 850; color: #535d70; font-family: Inter, ui-sans-serif, system-ui, sans-serif; transition: .1s ease; } .ds-key-role-0 { background: linear-gradient(#f3d9d9, #7a2323); color: #fff; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "La Partitura Editorial",
+    "overview": "El sistema visual se lee como una edición cuidada de partituras: papel crema cálido, tinta navy profunda, jerarquía tipográfica precisa. Es cálido y claro por diseño — un principiante autodidacta nunca debe sentirse intimidado — pero la precisión editorial (alineación, contraste, uso disciplinado del color) le da autoridad de material de estudio serio, no de app infantil.\n\nLa tipografía sans-serif (Inter) gobierna toda la interfaz — títulos, botones, navegación — mientras que la serif (Lora) queda reservada exclusivamente para el contenido musical real (nombres de acordes, notas): la regla que separa \"la interfaz que enseña\" de \"la música que se enseña\". El color es funcional antes que decorativo: cada tono de la familia raíz/tercera/quinta/séptima existe para que el oído y el ojo aprendan juntos qué nota cumple qué función en un acorde.",
+    "keyCharacteristics": [
+      "Papel crema + tinta navy como base editorial, nunca blanco puro ni negro puro",
+      "Serif solo para música, sans para todo lo demás (interfaz)",
+      "Paleta semántica de roles de acorde (raíz/tercera/quinta/séptima) consistente en teclado, chips y tablas",
+      "Sombras suaves y difusas, nunca duras ni \"flotantes\"",
+      "Radios generosos (12–18px) en casi todo — nada de esquinas afiladas"
+    ],
+    "rules": [
+      { "name": "La Regla del Papel", "body": "El fondo nunca es blanco puro ni gris frío: siempre crema o beige cálido, incluso en superficies \"neutras\". El navy es el único tono frío del sistema y por eso funciona como acento — su rareza es la señal de interactividad.", "section": "colors" },
+      { "name": "La Regla del Rol", "body": "Los cuatro colores de rol de acorde (raíz/tercera/quinta/séptima) son fijos y nunca se reasignan a otro significado; si un componente nuevo necesita distinguir roles armónicos, reutiliza esta paleta en vez de inventar una nueva.", "section": "colors" },
+      { "name": "La Regla Serif-Solo-Música", "body": "Lora aparece exclusivamente en .music-heading para nombres de acordes/notas. Ningún título de interfaz, botón o navegación usa serif — así el ojo aprende a distinguir \"esto es música\" de \"esto es la app\".", "section": "typography" },
+      { "name": "La Regla de la Sombra Reservada", "body": "La sombra se reserva para superficies que \"flotan\" sobre el fondo (hero, cards, teclado, botón primario). Contenedores informativos planos (info-item, concept, mission, callout) usan borde de 1px, nunca sombra.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do usar Lora exclusivamente para nombres de notas/acordes (.music-heading); todo lo demás en Inter.",
+      "Do mantener los cuatro colores de rol de acorde (raíz/tercera/quinta/séptima) fijos en su significado en cualquier componente nuevo.",
+      "Do reservar la sombra para superficies \"elevadas\" y usar borde de 1px para el resto.",
+      "Do usar radios generosos (12–18px) consistentes con la categoría del componente.",
+      "Do incluir el anillo de foco de 3px en todo control interactivo nuevo."
+    ],
+    "donts": [
+      "Don't usar blanco puro ni negro puro como fondo.",
+      "Don't usar Lora en botones, navegación o títulos de interfaz.",
+      "Don't apilar sombra sobre contenedores ya anidados dentro de una card con sombra.",
+      "Don't introducir un quinto color de rol de acorde o reasignar los existentes a otro significado."
+    ]
+  }
+}
