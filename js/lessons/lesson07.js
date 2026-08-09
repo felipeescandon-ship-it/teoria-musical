@@ -3,6 +3,7 @@ import { rootById, buildScaleTones } from "../theory.js?v=3";
 import { playMidi } from "../audio.js?v=3";
 import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=3";
 import { setLessonState } from "../nav.js?v=3";
+import { renderMissionDots } from "../icons.js?v=3";
 
 // ========== Lesson 7: Major scale builder ==========
 const scaleRootSelect=document.getElementById("scaleRoot");
@@ -38,7 +39,7 @@ function playScaleMission(rootId){
   renderScale("asc");
   scaleMissionHeard.add(rootId);
   if(scaleMissionHeard.size===1)setLessonState(7,"practiced");
-  document.getElementById("scaleMissionDots").textContent=["C","G","F"].map(id=>scaleMissionHeard.has(id)?"●":"○").join(" ");
+  renderMissionDots(document.getElementById("scaleMissionDots"),["C","G","F"].map(id=>scaleMissionHeard.has(id)));
   if(scaleMissionHeard.size===3){
     setLessonState(7,"mastered");
     document.getElementById("scaleMissionText").innerHTML="<strong>¡Dominado!</strong> Escuchaste el mismo patrón T–T–S–T–T–T–S en tres raíces distintas.";

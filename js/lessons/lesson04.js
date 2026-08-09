@@ -3,6 +3,7 @@ import { octaveOf, rootById, buildChordTones } from "../theory.js?v=3";
 import { playChord } from "../audio.js?v=3";
 import { buildKeyboard, clearKeyboard } from "../keyboard.js?v=3";
 import { setLessonState } from "../nav.js?v=3";
+import { renderMissionDots } from "../icons.js?v=3";
 
 // ========== Lesson 4: Accidentals (sharps and flats) ==========
 let accidentalSelection=[], accidentalStage=-1;
@@ -11,7 +12,7 @@ const accidentalChallenges=[
   {text:"Toca Mi y luego Mi♭: baja un semitono.",length:2,test:a=>a[0]%12===4&&a[1]-a[0]===-1},
   {text:"Toca una sola vez la tecla que puede llamarse Do♯ o Re♭.",length:1,test:a=>a[0]%12===1}
 ];
-function updateAccidentalMission(){document.getElementById("accidentalDots").textContent=[0,1,2].map(i=>i<Math.max(accidentalStage,0)?"●":"○").join(" "); if(accidentalStage>=0&&accidentalStage<3)document.getElementById("accidentalMissionText").textContent=`${accidentalStage+1} de 3 · ${accidentalChallenges[accidentalStage].text}`;}
+function updateAccidentalMission(){renderMissionDots(document.getElementById("accidentalDots"),[0,1,2].map(i=>i<Math.max(accidentalStage,0))); if(accidentalStage>=0&&accidentalStage<3)document.getElementById("accidentalMissionText").textContent=`${accidentalStage+1} de 3 · ${accidentalChallenges[accidentalStage].text}`;}
 function clearAccidental(){accidentalSelection=[]; clearKeyboard("accidentalKeyboard");}
 buildKeyboard("accidentalKeyboard",midi=>{
   setLessonState(4,"explored"); accidentalSelection.push(midi); const box=document.getElementById("accidentalResult");

@@ -5,7 +5,7 @@ import { createTransport } from "../transport.js?v=3";
 import { progressionEventAtBeat } from "../timing.js?v=3";
 import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=3";
 import { setLessonState, onNavigate } from "../nav.js?v=3";
-import { ICON_PLAY, ICON_STOP } from "../icons.js?v=3";
+import { ICON_PLAY, ICON_STOP, renderMissionDots } from "../icons.js?v=3";
 
 // ========== Lesson 9: Progressions and accompaniment (Epic B2) + tempo/loop (Epic C1) ==========
 // Both "play once" and "loop with a pulse" run through the SAME transport — they differ only in
@@ -148,7 +148,7 @@ function playProgressionMission(progressionKey){
   startPlayback({looping:false,countInBars:0,metronome:false});
   progressionMissionHeard.add(progressionKey);
   if(progressionMissionHeard.size===1)setLessonState(9,"practiced");
-  document.getElementById("progressionMissionDots").textContent=["I-IV-V-I","I-V-vi-IV","ii-V-I"].map(k=>progressionMissionHeard.has(k)?"●":"○").join(" ");
+  renderMissionDots(document.getElementById("progressionMissionDots"),["I-IV-V-I","I-V-vi-IV","ii-V-I"].map(k=>progressionMissionHeard.has(k)));
   if(progressionMissionHeard.size===3){
     setLessonState(9,"mastered");
     document.getElementById("progressionMissionText").innerHTML="<strong>¡Dominado!</strong> Escuchaste tres progresiones distintas construidas con los mismos acordes diatónicos.";

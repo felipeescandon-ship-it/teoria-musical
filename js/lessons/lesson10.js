@@ -3,6 +3,7 @@ import { rootById, buildChordTones, chordSymbol } from "../theory.js?v=3";
 import { playChord } from "../audio.js?v=3";
 import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=3";
 import { setLessonState, showMode } from "../nav.js?v=3";
+import { renderMissionDots } from "../icons.js?v=3";
 
 // ========== Lesson 10: Advanced voicings ==========
 const VOICING_QUALITY_IDS=["major","minor","dom7","maj7","min7"];
@@ -40,7 +41,7 @@ function playVoicingMission(voicingType){
   renderVoicing(true);
   voicingMissionHeard.add(voicingType);
   if(voicingMissionHeard.size===1)setLessonState(10,"practiced");
-  document.getElementById("voicingMissionDots").textContent=["closed","open","drop2","shell"].map(k=>voicingMissionHeard.has(k)?"●":"○").join(" ");
+  renderMissionDots(document.getElementById("voicingMissionDots"),["closed","open","drop2","shell"].map(k=>voicingMissionHeard.has(k)));
   if(voicingMissionHeard.size===4){
     setLessonState(10,"mastered");
     document.getElementById("voicingMissionText").innerHTML="<strong>¡Dominado!</strong> Escuchaste el mismo Do mayor distribuido en cuatro voicings distintos.";

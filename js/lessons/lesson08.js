@@ -3,6 +3,7 @@ import { rootById, buildDiatonicChords, buildChordTones } from "../theory.js?v=3
 import { playChord } from "../audio.js?v=3";
 import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=3";
 import { setLessonState } from "../nav.js?v=3";
+import { renderMissionDots } from "../icons.js?v=3";
 
 // ========== Lesson 8: Harmonic function (Tónica/Subdominante/Dominante) ==========
 const FUNCTION_ROLE_CLASS = { "Tónica": "role-tonica", "Subdominante": "role-subdominante", "Dominante": "role-dominante" };
@@ -64,7 +65,7 @@ function answerFunctionQuiz(answer){
   if(correct){
     functionMissionCorrect++;
     if(functionMissionCorrect===1)setLessonState(8,"practiced");
-    document.getElementById("functionMissionDots").textContent=[0,1,2].map(i=>i<Math.min(functionMissionCorrect,3)?"●":"○").join(" ");
+    renderMissionDots(document.getElementById("functionMissionDots"),[0,1,2].map(i=>i<Math.min(functionMissionCorrect,3)));
     if(functionMissionCorrect>=3){
       setLessonState(8,"mastered");
       document.getElementById("functionMissionText").innerHTML="<strong>¡Dominado!</strong> Reconoces la función armónica de tónica, subdominante y dominante.";

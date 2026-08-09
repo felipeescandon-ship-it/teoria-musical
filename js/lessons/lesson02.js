@@ -3,6 +3,7 @@ import { octaveOf } from "../theory.js?v=3";
 import { playMidi, playChord } from "../audio.js?v=3";
 import { buildKeyboard, clearKeyboard, getKeyboard } from "../keyboard.js?v=3";
 import { setLessonState } from "../nav.js?v=3";
+import { renderMissionDots } from "../icons.js?v=3";
 
 // ========== Lesson 2: Intervals (semitones and tones) ==========
 let intervalSelection=[], intervalMissionStage=-1;
@@ -13,7 +14,7 @@ const intervalChallenges=[
 ];
 function buildIntervalMeter(distance=null){ const meter=document.getElementById("intervalMeter"); meter.innerHTML=""; for(let i=0;i<=12;i++){const c=document.createElement("div"); c.className=`interval-cell ${distance!==null&&i<=distance?"active":""}`; c.textContent=i; meter.appendChild(c);} }
 function clearIntervalSelection(){ intervalSelection=[]; clearKeyboard("intervalKeyboard"); document.getElementById("playIntervalMelodic").disabled=true; document.getElementById("playIntervalHarmonic").disabled=true; buildIntervalMeter(); }
-function updateIntervalMission(){ document.getElementById("intervalMissionDots").textContent=[0,1,2].map(i=>i<Math.max(intervalMissionStage,0)?"●":"○").join(" "); if(intervalMissionStage>=0&&intervalMissionStage<3)document.getElementById("intervalMissionText").textContent=`${intervalMissionStage+1} de 3 · ${intervalChallenges[intervalMissionStage].text}`; }
+function updateIntervalMission(){ renderMissionDots(document.getElementById("intervalMissionDots"),[0,1,2].map(i=>i<Math.max(intervalMissionStage,0))); if(intervalMissionStage>=0&&intervalMissionStage<3)document.getElementById("intervalMissionText").textContent=`${intervalMissionStage+1} de 3 · ${intervalChallenges[intervalMissionStage].text}`; }
 function evaluateIntervalMission(a,b){ if(intervalMissionStage<0||intervalMissionStage>=3)return; const box=document.getElementById("intervalResult"); if(intervalChallenges[intervalMissionStage].test(a,b)){ intervalMissionStage++; if(intervalMissionStage===1)setLessonState(2,"practiced"); if(intervalMissionStage>=3){setLessonState(2,"mastered"); box.className="result-box status-good"; box.innerHTML="<strong>¡Dominado!</strong> Construiste un semitono ascendente, un tono y un semitono descendente.";} else {box.className="result-box status-good"; box.innerHTML=`<strong>Correcto.</strong> Ahora: ${intervalChallenges[intervalMissionStage].text}`;} updateIntervalMission(); setTimeout(clearIntervalSelection,500); } else {box.className="result-box status-bad"; box.innerHTML=`<strong>Casi.</strong> ${intervalChallenges[intervalMissionStage].text} Cuenta cada paso hacia la tecla vecina.`; setTimeout(clearIntervalSelection,850);} }
 buildIntervalMeter();
 buildKeyboard("intervalKeyboard",midi=>{

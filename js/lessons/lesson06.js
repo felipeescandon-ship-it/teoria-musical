@@ -2,6 +2,7 @@ import { rootById, buildChordTones } from "../theory.js?v=3";
 import { playChord } from "../audio.js?v=3";
 import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=3";
 import { setLessonState } from "../nav.js?v=3";
+import { renderMissionDots } from "../icons.js?v=3";
 
 // ========== Lesson 6: Degrees and diatonic chords ==========
 function demoChord(id,root,quality,inversion=0,arpeggio=false){ const tones=buildChordTones(root,quality,inversion); highlightChordOnKeyboard(id,tones); playChord(tones.map(t=>t.midi),arpeggio); return tones; }
@@ -20,7 +21,7 @@ buildKeyboard("lesson6Keyboard",(midi,pc)=>{
   const diatonic=DIATONIC_CHORDS.find(d=>d.pc===pc);
   if(diatonic){
     lesson6Explored.add(pc);
-    document.getElementById("lesson6Dots").textContent=[0,1,2,3,4,5,6].map(i=>lesson6Explored.has(DIATONIC_CHORDS[i].pc)?"●":"○").join(" ");
+    renderMissionDots(document.getElementById("lesson6Dots"),[0,1,2,3,4,5,6].map(i=>lesson6Explored.has(DIATONIC_CHORDS[i].pc)));
     if(lesson6Explored.size===1)setLessonState(6,"practiced");
     if(lesson6Explored.size===7)setLessonState(6,"mastered");
     const tones=buildChordTones(rootById(diatonic.root),diatonic.quality);

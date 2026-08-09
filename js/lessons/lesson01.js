@@ -2,11 +2,12 @@ import { PC_KEY_LABELS } from "../data.js?v=3";
 import { octaveOf } from "../theory.js?v=3";
 import { buildKeyboard, clearKeyboard } from "../keyboard.js?v=3";
 import { setLessonState } from "../nav.js?v=3";
+import { renderMissionDots } from "../icons.js?v=3";
 
 // ========== Lesson 1: Note recognition and octaves ==========
 let l1Step=0, firstDoMidi=null;
 const l1Tasks=["Encuentra cualquier Do.","Encuentra otro Do en una octava diferente.","Ahora encuentra Mi.","Finalmente encuentra Sol."];
-function renderL1Mission(){ document.getElementById("lesson1MissionText").textContent=`${Math.min(l1Step+1,4)} de 4 · ${l1Tasks[Math.min(l1Step,3)]}`; document.getElementById("lesson1Dots").textContent=[0,1,2,3].map(i=>i<l1Step?"●":"○").join(" "); }
+function renderL1Mission(){ document.getElementById("lesson1MissionText").textContent=`${Math.min(l1Step+1,4)} de 4 · ${l1Tasks[Math.min(l1Step,3)]}`; renderMissionDots(document.getElementById("lesson1Dots"),[0,1,2,3].map(i=>i<l1Step)); }
 function resetL1(){ l1Step=0; firstDoMidi=null; clearKeyboard("courseKeyboard1"); document.getElementById("lesson1Result").className="result-box"; document.getElementById("lesson1Result").textContent="Toca una tecla para comenzar."; renderL1Mission(); }
 buildKeyboard("courseKeyboard1",(midi,pc)=>{
   setLessonState(1,"explored"); const box=document.getElementById("lesson1Result"); let correct=false;

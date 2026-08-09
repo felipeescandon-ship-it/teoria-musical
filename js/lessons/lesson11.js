@@ -1,6 +1,7 @@
 import { rootById, buildChordTones } from "../theory.js?v=3";
 import { getAudioContext, playChordAt } from "../audio.js?v=3";
 import { setLessonState } from "../nav.js?v=3";
+import { renderMissionDots } from "../icons.js?v=3";
 
 // ========== Lesson 11: Connecting voicings to real music (Web Component) ==========
 // Unlike lessons 1-10 (plain script attaching listeners to app.html's markup), this lesson
@@ -62,27 +63,46 @@ const TEMPLATE = document.createElement("template");
 TEMPLATE.innerHTML = `
   <style>
     :host { display: block; color: var(--text); font-family: inherit; }
-    h2 { margin: 0 0 10px; font-size: 1.5rem; }
+    h2 { margin: 0 0 10px; font-size: 1.5rem; font-family: var(--font-sans); }
     p.intro { color: var(--muted); line-height: 1.55; }
     .cards { display: grid; gap: 14px; margin: 18px 0; }
     .card {
-      border: 1px solid var(--line); border-radius: var(--radius, 16px);
-      padding: 16px 18px; background: var(--panel-soft, #fafaff);
+      border: 1px solid var(--line); border-radius: var(--radius-md);
+      padding: 16px 18px; background: var(--panel-soft);
     }
-    .card h3 { margin: 0 0 6px; font-size: 1.05rem; }
+    .card h3 { margin: 0 0 6px; font-size: 1.05rem; font-family: var(--font-serif); color: var(--text); }
     .card p { margin: 6px 0; line-height: 1.5; }
-    .why { color: var(--accent-dark, var(--accent)); font-weight: 600; font-size: .92rem; }
+    .why { color: var(--accent-dark); font-weight: 600; font-size: .92rem; }
     button {
-      margin-top: 10px; border: none; border-radius: 999px; padding: 8px 16px;
-      background: var(--accent); color: white; font: inherit; font-weight: 600; cursor: pointer;
+      margin-top: 10px; border: none; border-radius: var(--radius-sm); padding: 12px 20px;
+      background: var(--accent); color: var(--accent-text); font: inherit; font-weight: var(--weight-heavy);
+      cursor: pointer; box-shadow: var(--shadow-btn);
     }
-    button:hover { filter: brightness(1.08); }
+    button:hover { background: var(--accent-hover); }
+    button:active { background: var(--accent-pressed); }
     .mission {
-      border: 1px dashed var(--accent); border-radius: var(--radius, 16px);
-      padding: 14px 16px; margin-top: 8px;
+      position: relative;
+      background: var(--mission-bg); border: 1px solid var(--mission-border);
+      border-radius: var(--radius-md); padding: 16px 16px 16px 60px; margin-top: 12px;
+      color: var(--mission-text-color);
     }
-    .mission-title { font-weight: 700; margin-bottom: 6px; }
-    .dots { letter-spacing: 3px; }
+    .mission { --target-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='6' fill='none' stroke='black' stroke-width='1.6'/%3E%3Ccircle cx='10' cy='10' r='1.8' fill='black'/%3E%3C/svg%3E"); }
+    .mission::before {
+      content: ""; position: absolute; left: 16px; top: 16px;
+      width: 32px; height: 32px; border-radius: 50%;
+      background-color: var(--mission-icon-bg);
+    }
+    .mission::after {
+      content: ""; position: absolute; left: 16px; top: 16px;
+      width: 32px; height: 32px;
+      background-color: var(--mission-icon-color);
+      -webkit-mask: var(--target-icon) center / 15px 15px no-repeat;
+      mask: var(--target-icon) center / 15px 15px no-repeat;
+    }
+    .mission-title { color: var(--mission-title-color); font-weight: var(--weight-heavy); margin-bottom: 5px; }
+    .dots { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+    .mission-dot { width: 15px; height: 15px; border-radius: 50%; border: 2px solid var(--accent); background: transparent; flex: 0 0 auto; }
+    .mission-dot.filled { background: var(--accent); }
   </style>
   <h2>Los mismos voicings, en contexto musical real</h2>
   <p class="intro">
@@ -94,7 +114,7 @@ TEMPLATE.innerHTML = `
   <div class="mission">
     <div class="mission-title">Misión: escucha la progresión en los 4 contextos</div>
     <p>Pulsa los cuatro botones para sentir cómo el mismo ii–V–I cambia de carácter según el voicing y el tempo.</p>
-    <div class="dots">○ ○ ○ ○</div>
+    <div class="dots"></div>
   </div>
 `;
 
@@ -105,6 +125,7 @@ class LessonRealMusic extends HTMLElement {
     const cardsEl = root.querySelector(".cards");
     const dotsEl = root.querySelector(".dots");
     const heard = new Set();
+    renderMissionDots(dotsEl, CONTEXTS.map(() => false));
 
     CONTEXTS.forEach(c => {
       const card = document.createElement("div");
@@ -120,7 +141,7 @@ class LessonRealMusic extends HTMLElement {
         playProgressionWithVoicing(c.type, c.stepMs);
         heard.add(c.type);
         if (heard.size === 1) setLessonState(11, "practiced");
-        dotsEl.textContent = CONTEXTS.map(x => heard.has(x.type) ? "●" : "○").join(" ");
+        renderMissionDots(dotsEl, CONTEXTS.map(x => heard.has(x.type)));
         if (heard.size === CONTEXTS.length) setLessonState(11, "mastered");
       });
       cardsEl.appendChild(card);
