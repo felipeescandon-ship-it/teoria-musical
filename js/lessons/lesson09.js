@@ -5,6 +5,7 @@ import { createTransport } from "../transport.js?v=3";
 import { progressionEventAtBeat } from "../timing.js?v=3";
 import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=3";
 import { setLessonState, onNavigate } from "../nav.js?v=3";
+import { ICON_PLAY, ICON_STOP } from "../icons.js?v=3";
 
 // ========== Lesson 9: Progressions and accompaniment (Epic B2) + tempo/loop (Epic C1) ==========
 // Both "play once" and "loop with a pulse" run through the SAME transport — they differ only in
@@ -90,7 +91,7 @@ const transport=createTransport({
 
 function updatePlaybackButtons(){
   stopButton.disabled=!transport.running;
-  loopButton.textContent=transport.running?"▶ Bucle sonando…":"▶ Bucle con pulso";
+  loopButton.innerHTML=`${ICON_PLAY}${transport.running?"Bucle sonando…":"Bucle con pulso"}`;
 }
 export function stopProgressionPlayback(){
   transport.stop(); // cancel:true — kills notes already scheduled ahead but not yet audible

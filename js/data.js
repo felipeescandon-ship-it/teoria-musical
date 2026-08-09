@@ -39,7 +39,6 @@ export const DIATONIC_QUALITIES = ["major", "minor", "minor", "major", "major", 
 export const DIATONIC_ROMANS = ["I", "ii", "iii", "IV", "V", "vi", "vii°"];
 // Harmonic function groups: Tónica (stable/home), Subdominante (movement away), Dominante (tension resolving to tonic)
 export const DIATONIC_FUNCTIONS = ["Tónica", "Subdominante", "Tónica", "Subdominante", "Dominante", "Tónica", "Dominante"];
-export const FUNCTION_COLOR_VAR = { "Tónica": "green", "Subdominante": "orange", "Dominante": "red" };
 
 // Common diatonic chord progressions, written as roman numeral sequences (universal for any major key)
 export const PROGRESSIONS = {

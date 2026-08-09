@@ -47,13 +47,27 @@ export function showLesson(n,scroll=true) {
   document.querySelectorAll(".lesson-link").forEach(b=>b.classList.toggle("active",Number(b.dataset.lesson)===currentLesson));
   updateProgress(); if(scroll) window.scrollTo({top:document.querySelector(".mode-tabs").offsetTop-6,behavior:"smooth"});
 }
-// Switch between app modes (course, lab, practice, reference)
-export function showMode(mode) {
+// ========== Cross-mode origin trail (C2): remember which lesson a "Ir a X" jump came from ==========
+const crossBanner=document.getElementById("crossOriginBanner"), crossLessonNum=document.getElementById("crossOriginLessonNum");
+let crossOriginLesson=null;
+function setCrossOrigin(lessonNum){
+  crossOriginLesson=lessonNum;
+  if(lessonNum){ crossLessonNum.textContent=lessonNum; crossBanner.hidden=false; }
+  else crossBanner.hidden=true;
+}
+document.getElementById("crossOriginReturn").addEventListener("click",()=>{
+  const lessonNum=crossOriginLesson; setCrossOrigin(null); showMode("course"); if(lessonNum) showLesson(lessonNum);
+});
+
+// Switch between app modes (course, lab, practice). `originLesson` is set only when the jump
+// comes from a lesson's "Ir a..." shortcut, so the banner can offer a way back to that exact spot.
+export function showMode(mode,originLesson=null) {
   const btn=document.querySelector(`.mode-tab[data-mode="${mode}"]`); if(!btn) return;
   notifyNavigation();
   document.querySelectorAll(".mode-tab").forEach(b=>b.classList.toggle("active",b===btn));
   document.querySelectorAll(".mode-panel").forEach(p=>p.classList.remove("active"));
   document.getElementById(`mode-${mode}`).classList.add("active");
+  setCrossOrigin(originLesson);
   if(mode==="lab") labRenderer?.(false);
   window.scrollTo({top:document.querySelector(".mode-tabs").offsetTop-6,behavior:"smooth"});
 }
@@ -61,5 +75,35 @@ document.querySelectorAll(".mode-tab").forEach(btn=>btn.addEventListener("click"
 document.querySelectorAll(".lesson-link").forEach(btn=>btn.addEventListener("click",()=>showLesson(btn.dataset.lesson)));
 document.querySelectorAll(".lesson-next").forEach(btn=>btn.addEventListener("click",()=>showLesson(btn.dataset.next)));
 document.querySelectorAll(".lesson-prev").forEach(btn=>btn.addEventListener("click",()=>showLesson(btn.dataset.prev)));
-document.getElementById("goToPractice").addEventListener("click",()=>showMode("practice"));
+document.getElementById("goToPractice").addEventListener("click",()=>showMode("practice",currentLesson));
+document.getElementById("goToFunctionQuiz").addEventListener("click",()=>{showMode("course");showLesson(8);});
+
+// ========== Hero collapse (returning users skip the pitch, land on content) ==========
+const hero=document.getElementById("hero"), heroToggle=document.getElementById("heroToggle");
+function setHeroCompact(compact){
+  hero.classList.toggle("compact",compact);
+  heroToggle.setAttribute("aria-expanded",String(!compact));
+  heroToggle.setAttribute("aria-label",compact?"Mostrar introducción":"Ocultar introducción");
+}
+const hasAnyProgress=Object.values(lessonStates).some(s=>s!=="not_started");
+setHeroCompact(hasAnyProgress);
+heroToggle.addEventListener("click",()=>setHeroCompact(!hero.classList.contains("compact")));
+
+// ========== Referencia: floating panel reachable from any mode, not a tab you "enter" ==========
+const referenceToggle=document.getElementById("referenceToggle"), referenceOverlay=document.getElementById("referenceOverlay"),
+  referenceScrim=document.getElementById("referenceScrim"), referenceClose=document.getElementById("referenceClose");
+function openReference(){
+  referenceOverlay.hidden=false; referenceToggle.setAttribute("aria-expanded","true");
+  referenceClose.focus();
+}
+function closeReference(){
+  if(referenceOverlay.hidden) return;
+  referenceOverlay.hidden=true; referenceToggle.setAttribute("aria-expanded","false");
+  referenceToggle.focus();
+}
+referenceToggle.addEventListener("click",openReference);
+referenceClose.addEventListener("click",closeReference);
+referenceScrim.addEventListener("click",closeReference);
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeReference(); });
+
 updateProgress(); showLesson(1,false);

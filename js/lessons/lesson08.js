@@ -1,10 +1,11 @@
-import { ROOTS, FUNCTION_COLOR_VAR, SCALE_ROOT_IDS } from "../data.js?v=3";
+import { ROOTS, SCALE_ROOT_IDS } from "../data.js?v=3";
 import { rootById, buildDiatonicChords, buildChordTones } from "../theory.js?v=3";
 import { playChord } from "../audio.js?v=3";
 import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=3";
 import { setLessonState } from "../nav.js?v=3";
 
 // ========== Lesson 8: Harmonic function (Tónica/Subdominante/Dominante) ==========
+const FUNCTION_ROLE_CLASS = { "Tónica": "role-tonica", "Subdominante": "role-subdominante", "Dominante": "role-dominante" };
 buildKeyboard("functionKeyboard",null,{octaves:2});
 const functionKeyRootSelect=document.getElementById("functionKeyRoot");
 ROOTS.filter(r=>SCALE_ROOT_IDS.includes(r.id)).forEach(r=>functionKeyRootSelect.add(new Option(`${r.latin} mayor`,r.id)));
@@ -13,7 +14,7 @@ function renderFunctionChords(){
   const root=rootById(functionKeyRootSelect.value);
   const chords=buildDiatonicChords(root);
   const grid=document.getElementById("functionChordsGrid");
-  grid.innerHTML=chords.map((c,i)=>`<div class="info-item" style="border-left:4px solid var(--${FUNCTION_COLOR_VAR[c.func]});"><span>${c.roman} · ${c.func}</span><strong>${c.name}</strong><button type="button" class="btn small function-chord-btn" data-index="${i}" style="margin-top:8px;">Oír</button></div>`).join("");
+  grid.innerHTML=chords.map((c,i)=>`<div class="info-item ${FUNCTION_ROLE_CLASS[c.func]}"><span>${c.roman} · ${c.func}</span><strong>${c.name}</strong><button type="button" class="btn small function-chord-btn mt-sm" data-index="${i}">Oír</button></div>`).join("");
   grid.querySelectorAll(".function-chord-btn").forEach(btn=>{
     btn.addEventListener("click",()=>{
       setLessonState(8,"explored");

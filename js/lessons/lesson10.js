@@ -50,4 +50,4 @@ document.getElementById("voicingMission1").addEventListener("click",()=>playVoic
 document.getElementById("voicingMission2").addEventListener("click",()=>playVoicingMission("open"));
 document.getElementById("voicingMission3").addEventListener("click",()=>playVoicingMission("drop2"));
 document.getElementById("voicingMission4").addEventListener("click",()=>playVoicingMission("shell"));
-document.getElementById("goToLabFinal").addEventListener("click",()=>showMode("lab"));
+document.getElementById("goToLabFinal").addEventListener("click",()=>showMode("lab",10));
