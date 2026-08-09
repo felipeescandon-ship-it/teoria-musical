@@ -339,11 +339,11 @@
     .callout { margin-top: 14px; padding: 14px 16px; border-radius: var(--radius-md); border: 1px solid var(--line); background: var(--panel-soft); color: var(--text); line-height: 1.52; }
     .callout.info {
       position: relative;
-      display: flex; align-items: flex-start; gap: 14px;
+      padding-left: 58px;
       border-color: var(--info-border); background: var(--info-bg); color: var(--info-text);
     }
     .callout.info::before {
-      content: ""; flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%;
+      content: ""; position: absolute; left: 16px; top: 14px; width: 30px; height: 30px; border-radius: 50%;
       background-color: var(--info-icon-bg);
     }
     .callout.info::after {
