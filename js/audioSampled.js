@@ -68,7 +68,16 @@ function toCancellable(stopFn) {
 // absolute AudioContext time. smplr's `start({time})` is ALSO an absolute AudioContext time (not
 // relative to "now" as its README implies) — it's compared directly against the player's own
 // `context.currentTime` internally, so `when` passes straight through unchanged.
+//
+// getAudioContext() here is NOT just for reading the clock — its side effect (auto-resume if
+// suspended) matters. Safari, unlike Chrome, keeps an AudioContext genuinely silent until it's
+// resumed inside a user-gesture call stack, and won't do so implicitly just because nodes get
+// scheduled on it. Every other sound-producing path (audio.js's makeVoice, playMidiSmart) already
+// called getAudioContext() and got this for free; this absolute-time path didn't, so once the
+// piano was warm, pressing a key here could schedule a note that never resumes the context —
+// silent on Safari, but easy to miss testing on Chrome, which resumes far more permissively.
 export function playMidiAtSampled(piano, midi, when, duration = .95, velocity = 80) {
+  getAudioContext();
   return toCancellable(piano.start({ note: midi, velocity, time: when, duration }));
 }
 export function playChordAtSampled(piano, midis, when, duration = .95, velocity = 80) {
@@ -93,6 +102,7 @@ export function playChordAtSmart(midis, when, duration=.95, volume=.09, velocity
 // stopId lets the same physical key be held via two different tokens (e.g. mouse vs. computer
 // keyboard) without one release silencing the other.
 export function startHeldMidiSampled(piano, token, midi, velocity = 80) {
+  getAudioContext(); // see playMidiAtSampled — resumes a Safari-suspended context on this gesture
   piano.start({ note: midi, velocity, stopId: token });
 }
 export function stopHeldMidiSampled(piano, token) {

@@ -1,6 +1,6 @@
 import { rootById, buildChordTones } from "../theory.js?v=3";
 import { getAudioContext, playChordAt } from "../audio.js?v=5";
-import { getSampledPiano, playChordAtSampled } from "../audioSampled.js?v=6";
+import { getSampledPiano, playChordAtSampled } from "../audioSampled.js?v=7";
 import { setLessonState } from "../nav.js?v=3";
 import { renderMissionDots } from "../icons.js?v=3";
 

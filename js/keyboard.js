@@ -1,6 +1,6 @@
 import { PC_KEY_LABELS, PC_KEY_SHORT } from "./data.js?v=3";
 import { startHeldMidi, stopHeldMidi } from "./audio.js?v=5";
-import { getSampledPiano, startHeldMidiSampled, stopHeldMidiSampled } from "./audioSampled.js?v=6";
+import { getSampledPiano, startHeldMidiSampled, stopHeldMidiSampled } from "./audioSampled.js?v=7";
 
 // ========== Piano keyboard and interaction ==========
 const keyboards = new Map(); // Global registry of keyboard instances
