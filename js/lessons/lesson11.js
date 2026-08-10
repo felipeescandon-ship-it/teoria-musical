@@ -1,6 +1,6 @@
 import { rootById, buildChordTones } from "../theory.js?v=3";
 import { getAudioContext, playChordAt } from "../audio.js?v=3";
-import { getSampledPiano, playChordAtSampled } from "../audioSampled.js?v=3";
+import { getSampledPiano, playChordAtSampled } from "../audioSampled.js?v=4";
 import { setLessonState } from "../nav.js?v=3";
 import { renderMissionDots } from "../icons.js?v=3";
 
@@ -134,9 +134,9 @@ TEMPLATE.innerHTML = `
     para elegir un voicing casi nunca es solo "cómo suena" — también es "¿me da tiempo de tocarlo?".
   </p>
   <div class="engine-toggle">
-    <span class="label">Motor de sonido (prototipo A/B):</span>
-    <button type="button" data-engine="synth" class="active">Sintetizador actual</button>
-    <button type="button" data-engine="sampled">Piano real (Steinway, beta)</button>
+    <span class="label">Motor de sonido:</span>
+    <button type="button" data-engine="synth">Sintetizador (comparar)</button>
+    <button type="button" data-engine="sampled" class="active">Piano real</button>
     <span class="status"></span>
   </div>
   <div class="cards"></div>
@@ -156,7 +156,7 @@ class LessonRealMusic extends HTMLElement {
     const heard = new Set();
     renderMissionDots(dotsEl, CONTEXTS.map(() => false));
 
-    let engine = "synth";
+    let engine = "sampled";
     const engineButtons = root.querySelectorAll(".engine-toggle button");
     const statusEl = root.querySelector(".engine-toggle .status");
     engineButtons.forEach(btn => btn.addEventListener("click", () => {

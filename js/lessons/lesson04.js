@@ -1,6 +1,6 @@
 import { PC_KEY_LABELS } from "../data.js?v=3";
 import { octaveOf, rootById, buildChordTones } from "../theory.js?v=3";
-import { playChord } from "../audio.js?v=3";
+import { playChordSmart as playChord } from "../audioSampled.js?v=4";
 import { buildKeyboard, clearKeyboard } from "../keyboard.js?v=4";
 import { setLessonState } from "../nav.js?v=3";
 import { renderMissionDots } from "../icons.js?v=3";

@@ -13,7 +13,7 @@
 // has no such property anywhere. The instrument always loads its full fixed sample set (5
 // velocity layers, ~60 recorded pitches each — the rest are reached via pitch-shifting from the
 // nearest recording), so every caller shares one instance regardless of what MIDI range it plays.
-import { getAudioContext } from "./audio.js?v=3";
+import { getAudioContext, playMidi as playMidiSynth, playChord as playChordSynth } from "./audio.js?v=3";
 
 const SAMPLE_BASE_URL = new URL("../assets/piano-samples", import.meta.url).href;
 
@@ -30,6 +30,25 @@ export function getSampledPiano() {
     })();
   }
   return pianoPromise;
+}
+
+// ========== Smart one-shot playback (drop-in for audio.js's playMidi/playChord) ==========
+// Same call signature as their synth counterparts, so a lesson's demo-button code doesn't need
+// to change — only its import source does. Falls back to the synth for whichever calls happen
+// before the piano finishes loading; every call after that uses the real piano. Kicked off eagerly
+// here (not waiting for a keyboard to trigger it) so demo-only lessons still get the real piano.
+let sharedPiano = null;
+getSampledPiano().then(p => { sharedPiano = p; });
+const DEMO_VELOCITY = 85;
+
+export function playMidiSmart(midi, duration=.78, delay=0, volume=.12, velocity=null) {
+  if (!sharedPiano) return playMidiSynth(midi, duration, delay, volume, velocity);
+  const ctx = getAudioContext();
+  return sharedPiano.start({ note: midi, velocity: DEMO_VELOCITY, time: ctx.currentTime + delay, duration });
+}
+export function playChordSmart(midis, arpeggio=false, delayStart=0, velocity=null) {
+  if (!sharedPiano) return playChordSynth(midis, arpeggio, delayStart, velocity);
+  return midis.map((m,i) => playMidiSmart(m, arpeggio ? .72 : .95, delayStart + (arpeggio ? i*.16 : 0), arpeggio ? .13 : .09, velocity));
 }
 
 // Mirrors audio.js's playChordAt(midis, when, duration) contract — `when` is an absolute

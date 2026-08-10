@@ -1,6 +1,6 @@
 import { ROOTS, CHORDS, VOICING_TYPES, SCALE_ROOT_IDS } from "../data.js?v=3";
 import { rootById, buildChordTones, chordSymbol } from "../theory.js?v=3";
-import { playChord } from "../audio.js?v=3";
+import { playChordSmart as playChord } from "../audioSampled.js?v=4";
 import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=4";
 import { setLessonState, showMode } from "../nav.js?v=3";
 import { renderMissionDots } from "../icons.js?v=3";
