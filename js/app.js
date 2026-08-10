@@ -14,7 +14,7 @@ import "./lessons/lesson07.js?v=3";
 import "./lessons/lesson08.js?v=3";
 import "./lessons/lesson09.js?v=3";
 import "./lessons/lesson10.js?v=3";
-import "./lessons/lesson11.js?v=3";
+import "./lessons/lesson11.js?v=4";
 
 import "./lab.js?v=3";
 import "./practice.js?v=3";
