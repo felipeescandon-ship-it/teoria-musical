@@ -22,3 +22,9 @@ import "./eartraining.js?v=3";
 
 // ========== Reference mode: quick chord-quality demo buttons ==========
 document.querySelectorAll(".reference-chord-demo").forEach(b=>b.addEventListener("click",()=>playChord(buildChordTones(rootC,b.dataset.quality).map(t=>t.midi))));
+
+// ========== PWA: cache piano samples + app shell on-device (service-worker.js) ==========
+// Registers immediately rather than waiting for the "load" event: this module script already
+// runs after the HTML is parsed (deferred by default), and on a fast/cached load that event can
+// fire before this listener even attaches — which would silently skip registration forever.
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("./service-worker.js");

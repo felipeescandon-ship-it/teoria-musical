@@ -1,5 +1,6 @@
 import { rootById, buildChordTones } from "../theory.js?v=3";
 import { getAudioContext, playChordAt } from "../audio.js?v=3";
+import { getSampledPiano, playChordAtSampled } from "../audioSampled.js?v=3";
 import { setLessonState } from "../nav.js?v=3";
 import { renderMissionDots } from "../icons.js?v=3";
 
@@ -49,13 +50,22 @@ const CONTEXTS = [
 // sequence like this can just be scheduled all at once; the lookahead scheduler in
 // transport.js is reserved for Lesson 9's open-ended loop, which can't know its beats in
 // advance the way this fixed 3-chord sequence can.
-function playProgressionWithVoicing(voicingType, stepMs) {
+//
+// `engine` picks which sound source plays the progression — "synth" (audio.js, always ready)
+// or "sampled" (the Steinway prototype from audioSampled.js). The sampled piano's first call
+// awaits its sample load before computing startTime, so "now + 0.08s" still means now — if it
+// were computed before the await, a slow first load would make every chord fire in the past.
+async function playProgressionWithVoicing(voicingType, stepMs, engine) {
   const ctx = getAudioContext();
-  const startTime = ctx.currentTime + 0.08; // same small buffer used elsewhere before a first sound
   const stepSeconds = stepMs / 1000;
-  PROGRESSION.forEach((chord, i) => {
-    const tones = buildChordTones(chord.root, chord.quality, 0, 48, voicingType);
-    playChordAt(tones.map(t => t.midi), startTime + i * stepSeconds);
+  const chords = PROGRESSION.map(chord => buildChordTones(chord.root, chord.quality, 0, 48, voicingType));
+  const piano = engine === "sampled" ? await getSampledPiano() : null;
+  const startTime = ctx.currentTime + 0.08; // same small buffer used elsewhere before a first sound
+  chords.forEach((tones, i) => {
+    const when = startTime + i * stepSeconds;
+    const midis = tones.map(t => t.midi);
+    if (piano) playChordAtSampled(piano, midis, when, stepSeconds * 0.9);
+    else playChordAt(midis, when);
   });
 }
 
@@ -103,6 +113,19 @@ TEMPLATE.innerHTML = `
     .dots { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
     .mission-dot { width: 15px; height: 15px; border-radius: 50%; border: 2px solid var(--accent); background: transparent; flex: 0 0 auto; }
     .mission-dot.filled { background: var(--accent); }
+    .engine-toggle {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      border: 1px solid var(--line); border-radius: var(--radius-md);
+      padding: 12px 16px; margin: 16px 0; background: var(--panel-soft);
+    }
+    .engine-toggle span.label { color: var(--muted); }
+    .engine-toggle .status { color: var(--muted); }
+    .engine-toggle button {
+      border: 1px solid var(--line); border-radius: var(--radius-sm);
+      padding: 8px 14px; background: var(--panel); color: var(--text);
+      font: inherit; font-weight: var(--weight-heavy); cursor: pointer; box-shadow: none;
+    }
+    .engine-toggle button.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
   </style>
   <h2>Los mismos voicings, en contexto musical real</h2>
   <p class="intro">
@@ -110,6 +133,12 @@ TEMPLATE.innerHTML = `
     progresión real de jazz (ii7–V7–Imaj7 en Do), cada uno al tempo donde realmente se usa. La razón
     para elegir un voicing casi nunca es solo "cómo suena" — también es "¿me da tiempo de tocarlo?".
   </p>
+  <div class="engine-toggle">
+    <span class="label">Motor de sonido (prototipo A/B):</span>
+    <button type="button" data-engine="synth" class="active">Sintetizador actual</button>
+    <button type="button" data-engine="sampled">Piano real (Steinway, beta)</button>
+    <span class="status"></span>
+  </div>
   <div class="cards"></div>
   <div class="mission">
     <div class="mission-title">Misión: escucha la progresión en los 4 contextos</div>
@@ -127,6 +156,15 @@ class LessonRealMusic extends HTMLElement {
     const heard = new Set();
     renderMissionDots(dotsEl, CONTEXTS.map(() => false));
 
+    let engine = "synth";
+    const engineButtons = root.querySelectorAll(".engine-toggle button");
+    const statusEl = root.querySelector(".engine-toggle .status");
+    engineButtons.forEach(btn => btn.addEventListener("click", () => {
+      engine = btn.dataset.engine;
+      engineButtons.forEach(b => b.classList.toggle("active", b === btn));
+      statusEl.textContent = "";
+    }));
+
     CONTEXTS.forEach(c => {
       const card = document.createElement("div");
       card.className = "card";
@@ -136,9 +174,11 @@ class LessonRealMusic extends HTMLElement {
         <p class="why">${c.why}</p>
         <button type="button">Escuchar en contexto (${Math.round(60000 / c.stepMs)} negras/min aprox.)</button>
       `;
-      card.querySelector("button").addEventListener("click", () => {
+      card.querySelector("button").addEventListener("click", async () => {
         setLessonState(11, "explored");
-        playProgressionWithVoicing(c.type, c.stepMs);
+        if (engine === "sampled") statusEl.textContent = "Cargando muestras de piano…";
+        await playProgressionWithVoicing(c.type, c.stepMs, engine);
+        if (engine === "sampled") statusEl.textContent = "";
         heard.add(c.type);
         if (heard.size === 1) setLessonState(11, "practiced");
         renderMissionDots(dotsEl, CONTEXTS.map(x => heard.has(x.type)));

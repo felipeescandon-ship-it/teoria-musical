@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#FCFAF6" />
   <title>Teoría musical interactiva con piano</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png">
   <script>
     (function () {
       try {
@@ -398,6 +400,7 @@
     input[type="range"] { width: 100%; accent-color: var(--accent); }
 
     .keyboard-wrap { margin-top: 16px; overflow-x: auto; padding: 12px; background: var(--kb-bg); border: 1px solid var(--kb-border); border-radius: var(--radius-md); box-shadow: var(--shadow-kb); transition: background .2s; }
+    .keyboard-loading-status { color: var(--muted); font-size: .82rem; margin: 0 0 8px; }
     .keyboard { position: relative; height: 220px; min-width: 840px; user-select: none; touch-action: manipulation; }
     .white-keys { display: flex; position: absolute; inset: 0; }
     .key { border: 0; }
@@ -1364,6 +1367,6 @@
     <footer class="footer">Aprender música es aprender a escuchar relaciones. El resto son nombres útiles para poder hablar de ellas.</footer>
   </main>
 
-  <script type="module" src="./js/app.js?v=3"></script>
+  <script type="module" src="./js/app.js?v=4"></script>
 </body>
 </html>
