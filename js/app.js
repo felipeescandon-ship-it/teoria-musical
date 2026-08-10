@@ -2,7 +2,7 @@ import { rootC, buildChordTones } from "./theory.js?v=3";
 import { playChordSmart as playChord } from "./audioSampled.js?v=7";
 
 import "./theme.js?v=3";
-import "./nav.js?v=3";
+import "./nav.js?v=4";
 
 import "./lessons/lesson01.js?v=3";
 import "./lessons/lesson02.js?v=6";

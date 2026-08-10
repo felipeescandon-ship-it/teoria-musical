@@ -2,7 +2,7 @@ import { ROOTS, CHORDS, PRACTICAL_ROOT_IDS } from "./data.js?v=3";
 import { rootById, buildChordTones, chordSymbol, spellChord, inversionName } from "./theory.js?v=3";
 import { playChordSmart as playChord } from "./audioSampled.js?v=7";
 import { buildKeyboard, highlightChordOnKeyboard } from "./keyboard.js?v=6";
-import { registerLabRenderer } from "./nav.js?v=3";
+import { registerLabRenderer } from "./nav.js?v=4";
 
 // ========== Lab mode: free exploration of chords ==========
 const labRoot=document.getElementById("labRoot");

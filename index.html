@@ -143,6 +143,10 @@
       --blue: #6FA0D4;
       --blue-soft: #16232F;
 
+      --green-soft: #13241f;
+      --orange-soft: #2a2013;
+      --red-soft: #2c151c;
+
       --kb-bg: #000000;
       --kb-border: #2a2a2a;
       --key-black: #151515;
@@ -330,9 +334,9 @@
     .mt { margin-top: 18px; }
     .mt-sm { margin-top: 8px; }
     .aside-note { margin-top: 14px; color: var(--muted); font-size: .9rem; }
-    .compare-card.role-tonica, .info-item.role-tonica { border-left: 4px solid var(--green); }
-    .compare-card.role-subdominante, .info-item.role-subdominante { border-left: 4px solid var(--orange); }
-    .compare-card.role-dominante, .info-item.role-dominante { border-left: 4px solid var(--red); }
+    .compare-card.role-tonica, .info-item.role-tonica { border-color: var(--green); background: var(--green-soft); }
+    .compare-card.role-subdominante, .info-item.role-subdominante { border-color: var(--orange); background: var(--orange-soft); }
+    .compare-card.role-dominante, .info-item.role-dominante { border-color: var(--red); background: var(--red-soft); }
     .concept-strip.cols-2 { grid-template-columns: 1fr 1fr; }
     table.narrow { min-width: 480px; }
     .eyebrow { color: var(--eyebrow-color); font-size: .76rem; font-weight: var(--weight-heavy); letter-spacing: .085em; text-transform: uppercase; margin-bottom: 8px; }
@@ -377,7 +381,7 @@
       mask: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpath d="M4 10.5l3.2 3.2L16 5"/%3E%3C/svg%3E') center / contain no-repeat;
     }
     .progress-track { height: 8px; background: var(--panel-soft); border-radius: 999px; overflow: hidden; margin: 10px 8px 14px; }
-    .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--third)); transition: width .25s ease; }
+    .progress-fill { height: 100%; width: 100%; transform: scaleX(0); transform-origin: left; background: linear-gradient(90deg, var(--accent), var(--third)); transition: transform .25s ease; }
     .lesson-panel { display: none; }
     .lesson-panel.active { display: block; }
     .lesson-actions { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
@@ -1367,6 +1371,6 @@
     <footer class="footer">Aprender música es aprender a escuchar relaciones. El resto son nombres útiles para poder hablar de ellas.</footer>
   </main>
 
-  <script type="module" src="./js/app.js?v=8"></script>
+  <script type="module" src="./js/app.js?v=9"></script>
 </body>
 </html>

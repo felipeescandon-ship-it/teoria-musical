@@ -36,7 +36,7 @@ export function updateProgress() {
   });
   const mastered=Object.values(lessonStates).filter(s=>s==="mastered").length;
   const practiced=Object.values(lessonStates).filter(s=>STATUS_RANK[s]>=2).length;
-  document.getElementById("progressFill").style.width=`${mastered/LESSON_COUNT*100}%`;
+  document.getElementById("progressFill").style.transform=`scaleX(${mastered/LESSON_COUNT})`;
   document.getElementById("progressSummary").textContent=`${mastered} de ${LESSON_COUNT} dominadas · ${practiced} practicadas`;
 }
 // Switch to a lesson and update sidebar/content
