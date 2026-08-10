@@ -1,6 +1,6 @@
 import { ROOTS, CHORDS } from "./data.js?v=3";
 import { rootC, buildChordTones } from "./theory.js?v=3";
-import { playMidiSmart as playMidi, playChordSmart as playChord } from "./audioSampled.js?v=4";
+import { playMidiSmart as playMidi, playChordSmart as playChord } from "./audioSampled.js?v=6";
 
 // ========== Ear training: identify chord quality by listening ==========
 let earQuestion=null,earAnswered=false,earStats={correct:0,total:0};

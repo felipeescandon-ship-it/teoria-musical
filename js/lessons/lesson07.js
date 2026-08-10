@@ -1,7 +1,7 @@
 import { PC_KEY_LABELS, ROOTS, MAJOR_SCALE_INTERVALS, SCALE_ROOT_IDS } from "../data.js?v=3";
 import { rootById, buildScaleTones } from "../theory.js?v=3";
-import { playMidiSmart as playMidi } from "../audioSampled.js?v=4";
-import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=4";
+import { playMidiSmart as playMidi } from "../audioSampled.js?v=6";
+import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=5";
 import { setLessonState } from "../nav.js?v=3";
 import { renderMissionDots } from "../icons.js?v=3";
 

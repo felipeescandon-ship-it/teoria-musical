@@ -13,7 +13,11 @@
 // has no such property anywhere. The instrument always loads its full fixed sample set (5
 // velocity layers, ~60 recorded pitches each — the rest are reached via pitch-shifting from the
 // nearest recording), so every caller shares one instance regardless of what MIDI range it plays.
-import { getAudioContext, playMidi as playMidiSynth, playChord as playChordSynth } from "./audio.js?v=3";
+import {
+  getAudioContext,
+  playMidi as playMidiSynth, playChord as playChordSynth,
+  playMidiAt as playMidiAtSynth, playChordAt as playChordAtSynth
+} from "./audio.js?v=5";
 
 const SAMPLE_BASE_URL = new URL("../assets/piano-samples", import.meta.url).href;
 
@@ -51,12 +55,36 @@ export function playChordSmart(midis, arpeggio=false, delayStart=0, velocity=nul
   return midis.map((m,i) => playMidiSmart(m, arpeggio ? .72 : .95, delayStart + (arpeggio ? i*.16 : 0), arpeggio ? .13 : .09, velocity));
 }
 
-// Mirrors audio.js's playChordAt(midis, when, duration) contract — `when` is an absolute
-// AudioContext time. smplr's `start({time})` is ALSO an absolute AudioContext time (not
+// smplr's `piano.start()` returns a callable that stops that note early when invoked — its own
+// native cancellation primitive. Wrapping it in `{cancel()}` gives it the same shape as the
+// `.cancel()` audio.js now attaches to its synth voices, so a scheduler (transport.js) can hold
+// a mixed bag of synth and sampled notes and cancel every one of them the same way, with no
+// per-engine branching of its own.
+function toCancellable(stopFn) {
+  return { cancel: () => { try { stopFn?.(); } catch (_) {} } };
+}
+
+// Mirrors audio.js's playMidiAt/playChordAt(midis, when, duration) contract — `when` is an
+// absolute AudioContext time. smplr's `start({time})` is ALSO an absolute AudioContext time (not
 // relative to "now" as its README implies) — it's compared directly against the player's own
 // `context.currentTime` internally, so `when` passes straight through unchanged.
+export function playMidiAtSampled(piano, midi, when, duration = .95, velocity = 80) {
+  return toCancellable(piano.start({ note: midi, velocity, time: when, duration }));
+}
 export function playChordAtSampled(piano, midis, when, duration = .95, velocity = 80) {
-  return midis.map(midi => piano.start({ note: midi, velocity, time: when, duration }));
+  return midis.map(midi => playMidiAtSampled(piano, midi, when, duration, velocity));
+}
+
+// Smart absolute-time scheduling (drop-in for audio.js's playMidiAt/playChordAt), for a
+// scheduler like transport.js: same fallback-then-upgrade behavior as playMidiSmart/playChordSmart
+// above, just anchored to a caller-supplied time instead of "now".
+export function playMidiAtSmart(midi, when, duration=.78, volume=.12, velocity=null) {
+  if (!sharedPiano) return playMidiAtSynth(midi, when, duration, volume, velocity);
+  return playMidiAtSampled(sharedPiano, midi, when, duration, DEMO_VELOCITY);
+}
+export function playChordAtSmart(midis, when, duration=.95, volume=.09, velocity=null) {
+  if (!sharedPiano) return playChordAtSynth(midis, when, duration, volume, velocity);
+  return playChordAtSampled(sharedPiano, midis, when, duration, DEMO_VELOCITY);
 }
 
 // Mirrors audio.js's startHeldMidi/stopHeldMidi (press-and-hold keyboard interaction), for

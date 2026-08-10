@@ -1,9 +1,10 @@
 import { ROOTS, PROGRESSIONS, DIATONIC_ROMANS, SCALE_ROOT_IDS } from "../data.js?v=3";
 import { rootById, buildDiatonicChords, buildChordTones } from "../theory.js?v=3";
-import { getAudioContext, playMidiAt, playChordAt } from "../audio.js?v=3";
-import { createTransport } from "../transport.js?v=3";
+import { getAudioContext } from "../audio.js?v=5";
+import { playMidiAtSmart as playMidiAt, playChordAtSmart as playChordAt } from "../audioSampled.js?v=6";
+import { createTransport } from "../transport.js?v=5";
 import { progressionEventAtBeat } from "../timing.js?v=3";
-import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=4";
+import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=5";
 import { setLessonState, onNavigate } from "../nav.js?v=3";
 import { ICON_PLAY, ICON_STOP, renderMissionDots } from "../icons.js?v=3";
 

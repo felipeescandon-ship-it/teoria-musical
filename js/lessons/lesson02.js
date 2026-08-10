@@ -1,7 +1,7 @@
 import { PC_KEY_LABELS, INTERVAL_NAMES } from "../data.js?v=3";
 import { octaveOf } from "../theory.js?v=3";
-import { playMidiSmart as playMidi, playChordSmart as playChord } from "../audioSampled.js?v=4";
-import { buildKeyboard, clearKeyboard, getKeyboard } from "../keyboard.js?v=4";
+import { playMidiSmart as playMidi, playChordSmart as playChord } from "../audioSampled.js?v=6";
+import { buildKeyboard, clearKeyboard, getKeyboard } from "../keyboard.js?v=5";
 import { setLessonState } from "../nav.js?v=3";
 import { renderMissionDots } from "../icons.js?v=3";
 

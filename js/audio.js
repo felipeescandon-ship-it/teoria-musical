@@ -73,7 +73,12 @@ export function makeVoice(midi, volume = .11, when = null, velocity = null) {
     osc.start(now);
     return osc;
   });
-  return {ctx, master, oscillators, started:now, env, cancelled:false};
+  const voice = {ctx, master, oscillators, started:now, env, cancelled:false};
+  // Generic handle a scheduler can hold without knowing this is a synth voice specifically —
+  // transport.js's cancellation now just calls `.cancel()` on whatever registerVoices collected,
+  // synth or sampled, instead of importing (and being coupled to) this engine's cancelVoice shape.
+  voice.cancel = () => cancelVoice(voice);
+  return voice;
 }
 
 // Release a voice at a real note-off time (not a duration guessed in advance) — the release

@@ -1,5 +1,13 @@
-import { resumeAudioContext, getAudioContext, cancelVoices } from "./audio.js?v=3";
+import { resumeAudioContext, getAudioContext } from "./audio.js?v=5";
 import { secondsPerBeat, collectScheduledBeats } from "./timing.js?v=3";
+
+// Engine-agnostic: works on whatever registerVoices collected, synth or sampled, as long as each
+// item exposes `.cancel()` (see audio.js's makeVoice and audioSampled.js's toCancellable) — this
+// scheduler doesn't need to know which engine produced a given note.
+function cancelVoices(voices) {
+  voices.forEach(v => v?.cancel?.());
+  voices.clear();
+}
 
 // ========== Lookahead-scheduler transport (Épica C1: tempo, count-in, loop) ==========
 // setTimeout here NEVER decides when a note sounds — it only wakes the scheduler often enough
