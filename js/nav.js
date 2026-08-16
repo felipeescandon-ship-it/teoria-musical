@@ -76,7 +76,7 @@ document.querySelectorAll(".lesson-link").forEach(btn=>btn.addEventListener("cli
 document.querySelectorAll(".lesson-next").forEach(btn=>btn.addEventListener("click",()=>showLesson(btn.dataset.next)));
 document.querySelectorAll(".lesson-prev").forEach(btn=>btn.addEventListener("click",()=>showLesson(btn.dataset.prev)));
 document.getElementById("goToPractice").addEventListener("click",()=>showMode("practice",currentLesson));
-document.getElementById("goToFunctionQuiz").addEventListener("click",()=>{showMode("course");showLesson(8);});
+document.getElementById("goToFunctionLesson").addEventListener("click",()=>{showMode("course");showLesson(8);});
 
 // ========== Hero collapse (returning users skip the pitch, land on content) ==========
 const hero=document.getElementById("hero"), heroToggle=document.getElementById("heroToggle");

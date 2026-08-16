@@ -1,7 +1,7 @@
 import { PC_KEY_LABELS } from "../data.js?v=3";
 import { octaveOf } from "../theory.js?v=3";
 import { buildKeyboard, clearKeyboard } from "../keyboard.js?v=6";
-import { setLessonState } from "../nav.js?v=4";
+import { setLessonState } from "../nav.js?v=5";
 import { renderMissionDots } from "../icons.js?v=3";
 
 // ========== Lesson 1: Note recognition and octaves ==========

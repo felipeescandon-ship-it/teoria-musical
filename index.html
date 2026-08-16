@@ -396,6 +396,8 @@
     .btn:disabled { opacity: .48; cursor: not-allowed; transform: none; }
     .icon-btn { display: inline-flex; align-items: center; gap: 6px; }
     .icon-btn svg { flex: 0 0 auto; }
+    .link-inline { background: none; border: none; padding: 0; font: inherit; font-weight: var(--weight-heavy); color: var(--accent-dark); text-decoration: underline; cursor: pointer; }
+    .link-inline:hover { color: var(--accent); }
 
     .controls { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; }
     .field { display: grid; gap: 6px; min-width: 155px; }
@@ -1193,6 +1195,7 @@
           <div class="field"><label for="labRoot">Raíz</label><select id="labRoot"></select></div>
           <div class="field"><label for="labQuality">Tipo de acorde</label><select id="labQuality"></select></div>
           <div class="field"><label for="labInversion">Inversión</label><select id="labInversion"></select></div>
+          <div class="field"><label for="labVoicing">Voicing</label><select id="labVoicing"></select></div>
           <button id="labPlay" class="btn">Construir y escuchar</button>
           <button id="labArpeggio" class="btn secondary">Arpegio</button>
         </div>
@@ -1240,11 +1243,18 @@
       <section class="card mt">
         <div class="eyebrow">Tercer examen: función armónica</div>
         <h2>Reconoce tónica, subdominante y dominante al oído</h2>
-        <p>Este examen vive dentro de la Lección 8, junto a la explicación de acordes diatónicos, para no separar la teoría de la práctica.</p>
-        <button id="goToFunctionQuiz" class="btn secondary icon-btn" type="button">
-          <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h10M9 5l5 5-5 5"/></svg>
-          Ir al examen de función armónica
-        </button>
+        <p>Se reproducirá un acorde diatónico en Do, Sol o Fa mayor. Identifica su función. Este examen comparte progreso con la misión de la <button id="goToFunctionLesson" class="link-inline" type="button">Lección 8</button>, donde puedes repasar la teoría si la necesitas.</p>
+        <div class="mission">
+          <div class="mission-title">Misión: reconoce la función al oído</div>
+          <p id="practiceFunctionMissionText">Se reproducirá un acorde diatónico. Identifica su función: Tónica, Subdominante o Dominante.</p>
+          <div class="mission-progress"><span id="practiceFunctionMissionDots"><span class="mission-dot"></span><span class="mission-dot"></span><span class="mission-dot"></span></span></div>
+        </div>
+        <div class="controls">
+          <button id="practiceFunctionNewChallenge" class="btn">Nuevo acorde</button>
+          <button id="practiceFunctionRepeat" class="btn secondary" disabled>Repetir</button>
+        </div>
+        <div id="practiceFunctionOptions" class="quiz-options"></div>
+        <div id="practiceFunctionFeedback" class="result-box">Pulsa "Nuevo acorde" para comenzar.</div>
       </section>
 
       <div class="grid two mt">
@@ -1253,7 +1263,7 @@
           <h2>Reconoce la calidad del acorde</h2>
           <p>El acorde permanece igual hasta que pulses “Siguiente”. Puedes repetirlo todas las veces necesarias.</p>
           <div class="controls">
-            <div class="field"><label for="earLevel">Nivel</label><select id="earLevel"><option value="1">1 · Mayor vs. menor, raíz Do</option><option value="2">2 · Mayor vs. menor, raíces variadas</option><option value="3">3 · Mayor, menor, aumentado y disminuido</option></select></div>
+            <div class="field"><label for="earLevel">Nivel</label><select id="earLevel"><option value="1">1 · Mayor vs. menor, raíz Do</option><option value="2">2 · Mayor vs. menor, raíces variadas</option><option value="3">3 · Mayor, menor, disminuido, aumentado, sus2 y sus4</option></select></div>
             <button id="earNew" class="btn">Nuevo acorde</button><button id="earRepeat" class="btn secondary" disabled>Repetir</button>
           </div>
           <div id="earOptions" class="quiz-options"></div>
@@ -1271,6 +1281,8 @@
             <div class="concept"><strong>Menor</strong><span>Tercera a 3 semitonos.</span></div>
             <div class="concept"><strong>Aumentado</strong><span>Quinta a 8 semitonos.</span></div>
             <div class="concept"><strong>Disminuido</strong><span>Quinta a 6 semitonos.</span></div>
+            <div class="concept"><strong>Sus2</strong><span>Segunda a 2 semitonos, sin tercera.</span></div>
+            <div class="concept"><strong>Sus4</strong><span>Cuarta a 5 semitonos, sin tercera.</span></div>
           </div>
           <div class="callout info">La pista reproduce raíz, nota decisiva y acorde completo. Así entrenas la relación audible.</div>
         </section>
@@ -1371,6 +1383,6 @@
     <footer class="footer">Aprender música es aprender a escuchar relaciones. El resto son nombres útiles para poder hablar de ellas.</footer>
   </main>
 
-  <script type="module" src="./js/app.js?v=9"></script>
+  <script type="module" src="./js/app.js?v=10"></script>
 </body>
 </html>

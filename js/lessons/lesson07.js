@@ -2,7 +2,7 @@ import { PC_KEY_LABELS, ROOTS, MAJOR_SCALE_INTERVALS, SCALE_ROOT_IDS } from "../
 import { rootById, buildScaleTones } from "../theory.js?v=3";
 import { playMidiSmart as playMidi } from "../audioSampled.js?v=7";
 import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=6";
-import { setLessonState } from "../nav.js?v=4";
+import { setLessonState } from "../nav.js?v=5";
 import { renderMissionDots } from "../icons.js?v=3";
 
 // ========== Lesson 7: Major scale builder ==========
