@@ -877,6 +877,32 @@
                 </div>
               </div>
               <div class="callout good">Una inversión no siempre es “mejor”: puede conectar más suavemente, pero también cambia el bajo y la sensación de estabilidad.</div>
+
+              <details class="advanced-details mt">
+                <summary>Detalle teórico opcional: ¿por qué la distancia entre la nota más grave y la más aguda cambia en cada inversión?</summary>
+                <p>
+                  Vuelve a tocar los tres botones de arriba y fíjate solo en los dos extremos (la nota más grave y la más aguda):
+                </p>
+                <div class="table-wrap">
+                  <table class="narrow">
+                    <thead><tr><th>Disposición</th><th>Extremos</th><th>Distancia</th></tr></thead>
+                    <tbody>
+                      <tr><td>Fundamental</td><td>Sol – Re</td><td>7 semitonos (5ª)</td></tr>
+                      <tr><td>1ª inversión</td><td>Si – Sol</td><td>8 semitonos (6ª menor)</td></tr>
+                      <tr><td>2ª inversión</td><td>Re – Si</td><td>9 semitonos (6ª mayor)</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p class="aside-note">
+                  La razón: una tríada no está armada con dos intervalos iguales. Sol mayor es 4 semitonos (Sol→Si) + 3 semitonos
+                  (Si→Re), no 3,5 + 3,5. Cuando invertís, la nota que "se va abajo" reaparece una octava más arriba, y como
+                  esos dos huecos internos son distintos (4 y 3), el hueco que queda entre el nuevo bajo y la nota más aguda
+                  también cambia según cuál de los dos se movió. Por eso fundamental mide una 5ª entre extremos, y las inversiones
+                  miden una 6ª (menor o mayor, según cuál nota bajó). No es un error ni una excepción: es consecuencia directa de
+                  que la tríada mezcla una tercera mayor y una menor.
+                </p>
+              </details>
+
               <div class="lesson-actions">
                 <button class="btn secondary lesson-prev" data-prev="4">Volver</button>
                 <button id="goToPractice" class="btn secondary">Ir a practicar</button>
@@ -937,6 +963,35 @@
                   <button id="playCommonProgression" class="btn small mt-sm">I → IV → V → I</button>
                 </div>
               </div>
+
+              <details class="advanced-details mt">
+                <summary>Detalle teórico opcional: ¿de dónde sale que ii sea menor y IV sea mayor?</summary>
+                <p>
+                  No es una lista para memorizar: cada acorde diatónico se arma <strong>apilando dos terceras</strong> (una nota
+                  sí, una no) a partir de la escala de Do mayor (Do-Re-Mi-Fa-Sol-La-Si). Igual que en la Lección 3, el patrón
+                  0–4–7 semitonos da mayor y 0–3–7 da menor:
+                </p>
+                <div class="table-wrap">
+                  <table class="narrow">
+                    <thead><tr><th>Grado</th><th>Notas apiladas</th><th>Semitonos</th><th>Resultado</th></tr></thead>
+                    <tbody>
+                      <tr><td>I</td><td>Do–Mi–Sol</td><td>0–4–7</td><td>mayor</td></tr>
+                      <tr><td>ii</td><td>Re–Fa–La</td><td>0–3–7</td><td>menor</td></tr>
+                      <tr><td>iii</td><td>Mi–Sol–Si</td><td>0–3–7</td><td>menor</td></tr>
+                      <tr><td>IV</td><td>Fa–La–Do</td><td>0–4–7</td><td>mayor</td></tr>
+                      <tr><td>V</td><td>Sol–Si–Re</td><td>0–4–7</td><td>mayor</td></tr>
+                      <tr><td>vi</td><td>La–Do–Mi</td><td>0–3–7</td><td>menor</td></tr>
+                      <tr><td>vii°</td><td>Si–Re–Fa</td><td>0–3–6</td><td>disminuido</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p class="aside-note">
+                  Nadie decidió a mano que ii fuera menor: es lo que sale al tomar la nota, saltarse una, tomar otra, saltarse
+                  otra, tomar la siguiente — todo dentro de las teclas blancas de Do mayor. Cambia la raíz de la tonalidad y
+                  las notas cambian, pero como la escala mayor siempre sigue el mismo patrón T–T–S–T–T–T–S (Lección 7), este
+                  resultado (I, IV, V mayores; ii, iii, vi menores; vii° disminuido) se repite igual en cualquier tonalidad mayor.
+                </p>
+              </details>
 
               <div class="lesson-actions">
                 <button class="btn secondary lesson-prev" data-prev="5">Volver</button>
@@ -1017,6 +1072,29 @@
                 <strong>Esto es universal:</strong> igual que el patrón 0–4–7 funciona en cualquier raíz, la agrupación funcional
                 (I-iii-vi = tónica, IV-ii = subdominante, V-vii° = dominante) funciona en cualquier tonalidad mayor. Solo cambian las notas, no la lógica.
               </div>
+
+              <details class="advanced-details mt">
+                <summary>Detalle teórico opcional: ¿por qué se agrupan así y no de otra forma?</summary>
+                <p>
+                  No es arbitrario: los acordes de un mismo grupo <strong>comparten dos de sus tres notas</strong>. En Do mayor:
+                </p>
+                <div class="table-wrap">
+                  <table class="narrow">
+                    <thead><tr><th>Grupo</th><th>Acordes</th><th>Notas compartidas</th></tr></thead>
+                    <tbody>
+                      <tr><td>Tónica</td><td>I (Do-Mi-Sol) · iii (Mi-Sol-Si) · vi (La-Do-Mi)</td><td>Mi y Sol (o Do y Mi)</td></tr>
+                      <tr><td>Subdominante</td><td>IV (Fa-La-Do) · ii (Re-Fa-La)</td><td>Fa y La</td></tr>
+                      <tr><td>Dominante</td><td>V (Sol-Si-Re) · vii° (Si-Re-Fa)</td><td>Si y Re</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p class="aside-note">
+                  Por eso suenan "parecidos" y cumplen roles similares: reemplazar I por vi (un recurso muy común, el "engaño")
+                  cambia menos de lo que parece, porque dos de las tres notas siguen sonando. Usa los botones "Oír" de la
+                  tabla de arriba para tocar I, iii y vi seguidos y notar cuánto se parecen. Esta es la misma lógica en
+                  cualquier tonalidad: cambian las notas, no qué comparte con qué.
+                </p>
+              </details>
 
               <div class="controls mt">
                 <div class="field"><label for="functionKeyRoot">Tonalidad</label><select id="functionKeyRoot"></select></div>
@@ -1162,6 +1240,40 @@
                 El voicing abierto y drop 2 son comunes en piano y arreglo orquestal: dan más espacio y evitan que las
                 notas graves suenen "embarradas". La cáscara es típica en jazz cuando otro instrumento ya toca la quinta.
               </div>
+
+              <div class="callout info mt">
+                Un <strong>voicing</strong> describe cómo se distribuyen las notas en el espacio: qué octava, qué orden vertical.
+                Un <strong>arpegio</strong> describe cómo se reparten en el <strong>tiempo</strong>: el mismo acorde, tocado
+                nota por nota en vez de junto.
+              </div>
+
+              <h3 class="mt">Bonus: el mismo acorde, tocado como arpegio</h3>
+              <p>Usa la raíz y el tipo de acorde de arriba (siempre en posición cerrada) para escuchar cuatro formas típicas de repartir un acorde en el tiempo.</p>
+              <div class="controls">
+                <button id="arpeggioAsc" class="btn secondary">Ascendente</button>
+                <button id="arpeggioDesc" class="btn secondary">Descendente</button>
+                <button id="arpeggioAscDesc" class="btn secondary">Ascendente-descendente</button>
+                <button id="arpeggioAlberti" class="btn secondary">Quebrado (bajo Alberti)</button>
+              </div>
+              <div id="arpeggioDescription" class="result-box">Elige un patrón para escucharlo.</div>
+
+              <div class="callout good compact-callout mt">
+                El <strong>bajo Alberti</strong> (grave–agudo–medio–agudo) no es al azar: rellena el registro medio con
+                movimiento constante sin sonar tan denso como el bloque. Ya lo escuchaste como patrón de acompañamiento
+                de mano izquierda en la Lección 9.
+              </div>
+
+              <div class="mission mt">
+                <div class="mission-title">Misión: reconoce el patrón de arpegio al oído</div>
+                <p id="arpeggioMissionText">Sonará el acorde actual repartido en el tiempo con uno de tres patrones. Identifica cuál es.</p>
+                <div class="mission-progress"><span id="arpeggioMissionDots"><span class="mission-dot"></span><span class="mission-dot"></span><span class="mission-dot"></span></span></div>
+              </div>
+              <div class="controls">
+                <button id="arpeggioNewChallenge" class="btn">Nuevo patrón</button>
+                <button id="arpeggioRepeat" class="btn secondary" disabled>Repetir</button>
+              </div>
+              <div id="arpeggioOptions" class="quiz-options"></div>
+              <div id="arpeggioFeedback" class="result-box">Pulsa "Nuevo patrón" para comenzar.</div>
 
               <div class="lesson-actions">
                 <button class="btn secondary lesson-prev" data-prev="9">Volver</button>
@@ -1383,6 +1495,6 @@
     <footer class="footer">Aprender música es aprender a escuchar relaciones. El resto son nombres útiles para poder hablar de ellas.</footer>
   </main>
 
-  <script type="module" src="./js/app.js?v=10"></script>
+  <script type="module" src="./js/app.js?v=11"></script>
 </body>
 </html>

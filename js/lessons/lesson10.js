@@ -52,3 +52,73 @@ document.getElementById("voicingMission2").addEventListener("click",()=>playVoic
 document.getElementById("voicingMission3").addEventListener("click",()=>playVoicingMission("drop2"));
 document.getElementById("voicingMission4").addEventListener("click",()=>playVoicingMission("shell"));
 document.getElementById("goToLabFinal").addEventListener("click",()=>showMode("lab",10));
+
+// ========== Bonus: arpeggio patterns — same chord, spread across time instead of played together ==========
+// Always closed position, independent of the voicing selector above, so patterns stay simple and comparable.
+function arpeggioTones(){
+  const root=rootById(voicingRootSelect.value),quality=voicingQualitySelect.value;
+  return buildChordTones(root,quality,0,48,"closed");
+}
+const ARPEGGIO_PATTERNS={
+  asc:{label:"Ascendente",desc:"Ascendente: de la nota más grave a la más aguda, en orden.",order:t=>t},
+  desc:{label:"Descendente",desc:"Descendente: de la nota más aguda a la más grave, en orden.",order:t=>[...t].reverse()},
+  ascdesc:{label:"Ascendente-descendente",desc:"Ascendente-descendente: sube hasta la nota más aguda y vuelve a bajar sin repetirla.",order:t=>[...t,...[...t].slice(0,-1).reverse()]},
+  alberti:{label:"Quebrado (bajo Alberti)",desc:"Quebrado (bajo Alberti): grave-agudo-medio-agudo. Es el mismo patrón de acompañamiento de la Lección 9.",order:t=>{const lo=t[0],hi=t[t.length-1],mid=t.length>2?t[1]:t[0];return [lo,hi,mid,hi];}}
+};
+function playArpeggio(type){
+  const tones=arpeggioTones(),order=ARPEGGIO_PATTERNS[type].order(tones);
+  playChord(order.map(t=>t.midi),true);
+  return tones;
+}
+[["arpeggioAsc","asc"],["arpeggioDesc","desc"],["arpeggioAscDesc","ascdesc"],["arpeggioAlberti","alberti"]].forEach(([id,type])=>{
+  document.getElementById(id).addEventListener("click",()=>{
+    setLessonState(10,"explored");
+    playArpeggio(type);
+    document.getElementById("arpeggioDescription").textContent=ARPEGGIO_PATTERNS[type].desc;
+  });
+});
+
+// Mission: identify the arpeggio pattern by ear. Restricted to the three most distinguishable
+// patterns — ascendente-descendente stays demo-only above since it's too easy to confuse by ear.
+const ARPEGGIO_QUIZ_TYPES=["asc","desc","alberti"];
+let arpeggioQuizType=null,arpeggioQuizTones=null,arpeggioQuizAnswered=false,arpeggioMissionCorrect=0;
+function renderArpeggioOptions(){
+  const c=document.getElementById("arpeggioOptions");c.innerHTML="";
+  ARPEGGIO_QUIZ_TYPES.forEach(type=>{
+    const b=document.createElement("button");b.className="btn secondary";b.textContent=ARPEGGIO_PATTERNS[type].label;
+    b.addEventListener("click",()=>answerArpeggioQuiz(type));
+    c.appendChild(b);
+  });
+}
+function newArpeggioChallenge(){
+  setLessonState(10,"explored");
+  renderArpeggioOptions();
+  arpeggioQuizType=ARPEGGIO_QUIZ_TYPES[Math.floor(Math.random()*ARPEGGIO_QUIZ_TYPES.length)];
+  arpeggioQuizTones=arpeggioTones();
+  arpeggioQuizAnswered=false;
+  playChord(ARPEGGIO_PATTERNS[arpeggioQuizType].order(arpeggioQuizTones).map(t=>t.midi),true);
+  document.getElementById("arpeggioFeedback").className="result-box";
+  document.getElementById("arpeggioFeedback").textContent="Puedes repetir antes de responder.";
+  document.getElementById("arpeggioRepeat").disabled=false;
+}
+function answerArpeggioQuiz(type){
+  const box=document.getElementById("arpeggioFeedback");
+  if(!arpeggioQuizType){box.className="result-box status-bad";box.textContent="Primero pulsa “Nuevo patrón”.";return;}
+  if(arpeggioQuizAnswered)return;
+  arpeggioQuizAnswered=true;
+  const correct=type===arpeggioQuizType;
+  box.className=`result-box ${correct?"status-good":"status-bad"}`;
+  box.innerHTML=correct?`<strong>¡Correcto!</strong> Era ${ARPEGGIO_PATTERNS[arpeggioQuizType].label.toLowerCase()}.`:`<strong>No esta vez.</strong> Era ${ARPEGGIO_PATTERNS[arpeggioQuizType].label.toLowerCase()}.`;
+  if(correct){
+    arpeggioMissionCorrect++;
+    if(arpeggioMissionCorrect===1)setLessonState(10,"practiced");
+    renderMissionDots(document.getElementById("arpeggioMissionDots"),[0,1,2].map(i=>i<Math.min(arpeggioMissionCorrect,3)));
+    if(arpeggioMissionCorrect>=3){
+      setLessonState(10,"mastered");
+      document.getElementById("arpeggioMissionText").innerHTML="<strong>¡Dominado!</strong> Reconoces ascendente, descendente y quebrado al oído.";
+    }
+  }
+}
+document.getElementById("arpeggioNewChallenge").addEventListener("click",newArpeggioChallenge);
+document.getElementById("arpeggioRepeat").addEventListener("click",()=>{if(arpeggioQuizType)playChord(ARPEGGIO_PATTERNS[arpeggioQuizType].order(arpeggioQuizTones).map(t=>t.midi),true);});
+renderArpeggioOptions();

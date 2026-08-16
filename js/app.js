@@ -13,7 +13,7 @@ import "./lessons/lesson06.js?v=6";
 import "./lessons/lesson07.js?v=6";
 import "./lessons/lesson08.js?v=7";
 import "./lessons/lesson09.js?v=6";
-import "./lessons/lesson10.js?v=6";
+import "./lessons/lesson10.js?v=7";
 import "./lessons/lesson11.js?v=7";
 
 import "./lab.js?v=7";
