@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-08-17T13:06:02.584Z",
+        "reason": "Inter es una decisión declarada en DESIGN.md: tipografía de interfaz neutra a propósito, para que lo distintivo sea el piano y los colores de rol armónico. Lora aporta el carácter, reservada a nombres de notas y acordes."
+      }
+    ]
+  }
+}

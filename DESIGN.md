@@ -19,7 +19,27 @@ colors:
   verde-correcto: "#138a76"
   naranja-alerta: "#d98219"
   rojo-error: "#ca4560"
+  verde-tinta: "#0b6253"
+  verde-linea: "#9dd9cc"
+  rojo-tinta: "#8a2940"
+  rojo-linea: "#efb3c1"
+  verde-linea-dominada: "#b8e2d8"
+  verde-tinta-oscuro: "#3fbfa4"
+  verde-linea-oscuro: "#2f5d52"
+  rojo-tinta-oscuro: "#e0798c"
+  rojo-linea-oscuro: "#5e2f3a"
+  tecla-negra-alta: "#2a2a2a"
+  tecla-negra-baja: "#111111"
+  tecla-blanca-borde: "#aeb5c4"
+  tecla-blanca-texto: "#535d70"
 typography:
+  scale:
+    ornamento-lg: "10rem"
+    ornamento-sm: "4rem"
+    md: "0.94rem"
+    sm: "0.88rem"
+    xs: "0.82rem"
+    2xs: "0.66rem"
   display:
     fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
     fontSize: "clamp(1.9rem, 4vw, 2.6rem)"
@@ -50,6 +70,8 @@ rounded:
   md: "16px"
   lg: "18px"
   pill: "999px"
+  tecla-blanca: "9px"
+  tecla-negra: "7px"
 spacing:
   sm: "8px"
   md: "16px"
@@ -137,7 +159,17 @@ Paleta cálida de papel editorial con un solo acento frío-neutro (navy) y una f
 - **Headline/Big Idea** (peso 850, `clamp(1.3rem, 3vw, 2rem)`, line-height 1.25): ideas centrales dentro de una lección.
 - **Music** (Lora, peso 700): nombres de acordes y notas cuando aparecen como contenido, no como UI.
 - **Body** (peso 400, 1rem, line-height 1.6): texto de párrafo.
-- **Label** (peso 850, 0.76rem–0.84rem, letter-spacing 0.085em, uppercase en eyebrows): etiquetas de campo, eyebrows, badges de estado.
+- **Label** (peso 850, 0.76rem, letter-spacing 0.085em, uppercase en eyebrows): etiquetas de campo, eyebrows, badges de estado.
+
+### Escala de texto pequeño
+Cuatro escalones, expuestos como tokens CSS. La hoja de estilos llegó a tener diez tamaños distintos entre 0.65rem y 0.95rem — pasos de menos de medio píxel, decididos de a uno; estos cuatro cubren los mismos roles.
+
+- `--text-md` (0.94rem): bajada del héroe, encabezados del índice de lecciones.
+- `--text-sm` (0.88rem): texto secundario — notas al margen, pie de página, botones pequeños, chips de puntaje.
+- `--text-xs` (0.82rem): etiquetas de campo, pistas, encabezados de tabla, resúmenes de progreso.
+- `--text-2xs` (0.66rem): nombres de nota sobre las teclas negras y chips de estado de lección.
+
+**Antes de agregar un quinto escalón, comprobar que ninguno de estos cuatro sirve.** El problema anterior no fue tener tamaños pequeños, sino tener cinco separados por un píxel.
 
 ### Named Rules
 **La Regla Serif-Solo-Música.** Lora aparece exclusivamente en `.music-heading` para nombres de acordes/notas. Ningún título de interfaz, botón o navegación usa serif — así el ojo aprende a distinguir "esto es música" de "esto es la app".
@@ -198,6 +230,21 @@ Botones, tarjetas y teclas se sienten **sólidos pero cálidos**: bordes suaves,
 
 ### Piano Virtual (componente insignia)
 Teclas blancas con gradiente sutil de blanco a gris muy claro y borde redondeado solo en la base (imitando un teclado real); teclas negras en gradiente oscuro casi negro. Cuando una tecla cumple un rol armónico (raíz/tercera/quinta/séptima), se tiñe con el color de rol correspondiente en gradiente — este es el mecanismo central de enseñanza visual del producto: el color conecta lo que se ve con lo que se oye y con la función teórica de la nota.
+
+El piano dibuja un objeto físico, no una superficie de interfaz, así que tiene sus propios tokens y no toma los de la paleta de marca:
+
+| Token | Valor | Qué es |
+|---|---|---|
+| `--key-black` | `linear-gradient(#2a2a2a, #111111)` | cara de la tecla negra |
+| `--key-black-shadow` | `rgba(0,0,0,.25)` | sombra proyectada de la tecla negra |
+| `--key-white-border` | `#aeb5c4` | contorno de la tecla blanca |
+| `--key-white-text` | `#535d70` | nombre de nota sobre tecla blanca |
+| `--radius-key-white` | `9px` | esquinas de la tecla blanca (solo abajo) |
+| `--radius-key-black` | `7px` | esquinas de la tecla negra (solo abajo) |
+
+Los radios de 9px y 7px están **fuera** de la escala 12/16/18 a propósito: una tecla con esquinas de UI deja de parecer una tecla.
+
+**Ancho:** el teclado se dimensiona como `56px × --white-count × --key-scale`, donde `--white-count` lo publica `buildKeyboard()` según las octavas que dibuje. Las lecciones usan dos octavas (15 blancas); Laboratorio y Practicar, tres (22).
 
 ## Do's and Don'ts
 
