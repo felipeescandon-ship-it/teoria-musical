@@ -443,7 +443,14 @@
     .white-keys { display: flex; position: absolute; inset: 0; }
     .key { border: 0; }
     .key.white { position: relative; flex: 1; height: 100%; border: 1px solid var(--key-white-border); border-radius: 0 0 var(--radius-key-white) var(--radius-key-white); background: linear-gradient(#fff, #eef0f5); display: flex; align-items: end; justify-content: center; padding: 0 3px 11px; font-weight: var(--weight-heavy); color: var(--key-white-text); transition: .1s ease; }
-    .key.black { position: absolute; z-index: 3; top: 0; width: calc(44px * var(--key-scale, 1)); height: 138px; transform: translateX(-50%); border-radius: 0 0 var(--radius-key-black) var(--radius-key-black); background: var(--key-black); color: rgba(255,255,255,.78); display: flex; align-items: end; justify-content: center; padding: 0 3px 8px; font-size: var(--text-2xs); font-weight: var(--weight-heavy); box-shadow: 0 6px 10px var(--key-black-shadow); transition: .1s ease; }
+    /* Black key width is a fraction of the *actual* white key width (13.7mm / 23.5mm on a real
+       piano = .583), not a fixed px value: that keeps the proportion right at any zoom level and
+       also when the keyboard stretches past its min-width on a wide screen. */
+    .key.black { position: absolute; z-index: 3; top: 0; width: calc(100% / var(--white-count, 15) * .583); height: 138px; transform: translateX(-50%); border-radius: 0 0 var(--radius-key-black) var(--radius-key-black); background: var(--key-black); color: rgba(255,255,255,.78); display: flex; align-items: end; justify-content: center; padding: 0 3px 8px; font-size: var(--text-2xs); font-weight: var(--weight-heavy); line-height: 1.15; text-align: center; overflow-wrap: anywhere; box-shadow: 0 6px 10px var(--key-black-shadow); transition: .1s ease; }
+    /* The real-width black key is narrow enough that "Do♯/Re♭" must wrap onto two lines at 100%
+       zoom; `overflow-wrap: anywhere` lets it break at the slash instead of spilling over the
+       neighbouring keys, and unwraps on its own as the slider approaches 160%. */
+    .key.black span { display: block; width: 100%; }
     .key-zoom-field { max-width: 320px; margin-top: 14px; }
     .key-zoom-field label { display: block; margin-bottom: 6px; font-size: var(--text-xs); }
     .key:hover { filter: brightness(.97); }
