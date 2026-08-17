@@ -407,11 +407,13 @@
 
     .keyboard-wrap { margin-top: 16px; overflow-x: auto; padding: 12px; background: var(--kb-bg); border: 1px solid var(--kb-border); border-radius: var(--radius-md); box-shadow: var(--shadow-kb); transition: background .2s; }
     .keyboard-loading-status { color: var(--muted); font-size: .82rem; margin: 0 0 8px; }
-    .keyboard { position: relative; height: 220px; min-width: 840px; user-select: none; touch-action: manipulation; }
+    .keyboard { position: relative; height: 220px; min-width: calc(840px * var(--key-scale, 1)); user-select: none; touch-action: manipulation; }
     .white-keys { display: flex; position: absolute; inset: 0; }
     .key { border: 0; }
     .key.white { position: relative; flex: 1; height: 100%; border: 1px solid #aeb5c4; border-radius: 0 0 9px 9px; background: linear-gradient(#fff, #eef0f5); display: flex; align-items: end; justify-content: center; padding: 0 3px 11px; font-weight: var(--weight-heavy); color: #535d70; transition: .1s ease; }
-    .key.black { position: absolute; z-index: 3; top: 0; width: 44px; height: 138px; transform: translateX(-50%); border-radius: 0 0 7px 7px; background: var(--key-black); color: rgba(255,255,255,.78); display: flex; align-items: end; justify-content: center; padding: 0 3px 8px; font-size: .67rem; font-weight: var(--weight-heavy); box-shadow: 0 6px 10px rgba(0,0,0,.25); transition: .1s ease; }
+    .key.black { position: absolute; z-index: 3; top: 0; width: calc(44px * var(--key-scale, 1)); height: 138px; transform: translateX(-50%); border-radius: 0 0 7px 7px; background: var(--key-black); color: rgba(255,255,255,.78); display: flex; align-items: end; justify-content: center; padding: 0 3px 8px; font-size: .67rem; font-weight: var(--weight-heavy); box-shadow: 0 6px 10px rgba(0,0,0,.25); transition: .1s ease; }
+    .key-zoom-field { max-width: 320px; margin-top: 14px; }
+    .key-zoom-field label { display: block; margin-bottom: 6px; font-size: .84rem; }
     .key:hover { filter: brightness(.97); }
     .key.pressed.white { transform: translateY(2px); filter: brightness(.95); }
     .key.pressed.black { transform: translateX(-50%) translateY(2px); filter: brightness(1.15); }
@@ -1317,6 +1319,10 @@
           <span class="legend-item"><span class="dot fifth"></span>5ª</span>
           <span class="legend-item"><span class="dot seventh"></span>7ª</span>
         </div>
+        <div class="field compact-field key-zoom-field">
+          <label for="labKeyZoom">Tamaño de tecla: <output id="labKeyZoomValue">100%</output> <span class="muted">(160% ≈ ancho real de piano)</span></label>
+          <input type="range" id="labKeyZoom" min="100" max="160" step="5" value="100">
+        </div>
         <div class="keyboard-wrap"><div id="labKeyboard" class="keyboard" aria-label="Piano del laboratorio"></div></div>
         <div id="labNotes" class="note-row"></div>
         <div id="labInfo" class="info-grid"></div>
@@ -1347,6 +1353,10 @@
           <button id="checkBuildChallenge" class="btn good">Comprobar</button>
         </div>
         <div id="buildChallengePrompt" class="mission"><div class="mission-title">Presiona “Nuevo desafío”.</div></div>
+        <div class="field compact-field key-zoom-field">
+          <label for="practiceKeyZoom">Tamaño de tecla: <output id="practiceKeyZoomValue">100%</output> <span class="muted">(160% ≈ ancho real de piano)</span></label>
+          <input type="range" id="practiceKeyZoom" min="100" max="160" step="5" value="100">
+        </div>
         <div class="keyboard-wrap"><div id="buildKeyboard" class="keyboard" aria-label="Piano para construir acordes"></div></div>
         <div id="buildChallengeResult" class="result-box">Las teclas seleccionadas aparecerán aquí.</div>
         <div class="quiz-score"><span class="score-chip">Aciertos: <strong id="buildCorrect">0</strong></span><span class="score-chip">Intentos: <strong id="buildTotal">0</strong></span></div>
@@ -1495,6 +1505,6 @@
     <footer class="footer">Aprender música es aprender a escuchar relaciones. El resto son nombres útiles para poder hablar de ellas.</footer>
   </main>
 
-  <script type="module" src="./js/app.js?v=11"></script>
+  <script type="module" src="./js/app.js?v=12"></script>
 </body>
 </html>

@@ -59,3 +59,14 @@ export function saveTheme(theme) {
   state = { ...state, data: { ...state.data, theme } };
   persist();
 }
+
+// Key width zoom, percentage (100 = current default size). Scoped to Laboratorio/Practicar only
+// (see js/keyZoom.js) — lesson panels always render at 100%, so a shared persisted value is safe.
+export function loadKeyZoom(defaultZoom) {
+  return state.data.keyZoom || defaultZoom;
+}
+
+export function saveKeyZoom(zoom) {
+  state = { ...state, data: { ...state.data, keyZoom: zoom } };
+  persist();
+}

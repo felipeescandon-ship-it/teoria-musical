@@ -1,4 +1,4 @@
-import { loadLessonStates, saveLessonStates } from "./storage.js?v=3";
+import { loadLessonStates, saveLessonStates } from "./storage.js?v=4";
 
 // ========== Navigation and lesson state management ==========
 export const LESSON_COUNT=11;

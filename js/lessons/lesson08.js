@@ -2,7 +2,7 @@ import { ROOTS, SCALE_ROOT_IDS } from "../data.js?v=3";
 import { rootById, buildDiatonicChords, buildChordTones } from "../theory.js?v=3";
 import { playChordSmart as playChord } from "../audioSampled.js?v=7";
 import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=6";
-import { setLessonState } from "../nav.js?v=5";
+import { setLessonState } from "../nav.js?v=6";
 import { renderMissionDots } from "../icons.js?v=3";
 
 // ========== Lesson 8: Harmonic function (Tónica/Subdominante/Dominante) ==========

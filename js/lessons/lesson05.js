@@ -1,7 +1,7 @@
 import { rootById, buildChordTones, chordSymbol } from "../theory.js?v=3";
 import { playChordSmart as playChord } from "../audioSampled.js?v=7";
 import { buildKeyboard, highlightChordOnKeyboard, highlightMidiRoles } from "../keyboard.js?v=6";
-import { setLessonState } from "../nav.js?v=5";
+import { setLessonState } from "../nav.js?v=6";
 import { renderMissionDots } from "../icons.js?v=3";
 
 // ========== Lesson 5: Chord inversions (root position, 1st, 2nd inversion) ==========

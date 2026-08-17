@@ -2,7 +2,7 @@ import { PC_KEY_LABELS, INTERVAL_NAMES } from "../data.js?v=3";
 import { octaveOf } from "../theory.js?v=3";
 import { playMidiSmart as playMidi, playChordSmart as playChord } from "../audioSampled.js?v=7";
 import { buildKeyboard, clearKeyboard, getKeyboard } from "../keyboard.js?v=6";
-import { setLessonState } from "../nav.js?v=5";
+import { setLessonState } from "../nav.js?v=6";
 import { renderMissionDots } from "../icons.js?v=3";
 
 // ========== Lesson 2: Intervals (semitones and tones) ==========

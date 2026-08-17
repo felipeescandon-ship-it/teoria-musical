@@ -2,7 +2,7 @@ import { ROOTS, CHORDS, VOICING_TYPES, SCALE_ROOT_IDS } from "../data.js?v=3";
 import { rootById, buildChordTones, chordSymbol } from "../theory.js?v=3";
 import { playChordSmart as playChord } from "../audioSampled.js?v=7";
 import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=6";
-import { setLessonState, showMode } from "../nav.js?v=5";
+import { setLessonState, showMode } from "../nav.js?v=6";
 import { renderMissionDots } from "../icons.js?v=3";
 
 // ========== Lesson 10: Advanced voicings ==========
