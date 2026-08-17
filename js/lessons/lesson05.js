@@ -1,6 +1,6 @@
 import { rootById, buildChordTones, chordSymbol } from "../theory.js?v=4";
 import { playChordSmart as playChord } from "../audioSampled.js?v=7";
-import { buildKeyboard, highlightChordOnKeyboard, highlightMidiRoles } from "../keyboard.js?v=6";
+import { buildKeyboard, highlightChordOnKeyboard, highlightMidiRoles } from "../keyboard.js?v=7";
 import { setLessonState } from "../nav.js?v=7";
 import { renderMissionDots } from "../icons.js?v=3";
 import { recordAttempt } from "../stats.js?v=1";

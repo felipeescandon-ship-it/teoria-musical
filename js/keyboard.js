@@ -49,6 +49,7 @@ export function buildKeyboard(id, onTrigger, options={}) {
   const blackAfterWhite = {0:1,1:3,3:6,4:8,5:10}; // Black keys positioned after specific white keys
   const keyMap = new Map(); // MIDI → DOM key element
   const finalMidi = startMidi + octaves*12;
+  const totalWhite = octaves*7+1; // white keys drawn, including the closing Do
   const pianoState = options.engine !== "synth" ? { piano: null } : null;
   if (pianoState) {
     // First visit only: the samples aren't cached yet (see service-worker.js), so this can take
@@ -60,6 +61,9 @@ export function buildKeyboard(id, onTrigger, options={}) {
     getSampledPiano().then(p => { pianoState.piano = p; status.remove(); });
   }
   container.innerHTML = "";
+  // The CSS width of a keyboard is `white key width × --white-count`, so a 3-octave keyboard gets
+  // wider instead of squeezing the same 840px into more keys (see .keyboard in index.html).
+  container.style.setProperty("--white-count", totalWhite);
   const whiteContainer = document.createElement("div");
   whiteContainer.className = "white-keys";
   container.appendChild(whiteContainer);
@@ -79,7 +83,6 @@ export function buildKeyboard(id, onTrigger, options={}) {
   finalKey.innerHTML='<span>Do<br><small>C</small></span>';
   bindKeyInteraction(id,finalKey,finalMidi,0,onTrigger,pianoState); whiteContainer.appendChild(finalKey); keyMap.set(finalMidi,finalKey);
   // Generate black keys (positioned absolutely between white keys)
-  const totalWhite = octaves*7+1;
   let globalWhite=0;
   for (let octave=0; octave<octaves; octave++) {
     whitePattern.forEach((pc,i) => {

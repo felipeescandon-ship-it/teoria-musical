@@ -407,7 +407,7 @@
 
     .keyboard-wrap { margin-top: 16px; overflow-x: auto; padding: 12px; background: var(--kb-bg); border: 1px solid var(--kb-border); border-radius: var(--radius-md); box-shadow: var(--shadow-kb); transition: background .2s; }
     .keyboard-loading-status { color: var(--muted); font-size: .82rem; margin: 0 0 8px; }
-    .keyboard { position: relative; height: 220px; min-width: calc(840px * var(--key-scale, 1)); user-select: none; touch-action: manipulation; }
+    .keyboard { position: relative; height: 220px; min-width: calc(56px * var(--white-count, 15) * var(--key-scale, 1)); user-select: none; touch-action: manipulation; }
     .white-keys { display: flex; position: absolute; inset: 0; }
     .key { border: 0; }
     .key.white { position: relative; flex: 1; height: 100%; border: 1px solid #aeb5c4; border-radius: 0 0 9px 9px; background: linear-gradient(#fff, #eef0f5); display: flex; align-items: end; justify-content: center; padding: 0 3px 11px; font-weight: var(--weight-heavy); color: #535d70; transition: .1s ease; }
@@ -1553,6 +1553,6 @@
     <footer class="footer">Aprender música es aprender a escuchar relaciones. El resto son nombres útiles para poder hablar de ellas.</footer>
   </main>
 
-  <script type="module" src="./js/app.js?v=14"></script>
+  <script type="module" src="./js/app.js?v=15"></script>
 </body>
 </html>

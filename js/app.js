@@ -18,8 +18,8 @@ import "./lessons/lesson09.js?v=9";
 import "./lessons/lesson10.js?v=9";
 import "./lessons/lesson11.js?v=9";
 
-import "./lab.js?v=9";
-import "./practice.js?v=7";
+import "./lab.js?v=10";
+import "./practice.js?v=8";
 import "./eartraining.js?v=8";
 
 // ========== Reference mode: quick chord-quality demo buttons ==========

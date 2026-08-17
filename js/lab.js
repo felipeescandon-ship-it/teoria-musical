@@ -1,7 +1,7 @@
 import { ROOTS, CHORDS, PRACTICAL_ROOT_IDS, VOICING_TYPES } from "./data.js?v=3";
 import { rootById, buildChordTones, chordSymbol, spellChord, inversionName } from "./theory.js?v=4";
 import { playChordSmart as playChord } from "./audioSampled.js?v=7";
-import { buildKeyboard, highlightChordOnKeyboard } from "./keyboard.js?v=6";
+import { buildKeyboard, highlightChordOnKeyboard } from "./keyboard.js?v=7";
 import { registerLabRenderer } from "./nav.js?v=7";
 
 // ========== Lab mode: free exploration of chords ==========
@@ -9,7 +9,7 @@ const labRoot=document.getElementById("labRoot");
 function populateLabRoots(){const mode=document.getElementById("labSpellingMode").value,previous=labRoot.value||"C",roots=mode==="practical"?ROOTS.filter(r=>PRACTICAL_ROOT_IDS.includes(r.id)):ROOTS; labRoot.innerHTML=""; roots.forEach(r=>labRoot.add(new Option(`${r.latin} / ${r.american}`,r.id))); labRoot.value=roots.some(r=>r.id===previous)?previous:"C";}
 const qualitySelects=[document.getElementById("labQuality"),document.getElementById("compareA"),document.getElementById("compareB")];
 Object.entries(CHORDS).forEach(([key,chord])=>qualitySelects.forEach(sel=>sel.add(new Option(chord.label[0].toUpperCase()+chord.label.slice(1),key))));
-document.getElementById("labQuality").value="major"; document.getElementById("compareA").value="major"; document.getElementById("compareB").value="minor"; populateLabRoots(); buildKeyboard("labKeyboard",null);
+document.getElementById("labQuality").value="major"; document.getElementById("compareA").value="major"; document.getElementById("compareB").value="minor"; populateLabRoots(); buildKeyboard("labKeyboard",null,{octaves:3});
 const labVoicingSelect=document.getElementById("labVoicing");
 Object.entries(VOICING_TYPES).forEach(([key,v])=>labVoicingSelect.add(new Option(v.label,key)));
 labVoicingSelect.value="closed";

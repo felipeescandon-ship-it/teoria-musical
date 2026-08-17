@@ -1,13 +1,13 @@
 import { PC_KEY_LABELS, ROOTS, CHORDS } from "./data.js?v=3";
 import { spellChord, buildChordTones } from "./theory.js?v=4";
 import { playChordSmart as playChord } from "./audioSampled.js?v=7";
-import { buildKeyboard, clearKeyboard, togglePcSelection } from "./keyboard.js?v=6";
+import { buildKeyboard, clearKeyboard, togglePcSelection } from "./keyboard.js?v=7";
 import { recordAttempt } from "./stats.js?v=1";
 
 // ========== Practice mode: build and ear training challenges ==========
 let buildSelected=new Set(),currentBuildChallenge=null,buildAttempts=0,buildChallengeCounted=false,buildCorrectCounted=false,buildStats={correct:0,total:0};
 function updateBuildStats(){document.getElementById("buildCorrect").textContent=buildStats.correct;document.getElementById("buildTotal").textContent=buildStats.total;}
-buildKeyboard("buildKeyboard",(midi,pc)=>{togglePcSelection("buildKeyboard",buildSelected,pc); document.getElementById("buildChallengeResult").className="result-box"; document.getElementById("buildChallengeResult").innerHTML=buildSelected.size?`<strong>Seleccionaste:</strong> ${[...buildSelected].sort((a,b)=>a-b).map(pc=>PC_KEY_LABELS[pc]).join(" · ")}`:"No hay notas seleccionadas.";});
+buildKeyboard("buildKeyboard",(midi,pc)=>{togglePcSelection("buildKeyboard",buildSelected,pc); document.getElementById("buildChallengeResult").className="result-box"; document.getElementById("buildChallengeResult").innerHTML=buildSelected.size?`<strong>Seleccionaste:</strong> ${[...buildSelected].sort((a,b)=>a-b).map(pc=>PC_KEY_LABELS[pc]).join(" · ")}`:"No hay notas seleccionadas.";},{octaves:3});
 function newBuildChallenge(){const roots=ROOTS.filter(r=>["C","D","E","F","G","A","B","F#","Bb","Eb"].includes(r.id)),qualities=["major","minor","diminished","augmented","sus2","sus4"],root=roots[Math.floor(Math.random()*roots.length)],quality=qualities[Math.floor(Math.random()*qualities.length)]; currentBuildChallenge={root,quality}; buildAttempts=0;buildChallengeCounted=false;buildCorrectCounted=false;buildSelected.clear();clearKeyboard("buildKeyboard");document.getElementById("buildChallengePrompt").innerHTML=`<div class="mission-title">Construye: ${root.latin} ${CHORDS[quality].label} (${root.american}${CHORDS[quality].short})</div><p>Usa la fórmula ${CHORDS[quality].degreeLabels.join(" – ")}.</p>`;document.getElementById("buildChallengeResult").className="result-box";document.getElementById("buildChallengeResult").textContent="Selecciona las notas del acorde.";}
 document.getElementById("newBuildChallenge").addEventListener("click",newBuildChallenge);
 document.getElementById("clearBuildSelection").addEventListener("click",()=>{buildSelected.clear();clearKeyboard("buildKeyboard");document.getElementById("buildChallengeResult").textContent="No hay notas seleccionadas.";});
