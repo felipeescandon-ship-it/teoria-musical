@@ -1,4 +1,4 @@
-import { loadTheme, saveTheme } from "./storage.js?v=4";
+import { loadTheme, saveTheme } from "./storage.js?v=5";
 import { ICON_MOON, ICON_SUN } from "./icons.js?v=3";
 
 // ========== Light/dark theme toggle ==========

@@ -2,8 +2,9 @@ import { PC_KEY_LABELS } from "../data.js?v=3";
 import { rootById, rootC, buildChordTones } from "../theory.js?v=3";
 import { playChordSmart as playChord } from "../audioSampled.js?v=7";
 import { buildKeyboard, clearKeyboard, highlightChordOnKeyboard, togglePcSelection } from "../keyboard.js?v=6";
-import { setLessonState } from "../nav.js?v=6";
+import { setLessonState } from "../nav.js?v=7";
 import { renderMissionDots } from "../icons.js?v=3";
+import { recordAttempt } from "../stats.js?v=1";
 
 // ========== Lesson 3: Major and minor triads (0–4–7 vs 0–3–7) ==========
 let mmSelected=new Set(), mmStage=0;
@@ -13,7 +14,7 @@ function updateMMSelection(){ document.getElementById("majorMinorResult").classN
 function clearMM(){mmSelected.clear(); clearKeyboard("majorMinorKeyboard"); updateMMSelection();}
 function renderMMMission(){document.getElementById("majorMinorMissionText").textContent=mmStage===0?"Paso 1 de 2 · Selecciona Do, Mi y Sol para construir Do mayor.":mmStage===1?"Paso 2 de 2 · Baja solo la tercera: construye Do menor con Do, Mi♭ y Sol.":"Misión completada."; renderMissionDots(document.getElementById("majorMinorDots"),[0,1].map(i=>i<mmStage));}
 buildKeyboard("majorMinorKeyboard",(midi,pc)=>{setLessonState(3,"explored"); togglePcSelection("majorMinorKeyboard",mmSelected,pc); updateMMSelection();});
-document.getElementById("checkMajorMinor").addEventListener("click",()=>{const target=mmTargets[Math.min(mmStage,1)],correct=mmSelected.size===target.size&&[...target].every(pc=>mmSelected.has(pc)); const box=document.getElementById("majorMinorResult"); if(correct){mmStage++; if(mmStage===1)setLessonState(3,"practiced"); box.className="result-box status-good"; if(mmStage>=2){setLessonState(3,"mastered"); box.innerHTML="<strong>¡Dominado!</strong> Cambiaste únicamente Mi por Mi♭ y transformaste mayor en menor.";} else box.innerHTML="<strong>Do mayor correcto.</strong> Ahora baja solamente la tercera un semitono."; clearMM(); renderMMMission();} else {box.className="result-box status-bad"; const rootOk=mmSelected.has(0),fifthOk=mmSelected.has(7); box.innerHTML=`<strong>Aún no.</strong> ${!rootOk?"Falta la raíz Do. ":""}${!fifthOk?"Falta la quinta Sol. ":""}Revisa la tercera del paso actual.`;}});
+document.getElementById("checkMajorMinor").addEventListener("click",()=>{const target=mmTargets[Math.min(mmStage,1)],correct=mmSelected.size===target.size&&[...target].every(pc=>mmSelected.has(pc)); const box=document.getElementById("majorMinorResult"); recordAttempt("calidad",correct,"visual"); if(correct){mmStage++; if(mmStage===1)setLessonState(3,"practiced"); box.className="result-box status-good"; if(mmStage>=2){setLessonState(3,"mastered"); box.innerHTML="<strong>¡Dominado!</strong> Cambiaste únicamente Mi por Mi♭ y transformaste mayor en menor.";} else box.innerHTML="<strong>Do mayor correcto.</strong> Ahora baja solamente la tercera un semitono."; clearMM(); renderMMMission();} else {box.className="result-box status-bad"; const rootOk=mmSelected.has(0),fifthOk=mmSelected.has(7); box.innerHTML=`<strong>Aún no.</strong> ${!rootOk?"Falta la raíz Do. ":""}${!fifthOk?"Falta la quinta Sol. ":""}Revisa la tercera del paso actual.`;}});
 document.getElementById("clearMajorMinor").addEventListener("click",clearMM);
 document.getElementById("playCMajor").addEventListener("click",()=>{setLessonState(3,"explored"); demoChord("majorMinorKeyboard",rootC,"major"); document.getElementById("majorMinorResult").innerHTML="<strong>Do mayor:</strong> 0–4–7 semitonos.";});
 document.getElementById("playCMinor").addEventListener("click",()=>{setLessonState(3,"explored"); demoChord("majorMinorKeyboard",rootC,"minor"); document.getElementById("majorMinorResult").innerHTML="<strong>Do menor:</strong> 0–3–7 semitonos.";});

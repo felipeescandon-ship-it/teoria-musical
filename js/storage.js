@@ -70,3 +70,14 @@ export function saveKeyZoom(zoom) {
   state = { ...state, data: { ...state.data, keyZoom: zoom } };
   persist();
 }
+
+// Per-skill quiz attempt counters (js/stats.js). Each entry in `defaults` is fully replaced
+// rather than deep-merged, so a saved skill always carries its complete {visual,audio} shape.
+export function loadSkillStats(defaults) {
+  return { ...defaults, ...(state.data.skillStats || {}) };
+}
+
+export function saveSkillStats(skillStats) {
+  state = { ...state, data: { ...state.data, skillStats } };
+  persist();
+}

@@ -1,4 +1,4 @@
-import { loadKeyZoom, saveKeyZoom } from "./storage.js?v=4";
+import { loadKeyZoom, saveKeyZoom } from "./storage.js?v=5";
 
 // ========== Key-width zoom, scoped to Laboratorio and Practicar only ==========
 // Lesson panels always stay at 100%: several missions rely on seeing a full chord or interval

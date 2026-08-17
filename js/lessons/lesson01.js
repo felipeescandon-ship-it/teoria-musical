@@ -1,8 +1,9 @@
 import { PC_KEY_LABELS } from "../data.js?v=3";
 import { octaveOf } from "../theory.js?v=3";
 import { buildKeyboard, clearKeyboard } from "../keyboard.js?v=6";
-import { setLessonState } from "../nav.js?v=6";
+import { setLessonState } from "../nav.js?v=7";
 import { renderMissionDots } from "../icons.js?v=3";
+import { recordAttempt } from "../stats.js?v=1";
 
 // ========== Lesson 1: Note recognition and octaves ==========
 let l1Step=0, firstDoMidi=null;
@@ -11,10 +12,12 @@ function renderL1Mission(){ document.getElementById("lesson1MissionText").textCo
 function resetL1(){ l1Step=0; firstDoMidi=null; clearKeyboard("courseKeyboard1"); document.getElementById("lesson1Result").className="result-box"; document.getElementById("lesson1Result").textContent="Toca una tecla para comenzar."; renderL1Mission(); }
 buildKeyboard("courseKeyboard1",(midi,pc)=>{
   setLessonState(1,"explored"); const box=document.getElementById("lesson1Result"); let correct=false;
+  const missionActive=l1Step<l1Tasks.length;
   if(l1Step===0 && pc===0){ firstDoMidi=midi; correct=true; }
   else if(l1Step===1 && pc===0 && midi!==firstDoMidi){ correct=true; }
   else if(l1Step===2 && pc===4){ correct=true; }
   else if(l1Step===3 && pc===7){ correct=true; }
+  if(missionActive)recordAttempt("notas",correct,"visual");
   if(correct){ l1Step++; if(l1Step===1)setLessonState(1,"practiced"); box.className="result-box status-good"; box.innerHTML=l1Step>=4?"<strong>¡Dominado!</strong> Reconociste Do en dos octavas, Mi y Sol.":`<strong>Correcto.</strong> Siguiente: ${l1Tasks[l1Step]}`; if(l1Step>=4)setLessonState(1,"mastered"); }
   // Once the mission is done l1Step is 4, past the last task — keep exploring freely instead of
   // scolding with "Aún no" and an out-of-range (undefined) task.

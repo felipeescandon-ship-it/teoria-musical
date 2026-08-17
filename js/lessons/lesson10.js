@@ -2,8 +2,9 @@ import { ROOTS, CHORDS, VOICING_TYPES, SCALE_ROOT_IDS } from "../data.js?v=3";
 import { rootById, buildChordTones, chordSymbol } from "../theory.js?v=3";
 import { playChordSmart as playChord } from "../audioSampled.js?v=7";
 import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=6";
-import { setLessonState, showMode } from "../nav.js?v=6";
+import { setLessonState, showMode } from "../nav.js?v=7";
 import { renderMissionDots } from "../icons.js?v=3";
+import { recordAttempt } from "../stats.js?v=1";
 
 // ========== Lesson 10: Advanced voicings ==========
 const VOICING_QUALITY_IDS=["major","minor","dom7","maj7","min7"];
@@ -107,6 +108,7 @@ function answerArpeggioQuiz(type){
   if(arpeggioQuizAnswered)return;
   arpeggioQuizAnswered=true;
   const correct=type===arpeggioQuizType;
+  recordAttempt("arpegio",correct,"audio");
   box.className=`result-box ${correct?"status-good":"status-bad"}`;
   box.innerHTML=correct?`<strong>¡Correcto!</strong> Era ${ARPEGGIO_PATTERNS[arpeggioQuizType].label.toLowerCase()}.`:`<strong>No esta vez.</strong> Era ${ARPEGGIO_PATTERNS[arpeggioQuizType].label.toLowerCase()}.`;
   if(correct){

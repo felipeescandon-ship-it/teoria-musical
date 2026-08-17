@@ -2,8 +2,9 @@ import { PC_KEY_LABELS } from "../data.js?v=3";
 import { octaveOf, rootById, buildChordTones } from "../theory.js?v=3";
 import { playChordSmart as playChord } from "../audioSampled.js?v=7";
 import { buildKeyboard, clearKeyboard } from "../keyboard.js?v=6";
-import { setLessonState } from "../nav.js?v=6";
+import { setLessonState } from "../nav.js?v=7";
 import { renderMissionDots } from "../icons.js?v=3";
+import { recordAttempt } from "../stats.js?v=1";
 
 // ========== Lesson 4: Accidentals (sharps and flats) ==========
 let accidentalSelection=[], accidentalStage=-1;
@@ -18,7 +19,8 @@ buildKeyboard("accidentalKeyboard",midi=>{
   setLessonState(4,"explored"); accidentalSelection.push(midi); const box=document.getElementById("accidentalResult");
   if(accidentalStage<0){box.className="result-box"; box.innerHTML=`Tocaste <strong>${PC_KEY_LABELS[midi%12]}${octaveOf(midi)}</strong>.`; return;}
   const challenge=accidentalChallenges[accidentalStage]; if(accidentalSelection.length<challenge.length){box.textContent="Ahora toca la segunda nota."; return;}
-  if(challenge.test(accidentalSelection)){accidentalStage++; if(accidentalStage===1)setLessonState(4,"practiced"); if(accidentalStage>=3){setLessonState(4,"mastered"); box.className="result-box status-good"; box.innerHTML="<strong>¡Dominado!</strong> Entiendes que ♯ sube, ♭ baja y una tecla puede tener dos nombres.";} else {box.className="result-box status-good"; box.innerHTML=`<strong>Correcto.</strong> Ahora: ${accidentalChallenges[accidentalStage].text}`;} updateAccidentalMission();} else {box.className="result-box status-bad"; box.innerHTML=`<strong>Casi.</strong> ${challenge.text}`;} setTimeout(clearAccidental,650);
+  const passed=challenge.test(accidentalSelection); recordAttempt("notas",passed,"visual");
+  if(passed){accidentalStage++; if(accidentalStage===1)setLessonState(4,"practiced"); if(accidentalStage>=3){setLessonState(4,"mastered"); box.className="result-box status-good"; box.innerHTML="<strong>¡Dominado!</strong> Entiendes que ♯ sube, ♭ baja y una tecla puede tener dos nombres.";} else {box.className="result-box status-good"; box.innerHTML=`<strong>Correcto.</strong> Ahora: ${accidentalChallenges[accidentalStage].text}`;} updateAccidentalMission();} else {box.className="result-box status-bad"; box.innerHTML=`<strong>Casi.</strong> ${challenge.text}`;} setTimeout(clearAccidental,650);
 });
 document.getElementById("startAccidentalMission").addEventListener("click",()=>{accidentalStage=0; clearAccidental(); updateAccidentalMission(); document.getElementById("accidentalResult").className="result-box"; document.getElementById("accidentalResult").textContent=accidentalChallenges[0].text;});
 document.getElementById("resetAccidental").addEventListener("click",()=>{clearAccidental(); document.getElementById("accidentalResult").className="result-box"; document.getElementById("accidentalResult").textContent="Selección reiniciada.";});

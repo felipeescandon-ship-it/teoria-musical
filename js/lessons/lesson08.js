@@ -2,8 +2,9 @@ import { ROOTS, SCALE_ROOT_IDS } from "../data.js?v=3";
 import { rootById, buildDiatonicChords, buildChordTones } from "../theory.js?v=3";
 import { playChordSmart as playChord } from "../audioSampled.js?v=7";
 import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=6";
-import { setLessonState } from "../nav.js?v=6";
+import { setLessonState } from "../nav.js?v=7";
 import { renderMissionDots } from "../icons.js?v=3";
+import { recordAttempt } from "../stats.js?v=1";
 
 // ========== Lesson 8: Harmonic function (Tónica/Subdominante/Dominante) ==========
 const FUNCTION_ROLE_CLASS = { "Tónica": "role-tonica", "Subdominante": "role-subdominante", "Dominante": "role-dominante" };
@@ -64,6 +65,7 @@ function initFunctionQuiz(ids){
     if(functionQuizAnswered)return;
     functionQuizAnswered=true;
     const correct=answer===functionQuizChord.chord.func;
+    recordAttempt("funcion",correct,"audio");
     box.className=`result-box ${correct?"status-good":"status-bad"}`;
     box.innerHTML=correct?`<strong>¡Correcto!</strong> ${functionQuizChord.chord.roman} (${functionQuizChord.chord.name}) es ${functionQuizChord.chord.func}.`:`<strong>No esta vez.</strong> Era ${functionQuizChord.chord.roman} (${functionQuizChord.chord.name}): ${functionQuizChord.chord.func}.`;
     if(correct){
