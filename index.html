@@ -1192,6 +1192,46 @@
                 el bloque suena más denso, y el arpegio Alberti da movimiento sin cambiar la armonía.
               </div>
 
+              <h3 class="mt">Bonus: conecta la progresión con inversiones</h3>
+              <p>
+                Tocar cada acorde en posición fundamental fuerza saltos grandes de mano. Elegir, para cada acorde,
+                la inversión que menos mueve las voces respecto al acorde anterior conecta la progresión con un
+                movimiento mínimo — sin dejar de tocar los mismos acordes. Usa la tonalidad y progresión de arriba.
+              </p>
+              <div class="controls">
+                <button id="compareInversions" class="btn secondary">Comparar conexión</button>
+                <button id="playRootPositions" class="btn secondary" disabled>Tocar en posición fundamental</button>
+                <button id="playConnected" class="btn secondary" disabled>Tocar conectada</button>
+              </div>
+              <div class="grid two mt">
+                <div class="compare-card">
+                  <div class="eyebrow">Posiciones fundamentales</div>
+                  <div id="rootPositionChords" class="pill-row">Pulsa "Comparar conexión".</div>
+                  <div class="info-item mt-sm"><span>Movimiento total</span><strong id="rootPositionMovement">—</strong></div>
+                </div>
+                <div class="compare-card">
+                  <div class="eyebrow">Conectada (menor movimiento)</div>
+                  <div id="connectedChords" class="pill-row">Pulsa "Comparar conexión".</div>
+                  <div class="info-item mt-sm"><span>Movimiento total</span><strong id="connectedMovement">—</strong></div>
+                </div>
+              </div>
+              <div class="callout good compact-callout mt">
+                El bajo sigue siendo la nota más grave de cada acorde en ambas versiones — nunca deja de ser
+                identificable. Lo que cambia es cuánto saltan las voces intermedias entre un acorde y el siguiente.
+              </div>
+
+              <div class="mission mt">
+                <div class="mission-title">Misión: elige la inversión que menos mueve las voces</div>
+                <p id="voiceLeadingMissionText">Sonará un acorde y se mostrará el siguiente de la progresión. Elige la inversión que lo conecta con el menor movimiento total.</p>
+                <div class="mission-progress"><span id="voiceLeadingMissionDots"><span class="mission-dot"></span><span class="mission-dot"></span><span class="mission-dot"></span></span></div>
+              </div>
+              <div class="controls">
+                <button id="voiceLeadingNewChallenge" class="btn">Nuevo desafío</button>
+                <button id="voiceLeadingRepeat" class="btn secondary" disabled>Repetir</button>
+              </div>
+              <div id="voiceLeadingOptions" class="quiz-options"></div>
+              <div id="voiceLeadingFeedback" class="result-box">Pulsa "Nuevo desafío" para comenzar.</div>
+
               <div class="lesson-actions">
                 <button class="btn secondary lesson-prev" data-prev="8">Volver</button>
                 <button class="btn lesson-next" data-next="10">Continuar a Voicings avanzados</button>
@@ -1513,6 +1553,6 @@
     <footer class="footer">Aprender música es aprender a escuchar relaciones. El resto son nombres útiles para poder hablar de ellas.</footer>
   </main>
 
-  <script type="module" src="./js/app.js?v=13"></script>
+  <script type="module" src="./js/app.js?v=14"></script>
 </body>
 </html>

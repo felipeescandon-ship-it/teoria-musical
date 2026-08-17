@@ -1,12 +1,13 @@
 import { ROOTS, PROGRESSIONS, DIATONIC_ROMANS, SCALE_ROOT_IDS } from "../data.js?v=3";
-import { rootById, buildDiatonicChords, buildChordTones } from "../theory.js?v=3";
+import { rootById, buildDiatonicChords, buildChordTones, chordSymbol, inversionName, bestInversion, voiceLeadingDistance } from "../theory.js?v=4";
 import { getAudioContext } from "../audio.js?v=5";
-import { playMidiAtSmart as playMidiAt, playChordAtSmart as playChordAt } from "../audioSampled.js?v=7";
+import { playMidiAtSmart as playMidiAt, playChordAtSmart as playChordAt, playChordSmart as playChordNow } from "../audioSampled.js?v=7";
 import { createTransport } from "../transport.js?v=5";
 import { progressionEventAtBeat } from "../timing.js?v=3";
 import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=6";
 import { setLessonState, onNavigate } from "../nav.js?v=7";
 import { ICON_PLAY, ICON_STOP, renderMissionDots } from "../icons.js?v=3";
+import { recordAttempt } from "../stats.js?v=1";
 
 // ========== Lesson 9: Progressions and accompaniment (Epic B2) + tempo/loop (Epic C1) ==========
 // Both "play once" and "loop with a pulse" run through the SAME transport — they differ only in
@@ -158,3 +159,92 @@ function playProgressionMission(progressionKey){
 document.getElementById("progressionMission1").addEventListener("click",()=>playProgressionMission("I-IV-V-I"));
 document.getElementById("progressionMission2").addEventListener("click",()=>playProgressionMission("I-V-vi-IV"));
 document.getElementById("progressionMission3").addEventListener("click",()=>playProgressionMission("ii-V-I"));
+
+// ========== Bonus (Epic B3): connect the progression with inversions instead of root position ==========
+// Chains bestInversion() forward — each chord picks whichever inversion moves the least from the
+// tones actually chosen for the PREVIOUS chord, not from its own root position — so the comparison
+// against "always root position" reflects a real cumulative effect across the whole progression.
+function computeInversionComparison(){
+  const chords=getProgressionChords(progressionKeySelect.value,progressionTypeSelect.value);
+  const rootVersion=chords.map(c=>({chord:c,inversion:0,tones:buildChordTones(c.root,c.quality,0,48)}));
+  const connectedVersion=[];
+  chords.forEach((c,i)=>{
+    if(i===0){ connectedVersion.push({chord:c,inversion:0,tones:buildChordTones(c.root,c.quality,0,48)}); return; }
+    const best=bestInversion(connectedVersion[i-1].tones,c.root,c.quality,48);
+    connectedVersion.push({chord:c,inversion:best.inversion,tones:best.tones});
+  });
+  const totalMovement=version=>version.slice(1).reduce((sum,step,i)=>sum+voiceLeadingDistance(version[i].tones,step.tones),0);
+  return {rootVersion,connectedVersion,rootMovement:totalMovement(rootVersion),connectedMovement:totalMovement(connectedVersion)};
+}
+function renderChordChips(version){
+  return version.map(({chord,inversion,tones})=>{
+    const bass=tones[0], symbol=chordSymbol(chord.root,chord.quality,bass.american);
+    return `<span class="pill">${chord.roman} · ${symbol} <small>(${inversionName(inversion,tones.length)})</small></span>`;
+  }).join("");
+}
+function playChordSequence(version){ version.forEach((step,i)=>setTimeout(()=>playChordNow(step.tones.map(t=>t.midi)),i*900)); }
+let lastComparison=null;
+document.getElementById("compareInversions").addEventListener("click",()=>{
+  setLessonState(9,"explored");
+  lastComparison=computeInversionComparison();
+  document.getElementById("rootPositionChords").innerHTML=renderChordChips(lastComparison.rootVersion);
+  document.getElementById("connectedChords").innerHTML=renderChordChips(lastComparison.connectedVersion);
+  document.getElementById("rootPositionMovement").textContent=`${lastComparison.rootMovement} semitonos`;
+  document.getElementById("connectedMovement").textContent=`${lastComparison.connectedMovement} semitonos`;
+  document.getElementById("playRootPositions").disabled=false;
+  document.getElementById("playConnected").disabled=false;
+});
+document.getElementById("playRootPositions").addEventListener("click",()=>lastComparison&&playChordSequence(lastComparison.rootVersion));
+document.getElementById("playConnected").addEventListener("click",()=>lastComparison&&playChordSequence(lastComparison.connectedVersion));
+
+// Mission: given the chord that's actually sounding and the next chord in the progression, choose
+// which inversion of the next chord connects with the least voice movement.
+let voiceLeadingQuiz=null, voiceLeadingAnswered=false, voiceLeadingMissionCorrect=0;
+function renderVoiceLeadingOptions(){
+  const c=document.getElementById("voiceLeadingOptions"); c.innerHTML="";
+  [0,1,2].forEach(inv=>{
+    const b=document.createElement("button"); b.className="btn secondary"; b.textContent=inversionName(inv,3);
+    b.addEventListener("click",()=>answerVoiceLeadingQuiz(inv));
+    c.appendChild(b);
+  });
+}
+function newVoiceLeadingChallenge(){
+  setLessonState(9,"explored");
+  renderVoiceLeadingOptions();
+  const chords=getProgressionChords(progressionKeySelect.value,progressionTypeSelect.value);
+  const idx=1+Math.floor(Math.random()*(chords.length-1));
+  const prevChord=chords[idx-1], nextChord=chords[idx];
+  const prevTones=buildChordTones(prevChord.root,prevChord.quality,0,48);
+  const best=bestInversion(prevTones,nextChord.root,nextChord.quality,48);
+  voiceLeadingQuiz={prevChord,nextChord,prevTones,correctInversion:best.inversion};
+  voiceLeadingAnswered=false;
+  playChordNow(prevTones.map(t=>t.midi));
+  const box=document.getElementById("voiceLeadingFeedback");
+  box.className="result-box";
+  box.innerHTML=`Anterior: <strong>${prevChord.roman} (${prevChord.name})</strong>. Siguiente: <strong>${nextChord.roman} (${nextChord.name})</strong>. ¿Qué inversión conecta con menos movimiento?`;
+  document.getElementById("voiceLeadingRepeat").disabled=false;
+}
+function answerVoiceLeadingQuiz(inv){
+  const box=document.getElementById("voiceLeadingFeedback");
+  if(!voiceLeadingQuiz){box.className="result-box status-bad";box.textContent="Primero pulsa \"Nuevo desafío\".";return;}
+  if(voiceLeadingAnswered)return;
+  voiceLeadingAnswered=true;
+  const correct=inv===voiceLeadingQuiz.correctInversion;
+  recordAttempt("inversiones",correct,"visual");
+  const chosenTones=buildChordTones(voiceLeadingQuiz.nextChord.root,voiceLeadingQuiz.nextChord.quality,inv,48);
+  playChordNow(chosenTones.map(t=>t.midi));
+  box.className=`result-box ${correct?"status-good":"status-bad"}`;
+  box.innerHTML=correct?`<strong>¡Correcto!</strong> ${inversionName(voiceLeadingQuiz.correctInversion,3)} es la que menos mueve las voces.`:`<strong>No esta vez.</strong> La mejor opción era ${inversionName(voiceLeadingQuiz.correctInversion,3)}.`;
+  if(correct){
+    voiceLeadingMissionCorrect++;
+    if(voiceLeadingMissionCorrect===1)setLessonState(9,"practiced");
+    renderMissionDots(document.getElementById("voiceLeadingMissionDots"),[0,1,2].map(i=>i<Math.min(voiceLeadingMissionCorrect,3)));
+    if(voiceLeadingMissionCorrect>=3){
+      setLessonState(9,"mastered");
+      document.getElementById("voiceLeadingMissionText").innerHTML="<strong>¡Dominado!</strong> Eliges la inversión que conecta cada acorde con el menor movimiento.";
+    }
+  }
+}
+document.getElementById("voiceLeadingNewChallenge").addEventListener("click",newVoiceLeadingChallenge);
+document.getElementById("voiceLeadingRepeat").addEventListener("click",()=>voiceLeadingQuiz&&playChordNow(voiceLeadingQuiz.prevTones.map(t=>t.midi)));
+renderVoiceLeadingOptions();

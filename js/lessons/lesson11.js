@@ -1,4 +1,4 @@
-import { rootById, buildChordTones } from "../theory.js?v=3";
+import { rootById, buildChordTones } from "../theory.js?v=4";
 import { getAudioContext, playChordAt } from "../audio.js?v=5";
 import { getSampledPiano, playChordAtSampled } from "../audioSampled.js?v=7";
 import { setLessonState } from "../nav.js?v=7";

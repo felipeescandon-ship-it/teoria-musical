@@ -1,5 +1,5 @@
 import { PC_KEY_LABELS, ROOTS, CHORDS } from "./data.js?v=3";
-import { spellChord, buildChordTones } from "./theory.js?v=3";
+import { spellChord, buildChordTones } from "./theory.js?v=4";
 import { playChordSmart as playChord } from "./audioSampled.js?v=7";
 import { buildKeyboard, clearKeyboard, togglePcSelection } from "./keyboard.js?v=6";
 import { recordAttempt } from "./stats.js?v=1";

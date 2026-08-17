@@ -1,5 +1,5 @@
 import { ROOTS, CHORDS } from "./data.js?v=3";
-import { rootC, buildChordTones } from "./theory.js?v=3";
+import { rootC, buildChordTones } from "./theory.js?v=4";
 import { playMidiSmart as playMidi, playChordSmart as playChord } from "./audioSampled.js?v=7";
 import { recordAttempt } from "./stats.js?v=1";
 

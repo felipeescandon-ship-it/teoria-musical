@@ -1,4 +1,4 @@
-import { rootById, buildChordTones, chordSymbol } from "../theory.js?v=3";
+import { rootById, buildChordTones, chordSymbol } from "../theory.js?v=4";
 import { playChordSmart as playChord } from "../audioSampled.js?v=7";
 import { buildKeyboard, highlightChordOnKeyboard, highlightMidiRoles } from "../keyboard.js?v=6";
 import { setLessonState } from "../nav.js?v=7";

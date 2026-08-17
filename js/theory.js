@@ -81,6 +81,34 @@ export function buildDiatonicChords(root) {
     return {quality, roman:DIATONIC_ROMANS[i], func:DIATONIC_FUNCTIONS[i], root:chordRoot, name:`${scaleNote.latin} ${CHORDS[quality].label}`};
   });
 }
+// ========== Voice leading: pick the inversion that moves the least from a previous chord ==========
+// buildChordTones always returns tones sorted low-to-high regardless of inversion, so array index
+// already means "voice from bottom to top" — comparing positionally (bass-to-bass, top-to-top)
+// approximates real voice leading for a triad without needing a full nearest-note matching search.
+export function voiceLeadingDistance(prevTones,nextTones){
+  const n=Math.min(prevTones.length,nextTones.length);
+  let sum=0; for(let i=0;i<n;i++) sum+=Math.abs(prevTones[i].midi-nextTones[i].midi);
+  return sum;
+}
+// Also tries the candidate an octave up/down from buildChordTones's own 48–72 clamp: without that,
+// two chords whose roots sit far apart on the clamped range can look artificially "unconnectable"
+// (e.g. C major vs F major would rank root position as smoothest, purely because the clamp forces F
+// into a higher octave band than C) even though real voice leading finds a close, common-tone
+// connection one octave down. The clamp is correct for keyboard-display call sites; a pure
+// voice-leading search needs the extra octave freedom to find that.
+export function bestInversion(prevTones,root,qualityKey,baseRootMidi=48){
+  const count=CHORDS[qualityKey].intervals.length;
+  let best=null;
+  for(let inv=0;inv<count;inv++){
+    const base=buildChordTones(root,qualityKey,inv,baseRootMidi);
+    for(const shift of [-12,0,12]){
+      const tones=shift?base.map(t=>({...t,midi:t.midi+shift})):base;
+      const distance=voiceLeadingDistance(prevTones,tones);
+      if(!best||distance<best.distance) best={inversion:inv,tones,distance};
+    }
+  }
+  return best;
+}
 export function rootById(id){ return ROOTS.find(r=>r.id===id)||ROOTS[0]; }
 // Do (C) as root — used as the default demo root across several lessons
 export const rootC = rootById("C");

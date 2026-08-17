@@ -1,7 +1,8 @@
 import { rootById } from "../js/theory.js";
 import {
   accidentalText, normalizeDiff, spellChord, chordSymbol, applyVoicing,
-  buildChordTones, spellScale, buildScaleTones, buildDiatonicChords, inversionName
+  buildChordTones, spellScale, buildScaleTones, buildDiatonicChords, inversionName,
+  voiceLeadingDistance, bestInversion
 } from "../js/theory.js";
 
 const C = rootById("C");
@@ -146,5 +147,31 @@ describe("inversionName", () => {
   });
   test("3 is third inversion only for 4-note chords", () => {
     expect(inversionName(3, 4)).toBe("tercera inversión");
+  });
+});
+
+describe("voiceLeadingDistance / bestInversion", () => {
+  const F = rootById("F");
+  const G = rootById("G");
+  test("C major (register 60) to F/C (second inversion) moves only 3 semitones total", () => {
+    // The canonical example from Lesson 5's voice-leading demo: C stays put, the other two voices
+    // move by step. Uses register 60 (not the default base 48) to match that demo's actual MIDI values.
+    const cMajor = buildChordTones(C, "major", 0, 60);
+    const fSecondInv = buildChordTones(F, "major", 2, 60);
+    expect(voiceLeadingDistance(cMajor, fSecondInv)).toBe(3);
+  });
+  test("bestInversion finds the F/C connection even from a register where buildChordTones' clamp would hide it", () => {
+    // At base 48, F major's clamped register sits far enough from C major's that root position
+    // looks artificially smoothest unless bestInversion also searches an octave up/down.
+    const cMajor = buildChordTones(C, "major", 0, 48);
+    const best = bestInversion(cMajor, F, "major", 48);
+    expect(best.inversion).toBe(2);
+    expect(best.distance).toBe(3);
+  });
+  test("bestInversion never returns a larger distance than root position", () => {
+    const cMajor = buildChordTones(C, "major", 0, 48);
+    const rootPositionDistance = voiceLeadingDistance(cMajor, buildChordTones(G, "major", 0, 48));
+    const best = bestInversion(cMajor, G, "major", 48);
+    expect(best.distance).toBeLessThanOrEqual(rootPositionDistance);
   });
 });
