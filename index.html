@@ -1426,6 +1426,40 @@
         </div>
         <div id="compareExplanation" class="result-box">Compara mayor y menor para comenzar.</div>
       </section>
+
+      <section class="card mt">
+        <div class="eyebrow">Voice leading</div>
+        <h2>Conecta cualquier progresión con el menor movimiento posible</h2>
+        <p>
+          Escribe una secuencia de acordes — no necesita pertenecer a una sola tonalidad — y compara tocarla
+          siempre en posición fundamental contra conectarla eligiendo, acorde a acorde, la inversión que menos
+          mueve la mano derecha respecto a la anterior. La mano izquierda toca siempre la raíz.
+        </p>
+        <div class="callout compact-callout">Modo libre: aquí no hay misión ni corrección, y no queda registrado ningún progreso. Es solo para explorar.</div>
+        <div class="controls">
+          <div class="field"><label for="vlSequence">Secuencia de acordes</label><input type="text" id="vlSequence" value="C Em F G C" autocomplete="off" spellcheck="false"></div>
+          <button id="vlConnect" class="btn">Comparar conexión</button>
+        </div>
+        <p class="muted">Admite: C, Cm, C7, Cmaj7, Cm7, Cdim, Caug, Csus2, Csus4 (con # / b o ♯ / ♭). Sepáralos con espacios.</p>
+        <div id="vlError" class="result-box status-bad" hidden></div>
+        <div class="grid two mt">
+          <div class="compare-card">
+            <div class="eyebrow">Posiciones fundamentales</div>
+            <div id="vlRootChords" class="pill-row">Escribe una secuencia y pulsa "Comparar conexión".</div>
+            <div class="info-item mt-sm"><span>Movimiento total</span><strong id="vlRootMovement">—</strong></div>
+          </div>
+          <div class="compare-card">
+            <div class="eyebrow">Conectada (menor movimiento)</div>
+            <div id="vlConnectedChords" class="pill-row">Escribe una secuencia y pulsa "Comparar conexión".</div>
+            <div class="info-item mt-sm"><span>Movimiento total</span><strong id="vlConnectedMovement">—</strong></div>
+          </div>
+        </div>
+        <div class="controls mt">
+          <button id="vlPlayRoot" class="btn secondary" disabled>Tocar en posición fundamental</button>
+          <button id="vlPlayConnected" class="btn secondary" disabled>Tocar conectada</button>
+        </div>
+        <div class="keyboard-wrap mt"><div id="vlKeyboard" class="keyboard" aria-label="Piano del voice leading"></div></div>
+      </section>
     </section>
 
     <section id="mode-practice" class="mode-panel">
