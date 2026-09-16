@@ -186,11 +186,11 @@
 
 ### D2. Mano izquierda y patrones de acompañamiento
 
-- [ ] Raíz sola.
-- [ ] Raíz y quinta.
-- [ ] Bajo–acorde.
-- [ ] Arpegios básicos.
-- [ ] Patrones de cuatro tiempos.
+- [x] Raíz sola.
+- [x] Raíz y quinta.
+- [x] Bajo–acorde.
+- [x] Arpegios básicos.
+- [x] Patrones de cuatro tiempos.
 
 **Prioridad:** alta.  
 **Dificultad:** alta.

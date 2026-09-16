@@ -67,6 +67,17 @@ function scheduleAccompaniedChord(chord,pattern,when,slotDuration,registerVoices
     const order=[leftHand[0],leftHand[2]||leftHand[1],leftHand[1],leftHand[2]||leftHand[1]];
     const sub=slotDuration/order.length; // Alberti fills the whole slot at any tempo
     order.forEach((t,j)=>registerVoices(playMidiAt(t.midi,when+j*sub,sub*.82,.1)));
+  } else if(pattern==="fifth"){
+    // Alternating bass: root, fifth, root, fifth — same subdivision scheme as Alberti, but a
+    // steady back-and-forth instead of an arpeggio, closer to what folk/pop left hand plays.
+    const order=[leftHand[0],leftHand[2]||leftHand[1],leftHand[0],leftHand[2]||leftHand[1]];
+    const sub=slotDuration/order.length;
+    order.forEach((t,j)=>registerVoices(playMidiAt(t.midi,when+j*sub,sub*.82,.1)));
+  } else if(pattern==="boomchick"){
+    // "Oom-pah-pah": bass note on beat one, then the full triad stabs the remaining three beats.
+    const beats=4, sub=slotDuration/beats;
+    registerVoices(playMidiAt(leftHand[0].midi,when,sub*.82,.1));
+    for(let j=1;j<beats;j++) registerVoices(playChordAt(leftHand.map(t=>t.midi),when+j*sub,sub*.7,.07));
   }
   highlightAtAudioTime(when,rightHand);
 }
