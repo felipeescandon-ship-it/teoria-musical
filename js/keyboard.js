@@ -1,4 +1,4 @@
-import { PC_KEY_LABELS, PC_KEY_SHORT } from "./data.js?v=3";
+import { PC_KEY_LABELS, PC_KEY_SHORT } from "./data.js?v=4";
 import { startHeldMidi, stopHeldMidi } from "./audio.js?v=5";
 import { getSampledPiano, startHeldMidiSampled, stopHeldMidiSampled } from "./audioSampled.js?v=7";
 

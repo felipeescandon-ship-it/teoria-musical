@@ -1,5 +1,5 @@
-import { ROOTS, CHORDS, VOICING_TYPES, SCALE_ROOT_IDS } from "../data.js?v=3";
-import { rootById, buildChordTones, chordSymbol } from "../theory.js?v=4";
+import { ROOTS, CHORDS, VOICING_TYPES, SCALE_ROOT_IDS } from "../data.js?v=4";
+import { rootById, buildChordTones, chordSymbol } from "../theory.js?v=5";
 import { playChordSmart as playChord } from "../audioSampled.js?v=7";
 import { buildKeyboard, highlightChordOnKeyboard } from "../keyboard.js?v=7";
 import { setLessonState, showMode } from "../nav.js?v=7";

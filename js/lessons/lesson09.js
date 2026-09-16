@@ -1,5 +1,5 @@
-import { ROOTS, PROGRESSIONS, DIATONIC_ROMANS, SCALE_ROOT_IDS } from "../data.js?v=3";
-import { rootById, buildDiatonicChords, buildChordTones, chordSymbol, inversionName, bestInversion, voiceLeadingDistance } from "../theory.js?v=4";
+import { ROOTS, PROGRESSIONS, DIATONIC_ROMANS, SCALE_ROOT_IDS } from "../data.js?v=4";
+import { rootById, buildDiatonicChords, buildChordTones, chordSymbol, inversionName, bestInversion, voiceLeadingDistance } from "../theory.js?v=5";
 import { getAudioContext } from "../audio.js?v=5";
 import { playMidiAtSmart as playMidiAt, playChordAtSmart as playChordAt, playChordSmart as playChordNow } from "../audioSampled.js?v=7";
 import { createTransport } from "../transport.js?v=5";

@@ -88,6 +88,13 @@ export const VOICING_TYPES = {
   }
 };
 
+// ========== Suggested fingering by inversion (closed-position triads/sevenths) ==========
+// Beginner-simplified scheme, one entry per inversion (root, 1st, 2nd, [3rd for sevenths]).
+// Not the only valid fingering — hand size and repertoire change it — see suggestFingering() in
+// theory.js and the disclaimer wherever this is shown.
+export const TRIAD_FINGERINGS = { right: [[1,3,5],[1,2,5],[1,3,5]], left: [[5,3,1],[5,3,1],[5,2,1]] };
+export const SEVENTH_FINGERINGS = { right: [[1,2,3,5],[1,2,3,5],[1,2,4,5],[1,2,3,5]], left: [[5,3,2,1],[5,3,2,1],[5,4,2,1],[5,3,2,1]] };
+
 // Root ids commonly used in "practical" spelling mode (lab lesson root picker)
 export const PRACTICAL_ROOT_IDS = ["C","Db","D","Eb","E","F","F#","G","Ab","A","Bb","B"];
 

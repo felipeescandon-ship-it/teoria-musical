@@ -2,7 +2,7 @@ import { rootById } from "../js/theory.js";
 import {
   accidentalText, normalizeDiff, spellChord, chordSymbol, applyVoicing,
   buildChordTones, spellScale, buildScaleTones, buildDiatonicChords, inversionName,
-  voiceLeadingDistance, bestInversion
+  voiceLeadingDistance, bestInversion, suggestFingering
 } from "../js/theory.js";
 
 const C = rootById("C");
@@ -173,5 +173,22 @@ describe("voiceLeadingDistance / bestInversion", () => {
     const rootPositionDistance = voiceLeadingDistance(cMajor, buildChordTones(G, "major", 0, 48));
     const best = bestInversion(cMajor, G, "major", 48);
     expect(best.distance).toBeLessThanOrEqual(rootPositionDistance);
+  });
+});
+
+describe("suggestFingering", () => {
+  test("triad root position uses 1-3-5 in the right hand, mirrored 5-3-1 in the left", () => {
+    expect(suggestFingering(3, 0, "right")).toEqual([1, 3, 5]);
+    expect(suggestFingering(3, 0, "left")).toEqual([5, 3, 1]);
+  });
+  test("triad first inversion narrows the right-hand stretch to 1-2-5", () => {
+    expect(suggestFingering(3, 1, "right")).toEqual([1, 2, 5]);
+  });
+  test("seventh chords use the 4-note table instead of the triad one", () => {
+    expect(suggestFingering(4, 0, "right")).toEqual([1, 2, 3, 5]);
+    expect(suggestFingering(4, 2, "right")).toEqual([1, 2, 4, 5]);
+  });
+  test("an inversion beyond the table clamps to the last entry instead of throwing", () => {
+    expect(suggestFingering(3, 5, "right")).toEqual(suggestFingering(3, 2, "right"));
   });
 });

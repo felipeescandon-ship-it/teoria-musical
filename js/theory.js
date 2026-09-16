@@ -1,7 +1,8 @@
 import {
   ROOTS, CHORDS, NATURAL_PCS, LATIN_LETTERS, AMERICAN_LETTERS,
-  MAJOR_SCALE_INTERVALS, DIATONIC_QUALITIES, DIATONIC_ROMANS, DIATONIC_FUNCTIONS
-} from "./data.js?v=3";
+  MAJOR_SCALE_INTERVALS, DIATONIC_QUALITIES, DIATONIC_ROMANS, DIATONIC_FUNCTIONS,
+  TRIAD_FINGERINGS, SEVENTH_FINGERINGS
+} from "./data.js?v=4";
 
 // ========== Chord theory utilities ==========
 // Convert accidental difference to notation (♯, ♭, etc.)
@@ -114,3 +115,9 @@ export function rootById(id){ return ROOTS.find(r=>r.id===id)||ROOTS[0]; }
 export const rootC = rootById("C");
 export function inversionName(n,count){ return n===0?"posición fundamental":n===1?"primera inversión":n===2?"segunda inversión":n===3&&count===4?"tercera inversión":"inversión"; }
 export function octaveOf(midi){ return Math.floor(midi/12)-1; }
+// ========== Suggested fingering (Épica D3): a beginner starting point, not the only valid choice —
+// see TRIAD_FINGERINGS/SEVENTH_FINGERINGS in data.js for the caveat this depends on.
+export function suggestFingering(voiceCount,inversion,hand){
+  const table=voiceCount>=4?SEVENTH_FINGERINGS:TRIAD_FINGERINGS;
+  return table[hand][Math.min(inversion,table[hand].length-1)];
+}

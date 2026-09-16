@@ -1,4 +1,4 @@
-import { rootById, buildChordTones, chordSymbol } from "../theory.js?v=4";
+import { rootById, buildChordTones, chordSymbol, suggestFingering } from "../theory.js?v=5";
 import { playChordSmart as playChord } from "../audioSampled.js?v=7";
 import { buildKeyboard, highlightChordOnKeyboard, highlightMidiRoles } from "../keyboard.js?v=7";
 import { setLessonState } from "../nav.js?v=7";
@@ -9,8 +9,7 @@ import { recordAttempt } from "../stats.js?v=1";
 const rootG = rootById("G");
 buildKeyboard("inversionKeyboard",null);
 let currentInversionDemo=0, inversionChallenge=null, inversionCorrect=0, lastChallengeInv=null;
-const fingerings={right:[[1,3,5],[1,2,5],[1,3,5]],left:[[5,3,1],[5,3,1],[5,2,1]]};
-function updateFingering(){const hand=document.getElementById("inversionHand").value, handName=hand==="right"?"Mano derecha":"Mano izquierda"; document.getElementById("inversionFingering").innerHTML=`<strong>${handName}:</strong> dedos ${fingerings[hand][currentInversionDemo].join("–")} para practicar esta disposición de Sol mayor de forma aislada.`;}
+function updateFingering(){const hand=document.getElementById("inversionHand").value, handName=hand==="right"?"Mano derecha":"Mano izquierda"; document.getElementById("inversionFingering").innerHTML=`<strong>${handName}:</strong> dedos ${suggestFingering(3,currentInversionDemo,hand).join("–")} para practicar esta disposición de Sol mayor de forma aislada. Es un punto de partida, no la única digitación correcta.`;}
 function renderInversionDemo(inv,markExplored=true){currentInversionDemo=Number(inv); if(markExplored)setLessonState(5,"explored"); const tones=buildChordTones(rootG,"major",inv); highlightChordOnKeyboard("inversionKeyboard",tones); playChord(tones.map(t=>t.midi)); const bass=tones[0]; document.querySelectorAll(".inversion-demo").forEach(b=>b.classList.toggle("secondary",Number(b.dataset.inversionDemo)!==currentInversionDemo)); document.getElementById("inversionInfo").innerHTML=`<div class="info-item"><span>Acorde</span><strong>Sol mayor</strong></div><div class="info-item"><span>Raíz</span><strong>Sol</strong></div><div class="info-item"><span>Bajo</span><strong>${bass.latin}</strong></div><div class="info-item"><span>Símbolo</span><strong>${chordSymbol(rootG,"major",bass.american)}</strong></div>`; updateFingering();}
 document.querySelectorAll(".inversion-demo").forEach(b=>b.addEventListener("click",()=>renderInversionDemo(b.dataset.inversionDemo)));
 document.getElementById("inversionHand").addEventListener("change",updateFingering);

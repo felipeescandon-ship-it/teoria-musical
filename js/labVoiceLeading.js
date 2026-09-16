@@ -1,5 +1,5 @@
-import { ROOTS } from "./data.js?v=3";
-import { buildChordTones, chordSymbol, inversionName, bestInversion, voiceLeadingDistance } from "./theory.js?v=4";
+import { ROOTS } from "./data.js?v=4";
+import { buildChordTones, chordSymbol, inversionName, bestInversion, voiceLeadingDistance, suggestFingering } from "./theory.js?v=5";
 import { playChordSmart as playChordNow } from "./audioSampled.js?v=7";
 import { buildKeyboard, highlightChordOnKeyboard } from "./keyboard.js?v=7";
 
@@ -46,7 +46,8 @@ function totalMovement(version) {
 function renderChordChips(version) {
   return version.map(({ root, quality, inversion, tones }) => {
     const bass = tones[0], symbol = chordSymbol(root, quality, bass.american);
-    return `<span class="pill">${symbol} <small>(${inversionName(inversion, tones.length)})</small></span>`;
+    const fingers = suggestFingering(tones.length, inversion, "right").join("-");
+    return `<span class="pill">${symbol} <small>(${inversionName(inversion, tones.length)} · dedos ${fingers})</small></span>`;
   }).join("");
 }
 function playSequence(version) {

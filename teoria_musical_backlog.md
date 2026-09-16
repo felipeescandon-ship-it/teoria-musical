@@ -197,10 +197,10 @@
 
 ### D3. Digitación contextual
 
-- [ ] Sugerir digitación según el acorde anterior y siguiente.
-- [ ] Distinguir mano derecha e izquierda.
-- [ ] Evitar presentar una única digitación como universal.
-- [ ] Añadir advertencias ergonómicas básicas y movimientos lentos.
+- [x] Sugerir digitación según el acorde anterior y siguiente.
+- [x] Distinguir mano derecha e izquierda.
+- [x] Evitar presentar una única digitación como universal.
+- [x] Añadir advertencias ergonómicas básicas y movimientos lentos.
 
 **Prioridad:** media.  
 **Dificultad:** alta.

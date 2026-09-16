@@ -1,4 +1,4 @@
-import { rootC, buildChordTones } from "./theory.js?v=4";
+import { rootC, buildChordTones } from "./theory.js?v=5";
 import { playChordSmart as playChord } from "./audioSampled.js?v=7";
 
 import "./theme.js?v=5";
